@@ -91,10 +91,17 @@ function UnitFrame:UpdateBuffs()
 
 				buff:Show();
 				buffIndex = buffIndex + 1;
+--[[
 			else
 				if ( buffFrame.buffList[i] ) then
 					buffFrame.buffList[i]:Hide();
 				end
+]]--
+			end
+		end
+		for i = buffIndex, BUFF_MAX_DISPLAY do
+			if (buffFrame.buffList[i]) then
+				buffFrame.buffList[i]:Hide();
 			end
 		end
 	end
