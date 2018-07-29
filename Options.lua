@@ -37,7 +37,8 @@ local hideClassBarButton = optionsPanel.hideClassBarButton;
 hideClassBarButton:SetPoint("TOPLEFT", optionsPanel.onlyShowOwnBuffsButton, "BOTTOMLEFT", 0, -12);
 -- hideClassBarButton.onValueChanged = function() end
 
-
-
+optionsPanel.colorByThreatStatusButton = optionsPanel:CreateCheckButton("ColorByThreatStatus");
+local colorByThreatStatusButton = optionsPanel.colorByThreatStatusButton;
+colorByThreatStatusButton:SetPoint("TOPLEFT", optionsPanel.hideClassBarButton, "BOTTOMLEFT", 0, -12);
 
 

@@ -358,6 +358,8 @@ function UnitFrame:UpdateHealthColor()
 	local healthBar = self.healthBar;
 	local options = self.optionTable;
 	local unit = self.unit;
+	local threatStatus = UnitThreatSituation("player", unit);
+	local colorByThreat = NephilistNameplatesOptions.ColorByThreatStatus;
 	local r, g, b;
 	if ( not UnitIsConnected(unit) ) then
 		r, g, b = 0.7, 0.7, 0.7;
@@ -372,6 +374,10 @@ function UnitFrame:UpdateHealthColor()
 				r, g, b = classColor.r, classColor.g, classColor.b;
 			elseif ( self:IsTapDenied() ) then
 				r, g, b = 0.3, 0.3, 0.3;
+			elseif (threatStatus == 3 and colorByThreat) then
+				r, g, b = 0.23, 0.51, 1;
+			elseif (threatStatus == 2 and colorByThreat) then
+				r, g, b = 1, 0.68, 0;
 			elseif ( options.colorHealthBySelection ) then
 				-- Use color based on the type of unit (neutral, etc.)
 				if ( options.considerSelectionInCombatAsHostile and IsOnThreatList(self.displayedUnit) ) then
