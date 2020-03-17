@@ -55,7 +55,7 @@
 		</Scripts>
 	</Frame>
 
-	<Button name="NephilistNameplatesTemplate" parentKey="UnitFrame" setAllPoints="true" useParentLevel="true" virtual="true">
+	<Button name="NephilistNameplatesTemplate" parentKey="UnitFrame" useParentLevel="true" virtual="true">
 		<Frames>
 			<StatusBar parentKey="healthBar">
 				<Size y="5.0"/>

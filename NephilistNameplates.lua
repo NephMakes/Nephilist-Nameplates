@@ -153,6 +153,7 @@ end
 
 function DriverFrame:OnNamePlateCreated(nameplate)
 	local unitFrame = CreateFrame("Button", "$parentUnitFrame", nameplate, "NephilistNameplatesTemplate");
+	unitFrame:SetAllPoints();
 
 	unitFrame.SetUnit = UnitFrame.SetUnit;
 	unitFrame.UpdateInVehicle = UnitFrame.UpdateInVehicle;
