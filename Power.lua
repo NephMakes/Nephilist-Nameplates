@@ -45,46 +45,43 @@ end
 
 function DriverFrame:UpdateClassResourceBar()
 
-	local nameplateBar = NamePlateDriverFrame.nameplateBar;
-	if ( not nameplateBar ) then 
+	local classBar = NamePlateDriverFrame.classNamePlateMechanicFrame; -- reuse Blizzard frame
+	if ( not classBar ) then 
 		return;
 	end
-	nameplateBar:Hide();
+	classBar:Hide();
 
 	local showSelf = GetCVar("nameplateShowSelf");
 	if ( showSelf == "0" or NephilistNameplatesOptions.HideClassBar ) then
 		return;
 	end
-	--[[
+
 	if ( NephilistNameplatesOptions.HideClassBar ) then
 		return;
 	end
-	]]--
 
 	local targetMode = GetCVarBool("nameplateResourceOnTarget");
-	if ( nameplateBar and nameplateBar.overrideTargetMode ~= nil ) then
-		targetMode = nameplateBar.overrideTargetMode;
+	if ( classBar and classBar.overrideTargetMode ~= nil ) then
+		targetMode = classBar.overrideTargetMode;
 	end
-	if ( targetMode and NamePlateTargetResourceFrame ) then
+	if ( targetMode and classBar ) then
 		local namePlateTarget = C_NamePlate.GetNamePlateForUnit("target");
 		if ( namePlateTarget ) then
-			nameplateBar:SetParent(NamePlateTargetResourceFrame);
-			NamePlateTargetResourceFrame:SetParent(namePlateTarget.UnitFrame);
-			NamePlateTargetResourceFrame:ClearAllPoints();
-			NamePlateTargetResourceFrame:SetPoint("BOTTOM", namePlateTarget.UnitFrame.name, "TOP", 0, 3);
-			nameplateBar:Show();
+			classBar:SetParent(namePlateTarget);
+			classBar:ClearAllPoints();
+			classBar:SetPoint("BOTTOM", namePlateTarget.UnitFrame.name, "TOP", 0, 4);
+			classBar:Show();
+		else
+			classBar:Hide();
 		end
-		NamePlateTargetResourceFrame:SetShown(namePlateTarget ~= nil);
-	elseif ( not targetMode and NamePlatePlayerResourceFrame ) then
+	elseif ( not targetMode and classBar ) then
 		local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player");
 		if ( namePlatePlayer ) then
-			nameplateBar:SetParent(NamePlatePlayerResourceFrame);
-			NamePlatePlayerResourceFrame:SetParent(namePlatePlayer.UnitFrame);
-			NamePlatePlayerResourceFrame:ClearAllPoints();
-			NamePlatePlayerResourceFrame:SetPoint("TOP", namePlatePlayer.UnitFrame.powerBar, "BOTTOM", 0, -3);
-			nameplateBar:Show();
+			classBar:SetParent(namePlatePlayer);
+			classBar:ClearAllPoints();
+			classBar:SetPoint("TOP", namePlatePlayer.UnitFrame.powerBar, "BOTTOM", 0, -4);
+			classBar:Show();
 		end
-		NamePlatePlayerResourceFrame:SetShown(namePlatePlayer ~= nil);
 	end
 end
 

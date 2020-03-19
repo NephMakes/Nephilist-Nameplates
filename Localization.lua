@@ -12,7 +12,7 @@ Localization["enUS"] = {
 	ShowBuffs = "Show buffs and debuffs",
 	ShowBuffsTooltip = "Show important buffs and debuffs on nameplates",
 	ShowClassResource = "Show class-specific combat resources",
-	ShowClassResourceTooltip = "Show combo points, runes, holy power, etc.",
+	ShowClassResourceTooltip = "Show combo points, runes, holy power, etc.", 
 	Subtext = "These options let you change the appearance of unit nameplates"
 }
 

@@ -16,7 +16,8 @@ local EnemyFrameOptions = {
 	displaySelectionHighlight = true,
 	considerSelectionInCombatAsHostile = true,
 	greyOutWhenTapDenied = true,
-	hideCastBar = false
+	hideCastBar = false, 
+	showEliteIcon = true 
 }
 local FriendlyFrameOptions = {
 	showName = true,
@@ -24,14 +25,16 @@ local FriendlyFrameOptions = {
 	displaySelectionHighlight = true,
 	considerSelectionInCombatAsHostile = true,
 	colorHealthWithExtendedColors = true,
-	hideCastBar = false
+	hideCastBar = false, 
+	showEliteIcon = true 
 }
 local PlayerFrameOptions = {
 	showName = false,
 	displaySelectionHighlight = false,
 	healthBarColorOverride = CreateColor(0, 0.7, 0), 
 	hideCastBar = true, 
-	showPowerBar = true
+	showPowerBar = true,
+	showEliteIcon = false 
 }
 
 
@@ -169,6 +172,7 @@ function DriverFrame:OnNamePlateCreated(nameplate)
 	unitFrame.UpdateMaxHealth = UnitFrame.UpdateMaxHealth;
 	unitFrame.UpdateHealth = UnitFrame.UpdateHealth;
 	unitFrame.UpdateRaidTarget = UnitFrame.UpdateRaidTarget;
+	unitFrame.UpdateEliteIcon = UnitFrame.UpdateEliteIcon;
 	unitFrame.UpdateSelectionHighlight = UnitFrame.UpdateSelectionHighlight;
 	unitFrame.UpdateBuffs = UnitFrame.UpdateBuffs;
 	unitFrame.UpdateCastBar = UnitFrame.UpdateCastBar;
@@ -198,10 +202,8 @@ function DriverFrame:OnNamePlateRemoved(unit)
 end
 
 function DriverFrame:OnTargetChanged()
-	DriverFrame:UpdateClassResourceBar();
+	DriverFrame:UpdateClassResourceBar();  -- in Power.lua
 end
-
-
 
 
 --[[ Unit frame ]]-- 
@@ -294,7 +296,7 @@ function UnitFrame:OnEvent(event, ...)
 			self:UpdateBuffs();
 		elseif ( event == "UNIT_THREAT_LIST_UPDATE" ) then
 			if ( self.optionTable.considerSelectionInCombatAsHostile ) then
-				self:UpdateName();  -- Why is this here?
+				self:UpdateName();
 				self:UpdateHealthColor();
 			end
 			-- CompactUnitFrame_UpdateAggroFlash(self);
@@ -343,6 +345,7 @@ function UnitFrame:UpdateAll()
 		self:UpdateCastBar();
 		self:UpdatePowerBar();
 		self:UpdateBuffs();
+		self:UpdateEliteIcon();
 	end
 end
 
@@ -352,6 +355,14 @@ function UnitFrame:UpdateName()
 		self.name:Hide();
 	else
 		self.name:Show();
+		local classification = UnitClassification(self.unit);
+		if ( classification == "worldboss" ) then
+			self.name:SetTextColor(0.1, 0.3, 0.1);
+		elseif ( classification == "rare" or classification == "rareelite" ) then
+			self.name:SetTextColor(0.5, 0.5, 1.0);
+		else
+			self.name:SetTextColor(0.7, 0.7, 0.7);
+		end
 	end
 end
 
@@ -428,6 +439,20 @@ function UnitFrame:UpdateRaidTarget()
 		icon:Show();
 	else
 		icon:Hide();
+	end
+end
+
+function UnitFrame:UpdateEliteIcon() 
+	local icon = self.EliteFrame.EliteIcon;
+	if ( not self.optionTable.showEliteIcon ) then
+		icon:Hide();
+	else
+		local classification = UnitClassification(self.unit);
+		if ( classification == "worldboss" or classification == "elite" or classification == "rareelite") then
+			icon:Show();
+		else
+			icon:Hide();
+		end
 	end
 end
 

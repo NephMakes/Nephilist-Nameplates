@@ -123,7 +123,6 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-1.6" y="1.6"/>
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="1.6" y="-1.6"/>
-								<!-- Why do these look like they're anchored to the healthBar? -->
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -141,7 +140,7 @@
 						<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield" forceAlpha="true">
 							<Size x="15" y="15"/>
 							<Anchors>
-								<Anchor point="CENTER" relativePoint="LEFT" x="-1" y="1"/>
+								<Anchor point="CENTER" relativePoint="LEFT" x="-1" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Icon" hidden="true" forceAlpha="true">
@@ -168,6 +167,17 @@
 				<BarTexture file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
 				<BarColor r="0.5" g="0.5" b="0.5"/>
 			</StatusBar>
+			<Frame parentKey="EliteFrame">
+				<Size x="24" y="24"/>
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="LEFT" relativeKey="$parent.healthBar" y="0" x="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="10">
+						<Texture parentKey="EliteIcon" file="Interface/AddOns/NephilistNameplates/Star"/>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame parentKey="BuffFrame" inherits="HorizontalLayoutFrame">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="BOTTOMLEFT" y="-5"/>
@@ -194,8 +204,8 @@
 				<Texture parentKey="selectionBorder" hidden="true">
 					<Color r="1" g="1" b="1" a="0.8"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-2.5" y="2.5"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="2.5" y="-2.5"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-2.8" y="2.8"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="2.8" y="-2.8"/>
 					</Anchors>
 				</Texture>
 			</Layer>

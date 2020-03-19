@@ -2,13 +2,14 @@ local addonName, NephilistNameplates = ...
 
 -- local Strings = NephilistNameplates.Strings;
 
-
 --[[ Defaults ]]-- 
 
 NephilistNameplates.Defaults = {
 	HideClassBar = false,
 	OnlyShowOwnBuffs = true,
 	ShowBuffs = true,
+	ShowEliteIcon = true, 
+	ColorRareNames = true, 
 	Version = GetAddOnMetadata(addonName, "Version")
 }
 
@@ -36,8 +37,6 @@ optionsPanel.hideClassBarButton = optionsPanel:CreateCheckButton("HideClassBar")
 local hideClassBarButton = optionsPanel.hideClassBarButton;
 hideClassBarButton:SetPoint("TOPLEFT", optionsPanel.onlyShowOwnBuffsButton, "BOTTOMLEFT", 0, -12);
 -- hideClassBarButton.onValueChanged = function() end
-
-
 
 
 
