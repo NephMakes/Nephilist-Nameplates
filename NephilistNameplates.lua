@@ -322,6 +322,7 @@ function UnitFrame:UpdateAll()
 	self:UpdateInVehicle();
 	if ( UnitExists(self.displayedUnit) ) then
 		self:UpdateName();
+		self:UpdateLevel();
 		self:UpdateHealthColor();
 		self:UpdateMaxHealth();
 		self:UpdateHealth();
@@ -336,33 +337,43 @@ end
 
 function UnitFrame:UpdateName() 
 	local name = GetUnitName(self.unit, false)
-	if true then
-	-- if self.showLevel then
-		local unitLevel = UnitLevel(self.unit)
-		if unitLevel == "-1" then
-			unitLevel = "??"
-		end
-		local levelColor = {r = 0.7, g = 0.7, b = 0.7}
-		if UnitCanAttack("player", self.unit) then
-			levelColor = GetCreatureDifficultyColor(unitLevel)
-			-- self.levelText:SetVertexColor(color.r, color.g, color.b)
-			-- print(levelColor.r .. levelColor.b .. levelColor.g)
-		end
-		name = name .. " [" .. unitLevel .. "] "
-	end
 	self.name:SetText(name);
-	if ( not self.optionTable.showName ) then
+	if not self.optionTable.showName then
 		self.name:Hide();
 	else
 		self.name:Show();
-		local classification = UnitClassification(self.unit);
-		if ( classification == "worldboss" ) then
-			self.name:SetTextColor(0.1, 0.3, 0.1);
-		elseif ( classification == "rare" or classification == "rareelite" ) then
-			self.name:SetTextColor(0.5, 0.5, 1.0);
+		local classification = UnitClassification(self.unit)
+		local unitLevel = UnitLevel(self.unit)
+		-- if classification == "worldboss" then
+		if unitLevel == -1 then
+			self.name:SetTextColor(1.0, 0.6, 0.0)  -- Orange
+			-- self.name:SetTextColor(0.9, 0.3, 0.9)  -- Purple
+		elseif classification == "rare" or classification == "rareelite" then
+			self.name:SetTextColor(0.5, 0.5, 1.0)
 		else
-			self.name:SetTextColor(0.7, 0.7, 0.7);
+			self.name:SetTextColor(0.7, 0.7, 0.7)
 		end
+	end
+end
+
+function UnitFrame:UpdateLevel()
+	local showLevel = true  -- Temporary
+	if showLevel then
+		local unitLevel = UnitLevel(self.unit)
+		if unitLevel == -1 then
+			unitLevel = "??"
+		end
+		self.levelText:SetText(unitLevel)
+
+		local levelColor = {r = 0.7, g = 0.7, b = 0.7}
+		if UnitCanAttack("player", self.unit) then
+			levelColor = GetCreatureDifficultyColor(unitLevel)
+		end
+		self.levelText:SetTextColor(levelColor.r, levelColor.g, levelColor.b)
+
+		self.levelText:Show()
+	else
+		self.levelText:Hide()
 	end
 end
 
