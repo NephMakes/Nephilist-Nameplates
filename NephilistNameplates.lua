@@ -103,22 +103,27 @@ end
 
 function DriverFrame:HideBlizzard()
 	NamePlateDriverFrame:UnregisterAllEvents();
-	ClassNameplateManaBarFrame:Hide();
-	ClassNameplateManaBarFrame:UnregisterAllEvents();
 
-	-- Blizz mana bar appearing on level-up
-	ClassNameplateManaBarFrame:HookScript("OnShow", function(self) self:Hide() end);
+	-- Retail-only features
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then  
+		-- Blizz globals in FrameXML/Constants.lua
 
-	local checkBox = InterfaceOptionsNamesPanelUnitNameplatesMakeLarger;
-	function checkBox.setFunc(value)
-		if value == "1" then
-			SetCVar("NamePlateHorizontalScale", checkBox.largeHorizontalScale);
-			SetCVar("NamePlateVerticalScale", checkBox.largeVerticalScale);
-		else
-			SetCVar("NamePlateHorizontalScale", checkBox.normalHorizontalScale);
-			SetCVar("NamePlateVerticalScale", checkBox.normalVerticalScale);
+		ClassNameplateManaBarFrame:Hide();
+		ClassNameplateManaBarFrame:UnregisterAllEvents();
+		-- Blizz mana bar appearing on level-up
+		ClassNameplateManaBarFrame:HookScript("OnShow", function(self) self:Hide() end);
+
+		local checkBox = InterfaceOptionsNamesPanelUnitNameplatesMakeLarger;
+		function checkBox.setFunc(value)
+			if value == "1" then
+				SetCVar("NamePlateHorizontalScale", checkBox.largeHorizontalScale);
+				SetCVar("NamePlateVerticalScale", checkBox.largeVerticalScale);
+			else
+				SetCVar("NamePlateHorizontalScale", checkBox.normalHorizontalScale);
+				SetCVar("NamePlateVerticalScale", checkBox.normalVerticalScale);
+			end
+			DriverFrame:UpdateNamePlateOptions();
 		end
-		DriverFrame:UpdateNamePlateOptions();
 	end
 end
 
@@ -158,6 +163,7 @@ function DriverFrame:OnNamePlateCreated(nameplate)
 	local unitFrame = CreateFrame("Button", "$parentUnitFrame", nameplate, "NephilistNameplatesTemplate");
 	unitFrame:SetAllPoints();
 
+	-- Mixin(unitFrame, UnitFrame)  -- Inherit UnitFrame:Methods()
 	unitFrame.SetUnit = UnitFrame.SetUnit;
 	unitFrame.UpdateInVehicle = UnitFrame.UpdateInVehicle;
 	unitFrame.RegisterEvents = UnitFrame.RegisterEvents;
@@ -266,7 +272,7 @@ function UnitFrame:UpdateEvents()
 		displayedUnit = self.displayedUnit;
 	end
 	self:RegisterUnitEvent("UNIT_MAXHEALTH", self.unit, displayedUnit);
-	self:RegisterUnitEvent("UNIT_HEALTH_FREQUENT", self.unit, displayedUnit);
+	self:RegisterUnitEvent("UNIT_HEALTH", self.unit, displayedUnit);
 	self:RegisterUnitEvent("UNIT_AURA", self.unit, displayedUnit);
 	self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", self.unit, displayedUnit);
 	-- self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", self.unit, displayedUnit);

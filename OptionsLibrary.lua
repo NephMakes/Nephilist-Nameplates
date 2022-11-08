@@ -1,4 +1,4 @@
---[[ Nephilist Options Library v0.5 ]]--
+--[[ Nephilist Options Library v0.6 ]]--
 
 -- Caveats: 
 --   CheckButton variables must be boolean (not 1/0)
@@ -66,7 +66,9 @@ end
 
 function MyAddon:CreateOptionsPanel() 
 	local name = "InterfaceOptions"..addonName.."Panel"
-	local optionsPanel = CreateFrame("Frame", name, InterfaceOptionsFramePanelContainer); 
+	-- local optionsPanel = CreateFrame("Frame", name, InterfaceOptionsFramePanelContainer); 
+		-- InterfaceOptionsFramePanelContainer removed in patch 10.0.0
+	local optionsPanel = CreateFrame("Frame", name); 
 
 	local title = GetAddOnMetadata(addonName, "Title");
 	local version = GetAddOnMetadata(addonName, "Version");
@@ -291,8 +293,11 @@ function MyAddon:CreateDropDownMenu(optionName)
 	local dropDownMenu = CreateFrame("Frame", name, self, "UIDropDownMenuTemplate");
 	dropDownMenu.optionName = optionName;
 	dropDownMenu.Text = dropDownMenu:CreateFontString(nil, nil, "GameFontHighlight");
-	dropDownMenu.Text:SetPoint("BOTTOMLEFT", dropDownMenu, "TOPLEFT", 16, 3);
+	dropDownMenu.Text:SetPoint("LEFT", dropDownMenu, "LEFT", 30, 2);
 	dropDownMenu.Text:SetText("Dropdown menu text");
+	dropDownMenu.Label = dropDownMenu:CreateFontString(nil, nil, "GameFontNormal");
+	dropDownMenu.Label:SetPoint("BOTTOMLEFT", dropDownMenu, "TOPLEFT", 16, 3);
+	dropDownMenu.Label:SetText("Dropdown menu label");
 	dropDownMenu.Refresh = MyAddon.DropDownMenuRefresh;
 	MyAddon:RegisterControl(dropDownMenu, self); 
 	return dropDownMenu;

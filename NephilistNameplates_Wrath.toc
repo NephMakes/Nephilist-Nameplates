@@ -1,11 +1,11 @@
-## Interface: 100000
+## Interface: 30400
 ## Title: Nephilist Nameplates
 ## Version: 2.2.0
 ## Notes: Simple, effective nameplates
 ## Author: Neph / lieandswell <Nephthys@Hyjal-US>
 ## SavedVariablesPerCharacter: NephilistNameplatesOptions
 
-NephilistNameplates.xml
+NephilistNameplatesClassic.xml
 NephilistNameplates.lua
 Auras.lua
 Power.lua
