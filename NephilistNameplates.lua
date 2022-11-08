@@ -162,33 +162,9 @@ end
 function DriverFrame:OnNamePlateCreated(nameplate)
 	local unitFrame = CreateFrame("Button", "$parentUnitFrame", nameplate, "NephilistNameplatesTemplate");
 	unitFrame:SetAllPoints();
-
-	-- Mixin(unitFrame, UnitFrame)  -- Inherit UnitFrame:Methods()
-	unitFrame.SetUnit = UnitFrame.SetUnit;
-	unitFrame.UpdateInVehicle = UnitFrame.UpdateInVehicle;
-	unitFrame.RegisterEvents = UnitFrame.RegisterEvents;
-	unitFrame.UnregisterEvents = UnitFrame.UnregisterEvents;
-	unitFrame.UpdateEvents = UnitFrame.UpdateEvents;
-	unitFrame.SetOptions = UnitFrame.SetOptions;
-
-	unitFrame.UpdateAll = UnitFrame.UpdateAll;
-	unitFrame.UpdateName = UnitFrame.UpdateName;
-	unitFrame.UpdateHealthColor = UnitFrame.UpdateHealthColor;
-	unitFrame.IsTapDenied = UnitFrame.IsTapDenied;
-	unitFrame.UpdateMaxHealth = UnitFrame.UpdateMaxHealth;
-	unitFrame.UpdateHealth = UnitFrame.UpdateHealth;
-	unitFrame.UpdateRaidTarget = UnitFrame.UpdateRaidTarget;
-	unitFrame.UpdateEliteIcon = UnitFrame.UpdateEliteIcon;
-	unitFrame.UpdateSelectionHighlight = UnitFrame.UpdateSelectionHighlight;
-	unitFrame.UpdateBuffs = UnitFrame.UpdateBuffs;
-	unitFrame.UpdateCastBar = UnitFrame.UpdateCastBar;
-
-	unitFrame.UpdatePowerBar = UnitFrame.UpdatePowerBar;
-	unitFrame.UpdatePowerBarColor = UnitFrame.UpdatePowerBarColor;
-	unitFrame.UpdateMaxPower = UnitFrame.UpdateMaxPower;
-	unitFrame.UpdatePower = UnitFrame.UpdatePower;
-
+	Mixin(unitFrame, UnitFrame)  -- Inherit UnitFrame:Methods()
 	unitFrame:EnableMouse(false);
+	unitFrame.selectionBorder = unitFrame.healthBar.selectionBorder;
 	unitFrame.optionTable = {};
 	unitFrame.BuffFrame.buffList = {};
 end

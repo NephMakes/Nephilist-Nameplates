@@ -58,24 +58,33 @@
 	<Button name="NephilistNameplatesTemplate" parentKey="UnitFrame" useParentLevel="true" virtual="true">
 		<Frames>
 			<StatusBar parentKey="healthBar">
-				<Size y="5.0"/>
+				<Size y="5"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" y="9"/>
-					<Anchor point="BOTTOMRIGHT" y="9"/>
+					<Anchor point="BOTTOMLEFT" x="2" y="9"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="9"/>
 				</Anchors>
 				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture parentKey="background">
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="border">
 							<Color r="0" g="0" b="0" a="1"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-1.6" y="1.6"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="1.6" y="-1.6"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-1" y="1"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="2">
-						<Texture parentKey="background">
-							<Color r="0" g="0" b="0" a="1"/>
+					<Layer level="BACKGROUND" textureSubLevel="0">
+						<Texture parentKey="selectionBorder" hidden="true">
+							<Color r="1" g="1" b="1" a="1"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-2.5" y="2.5"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="2.5" y="-2.5"/>
+							</Anchors>
 						</Texture>
 					</Layer>
 				</Layers>
@@ -93,8 +102,8 @@
 						<Texture parentKey="border">
 							<Color r="0" g="0" b="0" a="1"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.powerBar" relativePoint="TOPLEFT" x="-1.6" y="1.6"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.powerBar" relativePoint="BOTTOMRIGHT" x="1.6" y="-1.6"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.powerBar" relativePoint="TOPLEFT" x="-1" y="1"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.powerBar" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -113,10 +122,6 @@
 				</KeyValues>
 				<Size y="14.0"/>
 				<Anchors>
-					<!--
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="TOPRIGHT"/>
-					-->
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" y="18"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="TOPRIGHT" y="18"/>
 				</Anchors>
@@ -204,24 +209,21 @@
 			</Frame>
 		</Frames>
 		<Layers>
+			<!--
 			<Layer level="BACKGROUND" textureSubLevel="0">
 				<Texture parentKey="selectionBorder" hidden="true">
 					<Color r="1" g="1" b="1" a="0.8"/>
 					<Anchors>
-						<!--
-						<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-2.8" y="2.8"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="2.8" y="-2.8"/>
-						-->
-						<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-3" y="3"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="3" y="-3"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-2.5" y="2.5"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="2.5" y="-2.5"/>
 					</Anchors>
 				</Texture>
 			</Layer>
+			-->
 			<Layer level="BACKGROUND">
 				<FontString parentKey="name" inherits="FriendsFont_Small" wordwrap="false" justifyH="CENTER" text="Unit Name Here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
 					<Anchors>
-						<!-- <Anchor point="CENTER" /> -->
 						<Anchor point="BOTTOM" relativeKey="$parent.healthBar" relativePoint="TOP" y="3"/>
 					</Anchors>
 				</FontString>
