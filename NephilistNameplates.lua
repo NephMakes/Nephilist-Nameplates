@@ -139,6 +139,9 @@ function DriverFrame:UpdateNamePlateOptions()
 	-- C_NamePlate.SetNamePlateOtherSize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight);
 	C_NamePlate.SetNamePlateSelfSize(baseNamePlateWidth, baseNamePlateHeight);
 
+	-- /script SetCVar("nameplateHorizontalScale", 0.5)
+	-- /script print(GetCVar("nameplateVerticalScale"))
+
 	--[[
 	-- Somehow creating taint to have these here -- why would these get called in combat?
 	-- Make these options
@@ -332,7 +335,22 @@ function UnitFrame:UpdateAll()
 end
 
 function UnitFrame:UpdateName() 
-	self.name:SetText(GetUnitName(self.unit, false));
+	local name = GetUnitName(self.unit, false)
+	if true then
+	-- if self.showLevel then
+		local unitLevel = UnitLevel(self.unit)
+		if unitLevel == "-1" then
+			unitLevel = "??"
+		end
+		local levelColor = {r = 0.7, g = 0.7, b = 0.7}
+		if UnitCanAttack("player", self.unit) then
+			levelColor = GetCreatureDifficultyColor(unitLevel)
+			-- self.levelText:SetVertexColor(color.r, color.g, color.b)
+			-- print(levelColor.r .. levelColor.b .. levelColor.g)
+		end
+		name = name .. " [" .. unitLevel .. "] "
+	end
+	self.name:SetText(name);
 	if ( not self.optionTable.showName ) then
 		self.name:Hide();
 	else
