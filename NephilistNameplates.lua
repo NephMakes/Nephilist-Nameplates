@@ -102,27 +102,29 @@ function DriverFrame:OnAddonLoaded()
 end
 
 function DriverFrame:HideBlizzard()
-	NamePlateDriverFrame:UnregisterAllEvents();
+	NamePlateDriverFrame:UnregisterAllEvents()
 
 	-- Retail-only features
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then  
 		-- Blizz globals in FrameXML/Constants.lua
 
-		ClassNameplateManaBarFrame:Hide();
-		ClassNameplateManaBarFrame:UnregisterAllEvents();
+		ClassNameplateManaBarFrame:Hide()
+		ClassNameplateManaBarFrame:UnregisterAllEvents()
 		-- Blizz mana bar appearing on level-up
-		ClassNameplateManaBarFrame:HookScript("OnShow", function(self) self:Hide() end);
+		ClassNameplateManaBarFrame:HookScript("OnShow", function(self) self:Hide() end)
 
-		local checkBox = InterfaceOptionsNamesPanelUnitNameplatesMakeLarger;
-		function checkBox.setFunc(value)
-			if value == "1" then
-				SetCVar("NamePlateHorizontalScale", checkBox.largeHorizontalScale);
-				SetCVar("NamePlateVerticalScale", checkBox.largeVerticalScale);
-			else
-				SetCVar("NamePlateHorizontalScale", checkBox.normalHorizontalScale);
-				SetCVar("NamePlateVerticalScale", checkBox.normalVerticalScale);
+		local checkBox = InterfaceOptionsNamesPanelUnitNameplatesMakeLarger
+		if checkBox then
+			function checkBox.setFunc(value)
+				if value == "1" then
+					SetCVar("NamePlateHorizontalScale", checkBox.largeHorizontalScale)
+					SetCVar("NamePlateVerticalScale", checkBox.largeVerticalScale)
+				else
+					SetCVar("NamePlateHorizontalScale", checkBox.normalHorizontalScale)
+					SetCVar("NamePlateVerticalScale", checkBox.normalVerticalScale)
+				end
+				DriverFrame:UpdateNamePlateOptions()
 			end
-			DriverFrame:UpdateNamePlateOptions();
 		end
 	end
 end
@@ -159,17 +161,21 @@ function DriverFrame:UpdateNamePlateOptions()
 		unitFrame:UpdateAll();
 	end
 
-	self:UpdateClassResourceBar();
+	DriverFrame:UpdateClassResourceBar();
 end
 
 function DriverFrame:OnNamePlateCreated(nameplate)
-	local unitFrame = CreateFrame("Button", "$parentUnitFrame", nameplate, "NephilistNameplatesTemplate");
-	unitFrame:SetAllPoints();
+	local unitFrame = CreateFrame("Button", "$parentUnitFrame", nameplate, "NephilistNameplatesTemplate")
+	unitFrame:SetAllPoints()
+	unitFrame:EnableMouse(false)
 	Mixin(unitFrame, UnitFrame)  -- Inherit UnitFrame:Methods()
-	unitFrame:EnableMouse(false);
-	unitFrame.selectionBorder = unitFrame.healthBar.selectionBorder;
-	unitFrame.optionTable = {};
-	unitFrame.BuffFrame.buffList = {};
+	-- nameplate:HookScript("OnEnter", UnitFrame.ShowHighlight)   
+	-- nameplate:HookScript("OnLeave", UnitFrame.HideHighlight)
+	-- Causes nameplate to be unclickable
+	unitFrame.highlight = unitFrame.healthBar.highlight
+	unitFrame.selectionBorder = unitFrame.healthBar.selectionBorder
+	unitFrame.optionTable = {}
+	unitFrame.BuffFrame.buffList = {}
 end
 
 function DriverFrame:OnNamePlateAdded(unit)
@@ -305,16 +311,17 @@ function UnitFrame:OnEvent(event, ...)
 end
 
 function UnitFrame:SetOptions()
-	local options = NephilistNameplatesOptions;
-	self.showBuffs = options.ShowBuffs;
-	self.onlyShowOwnBuffs = options.OnlyShowOwnBuffs;
+	local options = NephilistNameplatesOptions
+	self.showBuffs = options.ShowBuffs
+	self.onlyShowOwnBuffs = options.OnlyShowOwnBuffs
+	self.showLevel = options.ShowLevel
 
-	if ( UnitIsUnit("player", self.unit) ) then
-		self.optionTable = PlayerFrameOptions;
-	elseif ( UnitIsFriend("player", self.unit) ) then
-		self.optionTable = FriendlyFrameOptions;
+	if UnitIsUnit("player", self.unit) then
+		self.optionTable = PlayerFrameOptions
+	elseif UnitIsFriend("player", self.unit) then
+		self.optionTable = FriendlyFrameOptions
 	else
-		self.optionTable = EnemyFrameOptions;
+		self.optionTable = EnemyFrameOptions
 	end
 end
 
@@ -357,8 +364,7 @@ function UnitFrame:UpdateName()
 end
 
 function UnitFrame:UpdateLevel()
-	local showLevel = true  -- Temporary
-	if showLevel then
+	if self.showLevel and not UnitIsUnit("player", self.unit) then
 		local unitLevel = UnitLevel(self.unit)
 		if unitLevel == -1 then
 			unitLevel = "??"
@@ -482,7 +488,14 @@ function UnitFrame:UpdateCastBar()
 	end
 end
 
+--[[
+function UnitFrame:ShowHighlight()
+	-- self.UnitFrame.highlight:Show()
+end
 
-
+function UnitFrame:HideHighlight()
+	-- self.UnitFrame.highlight:Hide()
+end
+]]--
 
 

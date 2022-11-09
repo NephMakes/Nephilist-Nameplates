@@ -5,11 +5,12 @@ local addonName, NephilistNameplates = ...
 --[[ Defaults ]]-- 
 
 NephilistNameplates.Defaults = {
+	ColorRareNames = true, 
 	HideClassBar = false,
 	OnlyShowOwnBuffs = true,
 	ShowBuffs = true,
 	ShowEliteIcon = true, 
-	ColorRareNames = true, 
+	ShowLevel = true,
 	Version = GetAddOnMetadata(addonName, "Version")
 }
 
@@ -23,9 +24,14 @@ optionsPanel.defaults = NephilistNameplates.Defaults;
 optionsPanel.defaultsFunc = NephilistNameplates.DriverFrame.UpdateNamePlateOptions;
 optionsPanel.okayFunc = NephilistNameplates.DriverFrame.UpdateNamePlateOptions;
 
+optionsPanel.showLevelButton = optionsPanel:CreateCheckButton("ShowLevel");
+local showLevelButton = optionsPanel.showLevelButton;
+showLevelButton:SetPoint("TOPLEFT", optionsPanel.subtext, "BOTTOMLEFT", 2, -34);
+showLevelButton.onValueChanged = NephilistNameplates.DriverFrame.UpdateNamePlateOptions
+
 optionsPanel.showBuffsButton = optionsPanel:CreateCheckButton("ShowBuffs");
 local showBuffsButton = optionsPanel.showBuffsButton;
-showBuffsButton:SetPoint("TOPLEFT", optionsPanel.subtext, "BOTTOMLEFT", 2, -34);
+showBuffsButton:SetPoint("TOPLEFT", showLevelButton, "BOTTOMLEFT", 0, -12);
 -- showBuffsButton.onValueChanged = function() end
 
 optionsPanel.onlyShowOwnBuffsButton = optionsPanel:CreateCheckButton("OnlyShowOwnBuffs");
@@ -37,6 +43,4 @@ optionsPanel.hideClassBarButton = optionsPanel:CreateCheckButton("HideClassBar")
 local hideClassBarButton = optionsPanel.hideClassBarButton;
 hideClassBarButton:SetPoint("TOPLEFT", optionsPanel.onlyShowOwnBuffsButton, "BOTTOMLEFT", 0, -12);
 -- hideClassBarButton.onValueChanged = function() end
-
-
 

@@ -13,6 +13,7 @@ Localization["enUS"] = {
 	ShowBuffsTooltip = "Show important buffs and debuffs on nameplates",
 	ShowClassResource = "Show class-specific combat resources",
 	ShowClassResourceTooltip = "Show combo points, runes, holy power, etc.", 
+	ShowLevel = "Show level",
 	Subtext = "These options let you change the appearance of unit nameplates"
 }
 
@@ -39,6 +40,7 @@ function NephilistNameplates:SetAllTheText()
 	local optionsPanel = _G["InterfaceOptionsNephilistNameplatesPanel"];
 	optionsPanel.subtext:SetText(strings.Subtext);
 	optionsPanel.showBuffsButton.Text:SetText(strings.ShowBuffs);
+	optionsPanel.showLevelButton.Text:SetText(strings.ShowLevel);
 	optionsPanel.onlyShowOwnBuffsButton.Text:SetText(strings.OnlyShowOwnBuffs);
 	optionsPanel.hideClassBarButton.Text:SetText(strings.HideClassBar);
 end
