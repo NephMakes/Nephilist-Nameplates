@@ -366,10 +366,6 @@ end
 function UnitFrame:UpdateLevel()
 	if self.showLevel and not UnitIsUnit("player", self.unit) then
 		local unitLevel = UnitLevel(self.unit)
-		if unitLevel == -1 then
-			unitLevel = "??"
-		end
-		self.levelText:SetText(unitLevel)
 
 		local levelColor = {r = 0.7, g = 0.7, b = 0.7}
 		if UnitCanAttack("player", self.unit) then
@@ -377,6 +373,10 @@ function UnitFrame:UpdateLevel()
 		end
 		self.levelText:SetTextColor(levelColor.r, levelColor.g, levelColor.b)
 
+		if unitLevel == -1 then
+			unitLevel = "??"
+		end
+		self.levelText:SetText(unitLevel)
 		self.levelText:Show()
 	else
 		self.levelText:Hide()
