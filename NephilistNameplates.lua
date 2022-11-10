@@ -372,17 +372,16 @@ end
 function UnitFrame:UpdateLevel()
 	if self.showLevel and not UnitIsUnit("player", self.unit) then
 		local unitLevel = UnitLevel(self.unit)
-
 		local levelColor = {r = 0.7, g = 0.7, b = 0.7}
 		if UnitCanAttack("player", self.unit) then
 			levelColor = GetCreatureDifficultyColor(unitLevel)
 		end
-		self.levelText:SetTextColor(levelColor.r, levelColor.g, levelColor.b)
-
 		if unitLevel == -1 then
 			unitLevel = "??"
+			levelColor = {r = 1.0, g = 0.3, b = 0.0}  -- Red
 		end
 		self.levelText:SetText(unitLevel)
+		self.levelText:SetTextColor(levelColor.r, levelColor.g, levelColor.b)
 		self.levelText:Show()
 	else
 		self.levelText:Hide()
