@@ -91,14 +91,21 @@ DriverFrame:RegisterEvent("PLAYER_TARGET_CHANGED");
 -- DriverFrame:RegisterEvent("PLAYER_LOGOUT");
 
 function DriverFrame:OnAddonLoaded()
-	NephilistNameplates:LocalizeStrings();
-	--[[
-	local reset = false;
-	if (NephilistNameplatesOptions) and (NephilistNameplates.Version) and (NephilistNameplates.Version < "2.0.3") then 
-		reset = true;
+	NephilistNameplates:LocalizeStrings()
+
+	-- Disable Retail-only options
+	if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then  -- Blizz globals in FrameXML/Constants.lua
+		local optionsPanel = NephilistNameplates.OptionsPanel
+		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.showBuffsButton)
+		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.onlyShowOwnBuffsButton)
+		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.hideClassBarButton)
 	end
-	]]--
-	NephilistNameplates:UpdateOptions("NephilistNameplatesOptions", NephilistNameplates.Defaults, false); 
+
+--	local reset = false
+--	if (NephilistNameplatesOptions) and (NephilistNameplates.Version) and (NephilistNameplates.Version < "2.0.3") then 
+--		reset = true
+--	end
+	NephilistNameplates:UpdateOptions("NephilistNameplatesOptions", NephilistNameplates.Defaults, false)
 end
 
 function DriverFrame:HideBlizzard()
@@ -106,7 +113,6 @@ function DriverFrame:HideBlizzard()
 
 	-- Retail-only features
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then  
-		-- Blizz globals in FrameXML/Constants.lua
 
 		ClassNameplateManaBarFrame:Hide()
 		ClassNameplateManaBarFrame:UnregisterAllEvents()
