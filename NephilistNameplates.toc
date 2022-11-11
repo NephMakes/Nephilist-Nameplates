@@ -7,6 +7,7 @@
 
 NephilistNameplates.xml
 NephilistNameplates.lua
+Nameplate.lua
 Auras.lua
 Power.lua
 OptionsLibrary.lua
