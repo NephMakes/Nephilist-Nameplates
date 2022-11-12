@@ -1,43 +1,43 @@
 local addonName, NephilistNameplates = ...
 local DriverFrame = NephilistNameplates.DriverFrame;
-local UnitFrame = NephilistNameplates.UnitFrame;
+local UnitFrame = NephilistNameplates.UnitFrame
 
 
 --[[ Power bar ]]--
 
 function UnitFrame:UpdatePowerBar()
-	local powerBar = self.powerBar;
-	if ( self.optionTable.showPowerBar == true ) then
-		powerBar:Show();
-		local powerType, powerToken = UnitPowerType("player");
-		if ( self.powerToken ~= powerToken or self.powerType ~= powerType ) then
-			self.powerToken = powerToken;
-			self.powerType = powerType;
+	local powerBar = self.powerBar
+	if self.optionTable.showPowerBar == true then
+		powerBar:Show()
+		local powerType, powerToken = UnitPowerType("player")
+		if self.powerToken ~= powerToken or self.powerType ~= powerType then
+			self.powerToken = powerToken
+			self.powerType = powerType
 		end
-		self:UpdatePowerBarColor();
-		self:UpdateMaxPower();
-		self:UpdatePower();
+		self:UpdatePowerBarColor()
+		self:UpdateMaxPower()
+		self:UpdatePower()
 	else
-		powerBar:Hide();
+		powerBar:Hide()
 	end
 end
 
 function UnitFrame:UpdatePowerBarColor()
-	local powerToken = self.powerToken;
-	local powerBar = self.powerBar;
-	if (powerToken) then
-		info = PowerBarColor[powerToken];
-		powerBar:SetStatusBarColor(info.r, info.g, info.b);
-		powerBar.background:SetColorTexture(0.15+info.r/5, 0.15+info.g/5, 0.15+info.b/5, 1);
+	local powerToken = self.powerToken
+	local powerBar = self.powerBar
+	if powerToken then
+		info = PowerBarColor[powerToken]
+		powerBar:SetStatusBarColor(info.r, info.g, info.b)
+		powerBar.background:SetColorTexture(0.15+info.r/5, 0.15+info.g/5, 0.15+info.b/5, 1)
 	end
 end
 
 function UnitFrame:UpdateMaxPower()
-	self.powerBar:SetMinMaxValues(0, UnitPowerMax("player", self.powerType));
+	self.powerBar:SetMinMaxValues(0, UnitPowerMax("player", self.powerType))
 end
 
 function UnitFrame:UpdatePower()
-	self.powerBar:SetValue(UnitPower("player", self.powerType));	
+	self.powerBar:SetValue(UnitPower("player", self.powerType))
 end
 
 

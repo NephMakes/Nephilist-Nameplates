@@ -1,10 +1,12 @@
 local addonName, NephilistNameplates = ...
 
-NephilistNameplates.DriverFrame = CreateFrame("Frame", "NephilistNameplatesFrame", UIParent); 
+NephilistNameplates.DriverFrame = CreateFrame("Frame", "NephilistNameplatesFrame", UIParent)
 NephilistNameplates.UnitFrame = {}
+NephilistNameplates.PlayerPlate = CreateFrame("Frame", "NephilistNameplatesPlayerPlate", UIParent)
 
-local DriverFrame = NephilistNameplates.DriverFrame;
-local UnitFrame = NephilistNameplates.UnitFrame;
+local DriverFrame = NephilistNameplates.DriverFrame
+local UnitFrame = NephilistNameplates.UnitFrame
+local PlayerPlate = NephilistNameplates.PlayerPlate
 
 local EnemyFrameOptions = {
 	showName = true, 
@@ -35,7 +37,7 @@ local PlayerFrameOptions = {
 
 function NephilistNameplates:Update()
 	-- Called by "Okay" button of addon options panel
-	DriverFrame:UpdateNamePlateOptions();
+	DriverFrame:UpdateNamePlateOptions()
 end
 
 
@@ -95,7 +97,7 @@ function DriverFrame:OnAddonLoaded()
 	end
 
 --	local reset = false
---	if (NephilistNameplatesOptions) and (NephilistNameplates.Version) and (NephilistNameplates.Version < "2.0.3") then 
+--	if NephilistNameplatesOptions and NephilistNameplates.Version and NephilistNameplates.Version < "2.0.3" then
 --		reset = true
 --	end
 	NephilistNameplates:UpdateOptions("NephilistNameplatesOptions", NephilistNameplates.Defaults, false)
@@ -157,12 +159,12 @@ function DriverFrame:UpdateNamePlateOptions()
 	]]--
 
 	for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
-		local unitFrame = namePlate.UnitFrame;
-		unitFrame:SetOptions();
-		unitFrame:UpdateAll();
+		local unitFrame = namePlate.UnitFrame
+		unitFrame:SetOptions()
+		unitFrame:UpdateAll()
 	end
-
-	DriverFrame:UpdateClassResourceBar();
+	PlayerPlate:Update()
+	DriverFrame:UpdateClassResourceBar()  -- In Power.lua
 end
 
 function DriverFrame:OnNamePlateCreated(nameplate)

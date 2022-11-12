@@ -10,6 +10,7 @@ NephilistNameplates.lua
 Nameplate.lua
 Auras.lua
 Power.lua
+PlayerPlate.lua
 OptionsLibrary.lua
 Options.lua
 Localization.lua

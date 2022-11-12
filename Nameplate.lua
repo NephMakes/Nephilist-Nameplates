@@ -44,110 +44,117 @@ local PlayerFrameOptions = {
 -- "Unit frame" here is non-interactable frame we attach to Blizz "Nameplate#" frames
 
 function UnitFrame:SetUnit(unit)
-	self.unit = unit;
-	self.displayedUnit = unit;	 -- For vehicles
-	self.inVehicle = false;
-	if ( unit ) then
-		self:RegisterEvents();
+	self.unit = unit
+	self.displayedUnit = unit  -- For vehicles
+	self.inVehicle = false
+	if unit then
+		self:RegisterEvents()
 	else
-		self:UnregisterEvents();
+		self:UnregisterEvents()
 	end
 end
 
 function UnitFrame:UpdateInVehicle() 
-	if ( UnitHasVehicleUI(self.unit) ) then
-		if ( not self.inVehicle ) then
-			self.inVehicle = true;
-			local prefix, id, suffix = string.match(self.unit, "([^%d]+)([%d]*)(.*)");
-			self.displayedUnit = prefix.."pet"..id..suffix;
-			self:UpdateEvents();
+	if UnitHasVehicleUI(self.unit) then
+		if not self.inVehicle then
+			self.inVehicle = true
+			local prefix, id, suffix = string.match(self.unit, "([^%d]+)([%d]*)(.*)")
+			self.displayedUnit = prefix.."pet"..id..suffix
+			self:UpdateEvents()
 		end
 	else
-		if ( self.inVehicle ) then
-			self.inVehicle = false;
-			self.displayedUnit = self.unit;
-			self:UpdateEvents();
+		if self.inVehicle then
+			self.inVehicle = false
+			self.displayedUnit = self.unit
+			self:UpdateEvents()
 		end
 	end
 end
 
 function UnitFrame:RegisterEvents()
-	self:RegisterEvent("UNIT_NAME_UPDATE");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self:RegisterEvent("UNIT_PET");
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE");
-	self:RegisterEvent("UNIT_EXITED_VEHICLE");
-	self:RegisterEvent("RAID_TARGET_UPDATE");
-	self:RegisterEvent("UNIT_FACTION");
-	-- self:RegisterEvent("UNIT_CONNECTION");
-	self:UpdateEvents();
-	if ( UnitIsUnit("player", self.unit) ) then
-		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player");
-		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
-		self:RegisterUnitEvent("UNIT_MAXPOWER", "player");
+	self:RegisterEvent("UNIT_NAME_UPDATE")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	self:RegisterEvent("UNIT_PET")
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE")
+	self:RegisterEvent("RAID_TARGET_UPDATE")
+	self:RegisterEvent("UNIT_FACTION")
+	-- self:RegisterEvent("UNIT_CONNECTION")
+	self:UpdateEvents()
+	if UnitIsUnit("player", self.unit) then
+		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player")
+		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
+		self:RegisterUnitEvent("UNIT_MAXPOWER", "player")
+		-- self:RegisterEvent("UNIT_POWER_FREQUENT")
 	end
-	self:SetScript("OnEvent", UnitFrame.OnEvent);
+	self:SetScript("OnEvent", UnitFrame.OnEvent)
 end
 
 function UnitFrame:UpdateEvents()
 	-- These events affected if unit in vehicle
 	-- Sometimes getting Lua error when entering/exiting during combat?
-	local displayedUnit;
-	if ( self.unit ~= self.displayedUnit ) then
-		displayedUnit = self.displayedUnit;
+	local displayedUnit
+	if self.unit ~= self.displayedUnit then
+		displayedUnit = self.displayedUnit
 	end
-	self:RegisterUnitEvent("UNIT_MAXHEALTH", self.unit, displayedUnit);
-	self:RegisterUnitEvent("UNIT_HEALTH", self.unit, displayedUnit);
-	self:RegisterUnitEvent("UNIT_AURA", self.unit, displayedUnit);
-	self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", self.unit, displayedUnit);
-	-- self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", self.unit, displayedUnit);
-	-- self:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", self.unit, displayedUnit);  -- i.e. AFK, DND
+	self:RegisterUnitEvent("UNIT_MAXHEALTH", self.unit, displayedUnit)
+	self:RegisterUnitEvent("UNIT_HEALTH", self.unit, displayedUnit)
+	self:RegisterUnitEvent("UNIT_AURA", self.unit, displayedUnit)
+	self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", self.unit, displayedUnit)
+	-- self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", self.unit, displayedUnit)
+	-- self:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", self.unit, displayedUnit)  -- i.e. AFK, DND
 end
 
 function UnitFrame:UnregisterEvents()
-	self:UnregisterAllEvents();
-	self:SetScript("OnEvent", nil);
+	self:UnregisterAllEvents()
+	self:SetScript("OnEvent", nil)
 end
 
 function UnitFrame:OnEvent(event, ...)
 	local arg1, arg2, arg3, arg4 = ...;
-	if ( event == "PLAYER_TARGET_CHANGED" ) then
-		self:UpdateSelectionHighlight();
-	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
-		self:UpdateAll();
-	elseif ( event == "RAID_TARGET_UPDATE" ) then
-		self:UpdateRaidTarget();
-	elseif ( arg1 == self.unit or arg1 == self.displayedUnit ) then
-		if ( event == "UNIT_HEALTH" or event == "UNIT_HEALTH_FREQUENT" ) then
-			self:UpdateHealth();
-		elseif ( event == "UNIT_MAXHEALTH" ) then
-			self:UpdateMaxHealth();
-			self:UpdateHealth();
-		elseif ( event == "UNIT_AURA" ) then
-			self:UpdateBuffs();
-		elseif ( event == "UNIT_THREAT_LIST_UPDATE" ) then
-			if ( self.optionTable.considerSelectionInCombatAsHostile ) then
-				self:UpdateName();
-				self:UpdateHealthColor();
+	if event == "PLAYER_TARGET_CHANGED" then
+		self:UpdateSelectionHighlight()
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		self:UpdateAll()
+	elseif event == "RAID_TARGET_UPDATE" then
+		self:UpdateRaidTarget()
+	elseif event == "UNIT_POWER_FREQUENT" then 
+		self:UpdatePower()
+	elseif event == "UNIT_MAXPOWER" then 
+		self:UpdateMaxPower()
+	elseif event == "UNIT_DISPLAYPOWER" then 
+		self:UpdatePowerBar()
+	elseif arg1 == self.unit or arg1 == self.displayedUnit then
+		if event == "UNIT_HEALTH" or event == "UNIT_HEALTH_FREQUENT" then
+			self:UpdateHealth()
+		elseif event == "UNIT_MAXHEALTH" then
+			self:UpdateMaxHealth()
+			self:UpdateHealth()
+		elseif event == "UNIT_AURA" then
+			self:UpdateBuffs()
+		elseif event == "UNIT_THREAT_LIST_UPDATE" then
+			if self.optionTable.considerSelectionInCombatAsHostile then
+				self:UpdateName()
+				self:UpdateHealthColor()
 			end
 			-- CompactUnitFrame_UpdateAggroFlash(self);
 			-- CompactUnitFrame_UpdateHealthBorder(self);
-		elseif ( event == "UNIT_NAME_UPDATE" ) then
-			self:UpdateName();
-			self:UpdateHealthColor();  -- Can signify now know unit's class
-		elseif ( event == "UNIT_FACTION" ) then
-			-- self:UpdateName();  -- Why is this here in Blizzard_Nameplates?
-			self:UpdateHealthColor();
-		elseif ( event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_PET" ) then
-			self:UpdateAll();
+		elseif event == "UNIT_NAME_UPDATE" then
+			self:UpdateName()
+			self:UpdateHealthColor()  -- Can signify now know unit's class
+		elseif event == "UNIT_FACTION" then
+			self:UpdateName()  -- Why is this here in Blizzard_Nameplates?
+			self:UpdateHealthColor()
+		elseif event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_PET" then
+			self:UpdateAll()
 		end
-	elseif ( event == "UNIT_POWER_FREQUENT" ) then 
-		self:UpdatePower();
-	elseif ( event == "UNIT_MAXPOWER" ) then 
-		self:UpdateMaxPower();
-	elseif ( event == "UNIT_DISPLAYPOWER" ) then 
-		self:UpdatePowerBar();
+--	elseif event == "UNIT_POWER_FREQUENT" then 
+--		self:UpdatePower()
+--	elseif event == "UNIT_MAXPOWER" then 
+--		self:UpdateMaxPower()
+--	elseif event == "UNIT_DISPLAYPOWER" then 
+--		self:UpdatePowerBar()
 	end
 end
 
