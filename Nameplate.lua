@@ -149,12 +149,6 @@ function UnitFrame:OnEvent(event, ...)
 		elseif event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_PET" then
 			self:UpdateAll()
 		end
---	elseif event == "UNIT_POWER_FREQUENT" then 
---		self:UpdatePower()
---	elseif event == "UNIT_MAXPOWER" then 
---		self:UpdateMaxPower()
---	elseif event == "UNIT_DISPLAYPOWER" then 
---		self:UpdatePowerBar()
 	end
 end
 
@@ -270,66 +264,66 @@ end
 function UnitFrame:IsTapDenied()
 	return self.optionTable.greyOutWhenTapDenied 
 		and UnitIsTapDenied(self.unit)
-		and not UnitPlayerControlled(self.unit);
+		and not UnitPlayerControlled(self.unit)
 end
 
 function UnitFrame:UpdateMaxHealth() 
-	self.healthBar:SetMinMaxValues(0, UnitHealthMax(self.displayedUnit));
+	self.healthBar:SetMinMaxValues(0, UnitHealthMax(self.displayedUnit))
 end
 
 function UnitFrame:UpdateHealth() 
-	self.healthBar:SetValue(UnitHealth(self.displayedUnit));
+	self.healthBar:SetValue(UnitHealth(self.displayedUnit))
 end
 
 function UnitFrame:UpdateSelectionHighlight() 
-	if ( not self.optionTable.displaySelectionHighlight ) then
-		self.selectionBorder:Hide();
-		return;
+	if not self.optionTable.displaySelectionHighlight then
+		self.selectionBorder:Hide()
+		return
 	end
-	if ( UnitIsUnit(self.displayedUnit, "target") ) then
-		self.selectionBorder:Show();
+	if UnitIsUnit(self.displayedUnit, "target") then
+		self.selectionBorder:Show()
 	else
-		self.selectionBorder:Hide();
+		self.selectionBorder:Hide()
 	end
 end
 
 function UnitFrame:UpdateRaidTarget() 
-	local icon = self.RaidTargetFrame.RaidTargetIcon;
-	local index = GetRaidTargetIndex(self.unit);
-	if ( index ) then
-		SetRaidTargetIconTexture(icon, index);
-		icon:Show();
+	local icon = self.RaidTargetFrame.RaidTargetIcon
+	local index = GetRaidTargetIndex(self.unit)
+	if index then
+		SetRaidTargetIconTexture(icon, index)
+		icon:Show()
 	else
-		icon:Hide();
+		icon:Hide()
 	end
 end
 
 function UnitFrame:UpdateEliteIcon() 
-	local icon = self.EliteFrame.EliteIcon;
-	if ( not self.optionTable.showEliteIcon ) then
-		icon:Hide();
+	local icon = self.EliteFrame.EliteIcon
+	if not self.optionTable.showEliteIcon then
+		icon:Hide()
 	else
-		local classification = UnitClassification(self.unit);
-		if ( classification == "worldboss" or classification == "elite" or classification == "rareelite") then
-			icon:Show();
+		local classification = UnitClassification(self.unit)
+		if classification == "worldboss" or classification == "elite" or classification == "rareelite" then
+			icon:Show()
 		else
-			icon:Hide();
+			icon:Hide()
 		end
 	end
 end
 
 function UnitFrame:UpdateCastBar()
-	local castBar = self.castBar;
-	castBar.startCastColor = CreateColor(0.6, 0.6, 0.6);
-	castBar.startChannelColor = CreateColor(0.6, 0.6, 0.6);
-	castBar.finishedCastColor = CreateColor(0.6, 0.6, 0.6);
-	castBar.failedCastColor = CreateColor(0.5, 0.2, 0.2);
-	castBar.nonInterruptibleColor = CreateColor(0.3, 0.3, 0.3);
-	CastingBarFrame_AddWidgetForFade(castBar, castBar.BorderShield);
-	if ( not self.optionTable.hideCastBar ) then
-		CastingBarFrame_SetUnit(castBar, self.unit, false, true);
+	local castBar = self.castBar
+	castBar.startCastColor = CreateColor(0.6, 0.6, 0.6)
+	castBar.startChannelColor = CreateColor(0.6, 0.6, 0.6)
+	castBar.finishedCastColor = CreateColor(0.6, 0.6, 0.6)
+	castBar.failedCastColor = CreateColor(0.5, 0.2, 0.2)
+	castBar.nonInterruptibleColor = CreateColor(0.3, 0.3, 0.3)
+	CastingBarFrame_AddWidgetForFade(castBar, castBar.BorderShield)
+	if not self.optionTable.hideCastBar then
+		CastingBarFrame_SetUnit(castBar, self.unit, false, true)
 	else
-		CastingBarFrame_SetUnit(castBar, nil, nil, nil); 
+		CastingBarFrame_SetUnit(castBar, nil, nil, nil)
 	end
 end
 

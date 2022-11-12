@@ -6,11 +6,15 @@ local addonName, NephilistNameplates = ...
 
 NephilistNameplates.Defaults = {
 	ColorRareNames = true, 
-	HideClassBar = false,
-	OnlyShowOwnBuffs = true,
-	ShowBuffs = true,
+	HideClassBar = false, 
+	ShowBuffs = true, 
 	ShowEliteIcon = true, 
-	ShowLevel = true,
+	ShowLevel = true, 
+	ShowPlayerPlate = false, 
+	PlayerPlateLocked = true, 
+	PlayerPlateOutOfCombatAlpha = 0.2, 
+	PlayerPlatePosition = {"TOP", UIParent, "CENTER", 0, -150}, 
+	OnlyShowOwnBuffs = true, 
 	Version = GetAddOnMetadata(addonName, "Version")
 }
 

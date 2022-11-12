@@ -126,7 +126,7 @@ function DriverFrame:HideBlizzard()
 				end
 				DriverFrame:UpdateNamePlateOptions()
 			end
-			-- Is this written properly? Are we defining or executing setFunc? 
+			-- Is this written wrong? Are we defining or executing setFunc? 
 			-- Where does value come from? 
 		end
 	end
@@ -134,28 +134,27 @@ end
 
 function DriverFrame:UpdateNamePlateOptions()
 
-	EnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate");
-	EnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash");
+	EnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate")
+	EnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash")
 
-	local baseNamePlateWidth = 110;
-	local baseNamePlateHeight = 45;
-	local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"));
-	local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"));
-	-- C_NamePlate.SetNamePlateOtherSize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight);
-	C_NamePlate.SetNamePlateSelfSize(baseNamePlateWidth, baseNamePlateHeight);
-
+	local baseNamePlateWidth = 110
+	local baseNamePlateHeight = 45
+	-- local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"))
+	-- local horizontalScale = tonumber(GetCVar("NamePlateHorizontalScale"))
+	-- C_NamePlate.SetNamePlateOtherSize(baseNamePlateWidth * horizontalScale, baseNamePlateHeight)
 	-- /script SetCVar("nameplateHorizontalScale", 0.5)
 	-- /script print(GetCVar("nameplateVerticalScale"))
+	C_NamePlate.SetNamePlateSelfSize(baseNamePlateWidth, baseNamePlateHeight)
 
 	--[[
 	-- Somehow creating taint to have these here -- why would these get called in combat?
 	-- Make these options
-	SetCVar("nameplateOtherTopInset", -1);  -- Default 0.08
-	SetCVar("nameplateOtherBottomInset", -1);  -- Default 0.1
+	SetCVar("nameplateOtherTopInset", -1)  -- Default 0.08
+	SetCVar("nameplateOtherBottomInset", -1)  -- Default 0.1
 	-- also bottom inset self?  
-	SetCVar("nameplateMinScale", 0.6);  -- Default 0.8
-	SetCVar("nameplateMinScaleDistance", 10);  -- Default 10
-	SetCVar("nameplateMaxDistance", 40);  -- Default 60
+	SetCVar("nameplateMinScale", 0.6)  -- Default 0.8
+	SetCVar("nameplateMinScaleDistance", 10)  -- Default 10
+	SetCVar("nameplateMaxDistance", 40)  -- Default 60
 	]]--
 
 	for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
