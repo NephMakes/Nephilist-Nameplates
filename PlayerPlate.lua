@@ -1,11 +1,16 @@
 local addonName, NephilistNameplates = ...
 
---[[ Player plate ]]--
-
--- PlayerPlate is static frame that acts like Blizz nameplate frame with self.unit = "player"
-
 local PlayerPlate = NephilistNameplates.PlayerPlate
 local DriverFrame = NephilistNameplates.DriverFrame
+
+local function round(x) 
+	return floor(x + 0.5)
+end
+
+
+--[[ Player plate ]]--
+
+-- PlayerPlate is a static frame that acts like Blizz nameplate with self.unit = "player"
 
 do
 --	PlayerPlate.texture = PlayerPlate:CreateTexture()
@@ -22,10 +27,8 @@ function PlayerPlate:OnEvent(event, ...)
 			self:ADDON_LOADED()
 		end
 	elseif event == "PLAYER_REGEN_DISABLED" then
-		-- Called before InCombatLockdown() true
 		self:SetShown()
 	elseif event == "PLAYER_REGEN_ENABLED" then
-		-- Called before InCombatLockdown() false
 		self:SetOutOfCombat()
 	end
 end
@@ -41,9 +44,9 @@ end
 function PlayerPlate:Update()
 	-- Called by PlayerPlate:ADDON_LOADED(), DriverFrame:UpdateNamePlateOptions()
 	-- and options panel controls
+	local self = PlayerPlate
 	local options = NephilistNameplatesOptions
-	-- if options.ShowPlayerPlate then 
-	if true then
+	if options.ShowPlayerPlate then 
 		self.inUse = true
 		self:RegisterEvent("PLAYER_REGEN_DISABLED")
 		self:RegisterEvent("PLAYER_REGEN_ENABLED")
@@ -82,11 +85,7 @@ function PlayerPlate:UpdateShown()
 end
 
 function PlayerPlate:SetOutOfCombat()
-	if self.isLocked then 
-		self:SetAlpha(self.outOfCombatAlpha)
-	else
-		self:SetShown()
-	end
+	self:SetAlpha(self.outOfCombatAlpha)
 end
 
 function PlayerPlate:SetShown()
@@ -94,7 +93,7 @@ function PlayerPlate:SetShown()
 end
 
 function PlayerPlate:SetLocked(isLocked)
-	-- Called by PlayerPlate:Update() and [options panel control]
+	-- Called by PlayerPlate:Update() and [options panel checkbutton]
 	self.isLocked = isLocked
 	if isLocked then
 		self:EnableMouse(false)
@@ -103,7 +102,77 @@ function PlayerPlate:SetLocked(isLocked)
 	end
 end
 
--- function PlayerPlate:OnDragStart() end
--- function PlayerPlate:OnDragStop() end
--- function PlayerPlate:OnClick() end
+function PlayerPlate:OnEnter()
+	GameTooltip_SetDefaultAnchor(GameTooltip, self)
+	local strings = NephilistNameplates.Strings
+	GameTooltip:AddLine(strings.NephilistNameplates, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.b, HIGHLIGHT_FONT_COLOR.g)
+	GameTooltip:AddLine(strings.DragToMove)
+	GameTooltip:Show()
+end
+PlayerPlate:SetScript("OnEnter", PlayerPlate.OnEnter)
 
+function PlayerPlate:OnLeave()
+	GameTooltip:Hide()
+end
+PlayerPlate:SetScript("OnLeave", PlayerPlate.OnLeave)
+
+function PlayerPlate:OnDragStart()
+	self:StartMoving()
+end
+PlayerPlate:SetMovable(true)
+PlayerPlate:RegisterForDrag("LeftButton")
+PlayerPlate:SetScript("OnDragStart", PlayerPlate.OnDragStart)
+
+function PlayerPlate:OnDragStop()
+	self:StopMovingOrSizing()
+	self:SetUserPlaced(false)
+	local point, relativeTo, relativePoint, xOfs, yOfs = self:GetPoint()
+	xOfs, yOfs = round(xOfs), round(yOfs)
+	NephilistNameplatesOptions.PlayerPlatePosition = {point, relativeTo, relativePoint, xOfs, yOfs}
+end
+PlayerPlate:SetScript("OnDragStop", PlayerPlate.OnDragStop)
+
+function PlayerPlate:OnClick(button)
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+	if button == "RightButton" then
+		InterfaceAddOnsList_Update()
+		InterfaceOptionsFrame_OpenToCategory(NephilistNameplates.OptionsPanel)
+	end
+end
+PlayerPlate:RegisterForClicks("OnClick", "RightButtonUp")
+PlayerPlate:SetScript("OnClick", PlayerPlate.OnClick)
+
+--[[
+function PlayerPlate:OnClick(button)
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
+	if button == "RightButton" then
+		ToggleDropDownMenu(1, nil, EngravedRuneFrameTabDropDown, self:GetName(), 0, 0)
+		return
+	end
+	CloseDropDownMenus()
+end
+
+function PlayerPlate:InitializeTabDropDown()
+	local strings = Engraved.Strings;
+	local info = UIDropDownMenu_CreateInfo();
+
+	info.text = strings.LOCK_RUNE_DISPLAY;
+	info.func = RuneFrame.SetLocked;
+	info.arg1 = true;
+	info.isNotRadio = true;
+	info.notCheckable = true;
+	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+
+--	info.text = strings.OPEN_OPTIONS_MENU;
+--	info.func = nil;
+--	info.isNotRadio = true;
+--	info.notCheckable = true;
+--	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+--
+--	info.text = strings.RESET_POSITIONS;
+--	info.func = nil;
+--	info.isNotRadio = true;
+--	info.notCheckable = true;
+--	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
+end
+]]--

@@ -2,7 +2,8 @@ local addonName, NephilistNameplates = ...
 
 NephilistNameplates.DriverFrame = CreateFrame("Frame", "NephilistNameplatesFrame", UIParent)
 NephilistNameplates.UnitFrame = {}
-NephilistNameplates.PlayerPlate = CreateFrame("Frame", "NephilistNameplatesPlayerPlate", UIParent)
+NephilistNameplates.PlayerPlate = CreateFrame("Button", "NephilistNameplatesPlayerPlate", UIParent)
+NephilistNameplates.Strings = {}
 
 local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame

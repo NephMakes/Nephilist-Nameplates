@@ -46,11 +46,11 @@
 		</Frames>
 		<Scripts>
 			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter);
+				GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+				GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter)
 			</OnEnter>
 			<OnLeave>
-				GameTooltip:Hide();
+				GameTooltip:Hide()
 			</OnLeave>
 		</Scripts>
 	</Frame>
@@ -178,7 +178,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						CastingBarFrame_OnLoad(self, nil, false, true);
+						CastingBarFrame_OnLoad(self, nil, false, true)
 					</OnLoad>
 					<OnEvent function="CastingBarFrame_OnEvent"/>
 					<OnUpdate function="CastingBarFrame_OnUpdate"/>
