@@ -1,5 +1,6 @@
 local addonName, NephilistNameplates = ...
 
+local DriverFrame = NephilistNameplates.DriverFrame
 local PlayerPlate = NephilistNameplates.PlayerPlate
 
 
@@ -30,10 +31,16 @@ optionsPanel.defaults = NephilistNameplates.Defaults
 optionsPanel.defaultsFunc = NephilistNameplates.DriverFrame.UpdateNamePlateOptions
 optionsPanel.okayFunc = NephilistNameplates.DriverFrame.UpdateNamePlateOptions
 
+-- Show/Hide
+
+optionsPanel.showHideText = optionsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+optionsPanel.showHideText:SetPoint("TOPLEFT", optionsPanel.subtext, "BOTTOMLEFT", 2, -34)
+
 optionsPanel.showLevelButton = optionsPanel:CreateCheckButton("ShowLevel")
 local showLevelButton = optionsPanel.showLevelButton
-showLevelButton:SetPoint("TOPLEFT", optionsPanel.subtext, "BOTTOMLEFT", 2, -34)
-showLevelButton.onValueChanged = NephilistNameplates.DriverFrame.UpdateNamePlateOptions
+-- showLevelButton:SetPoint("TOPLEFT", optionsPanel.subtext, "BOTTOMLEFT", 2, -34)
+showLevelButton:SetPoint("TOPLEFT", optionsPanel.showHideText, "BOTTOMLEFT", 0, -12)
+showLevelButton.onValueChanged = DriverFrame.UpdateNamePlateOptions
 
 optionsPanel.showBuffsButton = optionsPanel:CreateCheckButton("ShowBuffs")
 local showBuffsButton = optionsPanel.showBuffsButton
@@ -50,9 +57,14 @@ local hideClassBarButton = optionsPanel.hideClassBarButton
 hideClassBarButton:SetPoint("TOPLEFT", optionsPanel.onlyShowOwnBuffsButton, "BOTTOMLEFT", 0, -12)
 -- hideClassBarButton.onValueChanged = function() end
 
+-- Player nameplate
+
+optionsPanel.playerPlateText = optionsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+optionsPanel.playerPlateText:SetPoint("TOPLEFT", optionsPanel.hideClassBarButton, "BOTTOMLEFT", 0, -30)
+
 optionsPanel.showPlayerPlateButton = optionsPanel:CreateCheckButton("ShowPlayerPlate")
 local showPlayerPlateButton = optionsPanel.showPlayerPlateButton
-showPlayerPlateButton:SetPoint("TOPLEFT", optionsPanel.hideClassBarButton, "BOTTOMLEFT", 0, -12)
+showPlayerPlateButton:SetPoint("TOPLEFT", optionsPanel.playerPlateText, "BOTTOMLEFT", 0, -12)
 showPlayerPlateButton.onValueChanged = PlayerPlate.Update
 
 local lockPlayerPlateButton = optionsPanel:CreateCheckButton("PlayerPlateLocked")
@@ -62,7 +74,8 @@ lockPlayerPlateButton.onValueChanged = PlayerPlate.Update
 
 local outOfCombatAlpha = optionsPanel:CreateSlider("PlayerPlateOutOfCombatAlpha")
 optionsPanel.outOfCombatAlpha = outOfCombatAlpha
-outOfCombatAlpha:SetPoint("TOPLEFT", optionsPanel.lockPlayerPlateButton, "BOTTOMLEFT", 12, -24)
+outOfCombatAlpha:SetPoint("TOPLEFT", optionsPanel.lockPlayerPlateButton, "BOTTOMLEFT", 24, -30)
+-- outOfCombatAlpha:SetPoint("TOPLEFT", optionsPanel.showPlayerPlateButton, "TOPLEFT", 300, -14)
 outOfCombatAlpha:SetMinMaxValues(0, 1)
 outOfCombatAlpha:SetValueStep(0.05)
 outOfCombatAlpha:SetObeyStepOnDrag(true)

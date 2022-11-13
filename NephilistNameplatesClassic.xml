@@ -223,7 +223,6 @@
 			<Layer level="BACKGROUND">
 				<FontString parentKey="name" inherits="FriendsFont_Small" wordwrap="false" justifyH="CENTER" text="Unit Hame Here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
-					<!-- <Color r="1" g="1" b="1" a="0.7"/> -->
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.healthBar" relativePoint="TOP" y="3"/>
 					</Anchors>

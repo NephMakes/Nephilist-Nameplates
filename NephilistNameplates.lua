@@ -18,23 +18,6 @@ local EnemyFrameOptions = {
 	hideCastBar = false, 
 	showEliteIcon = true 
 }
-local FriendlyFrameOptions = {
-	showName = true,
-	colorHealthBySelection = true,
-	displaySelectionHighlight = true,
-	considerSelectionInCombatAsHostile = true,
-	colorHealthWithExtendedColors = true,
-	hideCastBar = false, 
-	showEliteIcon = true 
-}
-local PlayerFrameOptions = {
-	showName = false,
-	displaySelectionHighlight = false,
-	healthBarColorOverride = CreateColor(0, 0.7, 0), 
-	hideCastBar = true, 
-	showPowerBar = true,
-	showEliteIcon = false 
-}
 
 function NephilistNameplates:Update()
 	-- Called by "Okay" button of addon options panel
@@ -172,7 +155,7 @@ function DriverFrame:OnNamePlateCreated(nameplate)
 	unitFrame:SetAllPoints()
 	unitFrame:EnableMouse(false)
 	Mixin(unitFrame, UnitFrame)  -- Inherit UnitFrame:Methods()
-	unitFrame.highlight = unitFrame.healthBar.highlight
+	-- unitFrame.highlight = unitFrame.healthBar.highlight
 	unitFrame.selectionBorder = unitFrame.healthBar.selectionBorder
 	unitFrame.optionTable = {}
 	unitFrame.BuffFrame.buffList = {}
