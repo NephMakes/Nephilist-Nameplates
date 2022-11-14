@@ -3,14 +3,42 @@ local addonName, NephilistNameplates = ...
 local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame
 
-
---[[ Locals ]]-- 
+NephilistNameplates.EnemyFrameOptions = {
+	showName = true, 
+	colorHealthBySelection = true,
+	displaySelectionHighlight = true,
+	considerSelectionInCombatAsHostile = true,
+	greyOutWhenTapDenied = true,
+	hideCastBar = false, 
+	showEliteIcon = true 
+}
+NephilistNameplates.FriendlyFrameOptions = {
+	showName = true,
+	colorHealthBySelection = true,
+	displaySelectionHighlight = true,
+	considerSelectionInCombatAsHostile = true,
+	colorHealthWithExtendedColors = true,
+	hideCastBar = false, 
+	showEliteIcon = true 
+}
+NephilistNameplates.PlayerFrameOptions = {
+	showName = false,
+	displaySelectionHighlight = false,
+	healthBarColorOverride = CreateColor(0, 0.7, 0), 
+	hideCastBar = true, 
+	showPowerBar = true,
+	showEliteIcon = false 
+}
+local EnemyFrameOptions = NephilistNameplates.EnemyFrameOptions
+local FriendlyFrameOptions = NephilistNameplates.FriendlyFrameOptions
+local PlayerFrameOptions = NephilistNameplates.PlayerFrameOptions
 
 local function IsOnThreatList(unit)
 	local _, threatStatus = UnitDetailedThreatSituation("player", unit)
 	return threatStatus ~= nil
 end
 
+--[[
 local EnemyFrameOptions = {
 	showName = true, 
 	colorHealthBySelection = true,
@@ -37,7 +65,7 @@ local PlayerFrameOptions = {
 	showPowerBar = true,
 	showEliteIcon = false 
 }
-
+]]--
 
 --[[ Unit frame ]]-- 
 

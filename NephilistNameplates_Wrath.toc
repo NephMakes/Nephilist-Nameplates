@@ -5,7 +5,7 @@
 ## Author: Neph / lieandswell <Nephthys@Hyjal-US>
 ## SavedVariablesPerCharacter: NephilistNameplatesOptions
 
-NephilistNameplatesClassic.xml
+NephilistNameplates.xml
 NephilistNameplates.lua
 Nameplate.lua
 Auras.lua

@@ -46,11 +46,11 @@
 		</Frames>
 		<Scripts>
 			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-				GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter);
+				GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+				GameTooltip:SetUnitAura(self:GetParent().unit, self:GetID(), self:GetParent().filter)
 			</OnEnter>
 			<OnLeave>
-				GameTooltip:Hide();
+				GameTooltip:Hide()
 			</OnLeave>
 		</Scripts>
 	</Frame>
@@ -58,10 +58,10 @@
 	<Button name="NephilistNameplatesTemplate" parentKey="UnitFrame" useParentLevel="true" virtual="true">
 		<Frames>
 			<StatusBar parentKey="healthBar">
-				<Size y="5.0"/>
+				<Size y="5"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" y="9"/>
-					<Anchor point="BOTTOMRIGHT" y="9"/>
+					<Anchor point="BOTTOMLEFT" x="2" y="9"/>
+					<Anchor point="BOTTOMRIGHT" x="-2" y="9"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="2">
@@ -87,6 +87,17 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<!--
+					<Layer level="OVERLAY">
+						<Texture parentKey="highlight" hidden="true">
+							<Color r="1" g="1" b="1" a="0.5"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" />
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					-->
 				</Layers>
 				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
 				<BarColor r="1.0" g="0.7" b="0.0"/>
@@ -102,8 +113,8 @@
 						<Texture parentKey="border">
 							<Color r="0" g="0" b="0" a="1"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.powerBar" relativePoint="TOPLEFT" x="-1.6" y="1.6"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.powerBar" relativePoint="BOTTOMRIGHT" x="1.6" y="-1.6"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.powerBar" relativePoint="TOPLEFT" x="-1" y="1"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.powerBar" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -122,16 +133,16 @@
 				</KeyValues>
 				<Size y="14.0"/>
 				<Anchors>
-					<Anchor point="TOPLEFT"/>
-					<Anchor point="TOPRIGHT"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" y="18"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="TOPRIGHT" y="18"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="border">
 							<Color r="0" g="0" b="0" a="1"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-1.6" y="1.6"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="1.6" y="-1.6"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-1" y="1"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -167,7 +178,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad>
-						CastingBarFrame_OnLoad(self, nil, false, true);
+						CastingBarFrame_OnLoad(self, nil, false, true)
 					</OnLoad>
 					<OnEvent function="CastingBarFrame_OnEvent"/>
 					<OnUpdate function="CastingBarFrame_OnUpdate"/>
@@ -209,28 +220,16 @@
 			</Frame>
 		</Frames>
 		<Layers>
-			<!--
-			<Layer level="BACKGROUND" textureSubLevel="0">
-				<Texture parentKey="selectionBorder" hidden="true">
-					<Color r="1" g="1" b="1" a="0.8"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-2.8" y="2.8"/>
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="2.8" y="-2.8"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			-->
 			<Layer level="BACKGROUND">
 				<FontString parentKey="name" inherits="FriendsFont_Small" wordwrap="false" justifyH="CENTER" text="Unit Hame Here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
-					<!-- <Color r="1" g="1" b="1" a="0.7"/> -->
 					<Anchors>
 						<Anchor point="BOTTOM" relativeKey="$parent.healthBar" relativePoint="TOP" y="3"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="statusText" inherits="GameFontDisable" />
 			</Layer>
-			<Layer level="BACKGROUND">
+			<Layer level="OVERLAY">
 				<FontString parentKey="levelText" inherits="SystemFont_NamePlate" justifyH="LEFT" text="Unit level here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
 					<Anchors>

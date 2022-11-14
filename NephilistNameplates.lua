@@ -1,5 +1,6 @@
 local addonName, NephilistNameplates = ...
 
+-- Namespaces
 NephilistNameplates.DriverFrame = CreateFrame("Frame", "NephilistNameplatesFrame", UIParent)
 NephilistNameplates.UnitFrame = {}
 NephilistNameplates.PlayerPlate = CreateFrame("Button", "NephilistNameplatesPlayerPlate", UIParent)
@@ -28,46 +29,49 @@ end
 --[[ Driver frame ]]--
 
 function DriverFrame:OnEvent(event, ...) 
-	if ( event == "ADDON_LOADED" ) then
-		local arg1 = ...;
-		if ( arg1 == addonName ) then
-			self:OnAddonLoaded();
+	if event == "ADDON_LOADED" then
+		local arg1 = ...
+		if arg1 == addonName then
+			self:OnAddonLoaded()
 		end
-	elseif ( event == "VARIABLES_LOADED" ) then
-		self:HideBlizzard();
-		self:UpdateNamePlateOptions(); 
-	elseif ( event == "NAME_PLATE_CREATED" ) then 
-		local nameplate = ...;
-		self:OnNamePlateCreated(nameplate);
-	elseif ( event == "NAME_PLATE_UNIT_ADDED" ) then 
-		local unit = ...;
-		self:OnNamePlateAdded(unit);
-	elseif ( event == "NAME_PLATE_UNIT_REMOVED" ) then 
-		local unit = ...;
-		self:OnNamePlateRemoved(unit);
-	elseif event == "PLAYER_TARGET_CHANGED" then
-		self:OnTargetChanged();
-	elseif event == "DISPLAY_SIZE_CHANGED" then
+	elseif event == "VARIABLES_LOADED" then
+		self:HideBlizzard()
 		self:UpdateNamePlateOptions();
+	elseif event == "NAME_PLATE_CREATED" then 
+		local nameplate = ...
+		self:OnNamePlateCreated(nameplate)
+	elseif event == "NAME_PLATE_UNIT_ADDED" then 
+		local unit = ...
+		self:OnNamePlateAdded(unit)
+	elseif event == "NAME_PLATE_UNIT_REMOVED" then 
+		local unit = ...
+		self:OnNamePlateRemoved(unit)
+	elseif event == "PLAYER_TARGET_CHANGED" then
+		self:OnTargetChanged()
+	elseif event == "DISPLAY_SIZE_CHANGED" then
+		self:UpdateNamePlateOptions()
 	elseif event == "CVAR_UPDATE" then
-		local name = ...;
-		if name == "SHOW_CLASS_COLOR_IN_V_KEY" or name == "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" then
-			self:UpdateNamePlateOptions();
+		local name = ...
+		if
+			name == "SHOW_CLASS_COLOR_IN_V_KEY" or 
+			name == "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" 
+		then
+			self:UpdateNamePlateOptions()
 		end
 	end
 end
-DriverFrame:SetScript("OnEvent", DriverFrame.OnEvent);
-DriverFrame:RegisterEvent("ADDON_LOADED");
-DriverFrame:RegisterEvent("VARIABLES_LOADED");
-DriverFrame:RegisterEvent("NAME_PLATE_CREATED");
-DriverFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED");
-DriverFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED");
-DriverFrame:RegisterEvent("CVAR_UPDATE");
-DriverFrame:RegisterEvent("DISPLAY_SIZE_CHANGED");
-DriverFrame:RegisterEvent("PLAYER_TARGET_CHANGED");
--- DriverFrame:RegisterEvent("PLAYER_LOGIN");
--- DriverFrame:RegisterEvent("PLAYER_ENTERING_WORLD");
--- DriverFrame:RegisterEvent("PLAYER_LOGOUT");
+DriverFrame:SetScript("OnEvent", DriverFrame.OnEvent)
+DriverFrame:RegisterEvent("ADDON_LOADED")
+DriverFrame:RegisterEvent("VARIABLES_LOADED")
+DriverFrame:RegisterEvent("NAME_PLATE_CREATED")
+DriverFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+DriverFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
+DriverFrame:RegisterEvent("CVAR_UPDATE")
+DriverFrame:RegisterEvent("DISPLAY_SIZE_CHANGED")
+DriverFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
+-- DriverFrame:RegisterEvent("PLAYER_LOGIN")
+-- DriverFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+-- DriverFrame:RegisterEvent("PLAYER_LOGOUT")
 
 function DriverFrame:OnAddonLoaded()
 	NephilistNameplates:LocalizeStrings()
@@ -118,8 +122,12 @@ end
 
 function DriverFrame:UpdateNamePlateOptions()
 
-	EnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate")
-	EnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash")
+	-- Get cvars
+	local enemyOptions = NephilistNameplates.EnemyFrameOptions
+	enemyOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate")
+	enemyOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash")
+	-- EnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate")
+	-- EnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash")
 
 	local baseNamePlateWidth = 110
 	local baseNamePlateHeight = 45
@@ -141,6 +149,7 @@ function DriverFrame:UpdateNamePlateOptions()
 	SetCVar("nameplateMaxDistance", 40)  -- Default 60
 	]]--
 
+	-- Update frames
 	for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 		local unitFrame = namePlate.UnitFrame
 		unitFrame:SetOptions()
@@ -159,25 +168,22 @@ function DriverFrame:OnNamePlateCreated(nameplate)
 	unitFrame.selectionBorder = unitFrame.healthBar.selectionBorder
 	unitFrame.optionTable = {}
 	unitFrame.BuffFrame.buffList = {}
-	-- nameplate:HookScript("OnEnter", UnitFrame.ShowHighlight)   
-	-- nameplate:HookScript("OnLeave", UnitFrame.HideHighlight)
-	-- Causes nameplate to be unclickable
 end
 
 function DriverFrame:OnNamePlateAdded(unit)
-	local namePlate = C_NamePlate.GetNamePlateForUnit(unit);
-	local unitFrame = namePlate.UnitFrame;
-	unitFrame:SetUnit(unit);
-	unitFrame:SetOptions();
-	unitFrame:UpdateAll();
-	self:UpdateClassResourceBar();
+	local namePlate = C_NamePlate.GetNamePlateForUnit(unit)
+	local unitFrame = namePlate.UnitFrame
+	unitFrame:SetUnit(unit)
+	unitFrame:SetOptions()
+	unitFrame:UpdateAll()
+	self:UpdateClassResourceBar()
 end
 
 function DriverFrame:OnNamePlateRemoved(unit)
-	local namePlate = C_NamePlate.GetNamePlateForUnit(unit);
-	namePlate.UnitFrame:SetUnit(nil);
+	local namePlate = C_NamePlate.GetNamePlateForUnit(unit)
+	namePlate.UnitFrame:SetUnit(nil)
 end
 
 function DriverFrame:OnTargetChanged()
-	DriverFrame:UpdateClassResourceBar();  -- in Power.lua
+	DriverFrame:UpdateClassResourceBar()  -- in Power.lua
 end
