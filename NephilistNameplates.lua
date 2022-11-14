@@ -48,6 +48,12 @@ function DriverFrame:OnEvent(event, ...)
 		self:OnNamePlateRemoved(unit)
 	elseif event == "PLAYER_TARGET_CHANGED" then
 		self:OnTargetChanged()
+	elseif event == "UPDATE_MOUSEOVER_UNIT" then
+		-- Fires OnEnter and OnLeave
+		local nameplate = C_NamePlate.GetNamePlateForUnit("mouseover")
+		if nameplate then 
+			nameplate.UnitFrame:ShowMouseoverHighlight()
+		end
 	elseif event == "DISPLAY_SIZE_CHANGED" then
 		self:UpdateNamePlateOptions()
 	elseif event == "CVAR_UPDATE" then
@@ -69,6 +75,7 @@ DriverFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
 DriverFrame:RegisterEvent("CVAR_UPDATE")
 DriverFrame:RegisterEvent("DISPLAY_SIZE_CHANGED")
 DriverFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
+DriverFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 -- DriverFrame:RegisterEvent("PLAYER_LOGIN")
 -- DriverFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 -- DriverFrame:RegisterEvent("PLAYER_LOGOUT")
@@ -166,6 +173,7 @@ function DriverFrame:OnNamePlateCreated(nameplate)
 	Mixin(unitFrame, UnitFrame)  -- Inherit UnitFrame:Methods()
 	-- unitFrame.highlight = unitFrame.healthBar.highlight
 	unitFrame.selectionBorder = unitFrame.healthBar.selectionBorder
+	unitFrame.highlight = unitFrame.healthBar.highlight
 	unitFrame.optionTable = {}
 	unitFrame.BuffFrame.buffList = {}
 end

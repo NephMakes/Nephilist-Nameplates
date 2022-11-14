@@ -204,6 +204,7 @@ function UnitFrame:UpdateAll()
 		self:UpdateMaxHealth()
 		self:UpdateHealth()
 		self:UpdateSelectionHighlight()
+		self:UpdateMouseoverHighlight()
 		self:UpdateRaidTarget()
 		self:UpdateCastBar()
 		self:UpdatePowerBar()
@@ -215,8 +216,10 @@ end
 function UnitFrame:UpdateName() 
 	local name = GetUnitName(self.unit, false)
 	self.name:SetText(name)
+	self.nameHighlight:SetText(name)
 	if not self.optionTable.showName then
 		self.name:Hide()
+		self.nameHighlight:Hide()
 	else
 		self.name:Show()
 		local unitLevel = UnitLevel(self.unit)
@@ -224,9 +227,9 @@ function UnitFrame:UpdateName()
 		if unitLevel == -1 or classification == "worldboss" then
 			self.name:SetTextColor(1.0, 0.6, 0.0)  -- Orange
 		elseif classification == "rare" or classification == "rareelite" then
-			self.name:SetTextColor(0.5, 0.5, 1.0)
+			self.name:SetTextColor(0.5, 0.5, 1.0)  -- Blue
 		else
-			self.name:SetTextColor(0.7, 0.7, 0.7)
+			self.name:SetTextColor(0.7, 0.7, 0.7)  -- Light grey
 		end
 	end
 end
@@ -313,6 +316,29 @@ function UnitFrame:UpdateSelectionHighlight()
 	else
 		self.selectionBorder:Hide()
 	end
+end
+
+function UnitFrame:ShowMouseoverHighlight()
+	self.highlight:Show()
+	if self.optionTable.showName then
+		self.nameHighlight:Show()
+	end
+	self:SetIgnoreParentAlpha(true)
+	self:SetScript("OnUpdate", self.UpdateMouseoverHighlight)
+end
+
+function UnitFrame:UpdateMouseoverHighlight()
+	-- Because UnitIsUnit("mouseover", self.unit) true when UPDATE_MOUSEOVER_UNIT fired OnLeave
+	if not UnitIsUnit("mouseover", self.unit) then
+		self:HideMouseoverHighlight()
+		self:SetScript("OnUpdate", nil)
+	end
+end
+
+function UnitFrame:HideMouseoverHighlight()
+	self.highlight:Hide()
+	self.nameHighlight:Hide()
+	self:SetIgnoreParentAlpha(false)
 end
 
 function UnitFrame:UpdateRaidTarget() 

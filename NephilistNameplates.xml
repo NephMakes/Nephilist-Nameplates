@@ -57,6 +57,7 @@
 
 	<Button name="NephilistNameplatesTemplate" parentKey="UnitFrame" useParentLevel="true" virtual="true">
 		<Frames>
+			<!-- Health bar -->
 			<StatusBar parentKey="healthBar">
 				<Size y="5"/>
 				<Anchors>
@@ -87,21 +88,20 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<!--
 					<Layer level="OVERLAY">
-						<Texture parentKey="highlight" hidden="true">
-							<Color r="1" g="1" b="1" a="0.5"/>
+						<Texture parentKey="highlight" hidden="true" alphaMode="ADD">
+							<Color r="1" g="1" b="1" a="0.4"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" />
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" />
 							</Anchors>
 						</Texture>
 					</Layer>
-					-->
 				</Layers>
 				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
 				<BarColor r="1.0" g="0.7" b="0.0"/>
 			</StatusBar>
+			<!-- Power bar -->
 			<StatusBar parentKey="powerBar">
 				<Size y="5.0"/>
 				<Anchors>
@@ -127,15 +127,16 @@
 				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
 				<BarColor r="1.0" g="0.7" b="0.0"/>
 			</StatusBar>
+			<!-- Cast bar -->
 			<StatusBar parentKey="castBar" hidden="true">
 				<KeyValues>
 					<KeyValue key="iconWhenNoninterruptible" value="false" type="boolean"/>
 				</KeyValues>
-				<Size y="14.0"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" y="18"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="TOPRIGHT" y="18"/>
 				</Anchors>
+				<Size y="14.0"/>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="border">
@@ -220,6 +221,7 @@
 			</Frame>
 		</Frames>
 		<Layers>
+			<!-- Unit name -->
 			<Layer level="BACKGROUND">
 				<FontString parentKey="name" inherits="FriendsFont_Small" wordwrap="false" justifyH="CENTER" text="Unit Hame Here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
@@ -227,8 +229,15 @@
 						<Anchor point="BOTTOM" relativeKey="$parent.healthBar" relativePoint="TOP" y="3"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="nameHighlight" inherits="FriendsFont_Small" wordwrap="false" justifyH="CENTER" text="Unit Hame Here" hidden="true">
+					<Color r="1" g="1" b="1" a="0.5"/>
+					<Anchors>
+						<Anchor point="BOTTOM" relativeKey="$parent.name"/>
+					</Anchors>
+				</FontString>
 				<FontString parentKey="statusText" inherits="GameFontDisable" />
 			</Layer>
+			<!-- Level text -->
 			<Layer level="OVERLAY">
 				<FontString parentKey="levelText" inherits="SystemFont_NamePlate" justifyH="LEFT" text="Unit level here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
