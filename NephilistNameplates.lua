@@ -10,17 +10,6 @@ local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame
 local PlayerPlate = NephilistNameplates.PlayerPlate
 
---[[
-local EnemyFrameOptions = {
-	showName = true, 
-	colorHealthBySelection = true,
-	displaySelectionHighlight = true,
-	considerSelectionInCombatAsHostile = true,
-	greyOutWhenTapDenied = true,
-	hideCastBar = false, 
-	showEliteIcon = true 
-}
-]]--
 
 function NephilistNameplates:Update()
 	-- Called by "Okay" button of addon options panel
@@ -87,7 +76,6 @@ DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 -- DriverFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 -- DriverFrame:RegisterEvent("PLAYER_LOGOUT")
 -- 			name == "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" 
-
 
 function DriverFrame:OnAddonLoaded()
 	NephilistNameplates:LocalizeStrings()

@@ -103,6 +103,7 @@ function UnitFrame:UpdateEvents()
 	self:RegisterUnitEvent("UNIT_HEALTH", self.unit, displayedUnit)
 	self:RegisterUnitEvent("UNIT_AURA", self.unit, displayedUnit)
 	self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", self.unit, displayedUnit)
+	self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", displayedUnit)
 	-- self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", self.unit, displayedUnit)
 	-- self:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", self.unit, displayedUnit)  -- i.e. AFK, DND
 end
@@ -134,7 +135,7 @@ function UnitFrame:OnEvent(event, ...)
 			self:UpdateHealth()
 		elseif event == "UNIT_AURA" then
 			self:UpdateBuffs()
-		elseif event == "UNIT_THREAT_LIST_UPDATE" then
+		elseif event == "UNIT_THREAT_LIST_UPDATE" or event == "UNIT_THREAT_SITUATION_UPDATE" then
 			if self.optionTable.considerSelectionInCombatAsHostile then
 				self:UpdateName()
 				self:UpdateHealthColor()
@@ -232,6 +233,7 @@ function UnitFrame:UpdateHealthColor()
 	local r, g, b = self:GetHealthColor()
 	local healthBar = self.healthBar
 	healthBar:SetStatusBarColor(r, g, b)
+	healthBar.highlight:SetVertexColor(r, g, b)
 	healthBar.background:SetColorTexture(0.15 + r/5, 0.15 + g/5, 0.15 + b/5, 1)
 end
 
@@ -261,17 +263,23 @@ function UnitFrame:GetHealthColor()
 		return 0.4, 0.4, 0.4
 	end
 
---	if self.showThreat then
---		isTanking, status = UnitDetailedThreatSituation("player", unit)
---		if self.threatRole == "TANK" then
---		else
---		end		
---	end
-
 	if optionTable.colorHealthBySelection then
 		-- Color by unit reaction (neutral, hostile, etc)
-		if optionTable.considerSelectionInCombatAsHostile and IsOnThreatList(self.displayedUnit) then
-			return 1.0, 0.0, 0.0
+		if not UnitIsFriend("player", unit) and self.showThreat then
+			isTanking, status = UnitDetailedThreatSituation("player", unit)
+			if self.threatRole == "TANK" then
+				if isTanking then
+					return 0.5, 0.25, 0.25
+				else
+					return 1.0, 0.0, 0.0
+				end
+			else
+				if isTanking then
+					return 1.0, 0.0, 0.0
+				else
+					return 0.5, 0.25, 0.25
+				end
+			end		
 		else
 			return UnitSelectionColor(unit, optionTable.colorHealthWithExtendedColors)
 		end
