@@ -4,30 +4,32 @@ local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame
 
 NephilistNameplates.EnemyFrameOptions = {
-	showName = true, 
 	colorHealthBySelection = true,
-	displaySelectionHighlight = true,
 	considerSelectionInCombatAsHostile = true,
-	greyOutWhenTapDenied = true,
-	hideCastBar = false, 
-	showEliteIcon = true 
+	greyWhenTapDenied = true,
+	-- hideCastBar = false, 
+	showEliteIcon = true, 
+	showName = true, 
+	-- showClassColor set by DriverFrame:UpdateNamePlateOptions()
+	showSelectionHighlight = true, 
 }
 NephilistNameplates.FriendlyFrameOptions = {
-	showName = true,
 	colorHealthBySelection = true,
-	displaySelectionHighlight = true,
-	considerSelectionInCombatAsHostile = true,
 	colorHealthWithExtendedColors = true,
-	hideCastBar = false, 
-	showEliteIcon = true 
+	considerSelectionInCombatAsHostile = true,
+	-- hideCastBar = false, 
+	-- showClassColor set by DriverFrame:UpdateNamePlateOptions()
+	showEliteIcon = true, 
+	showName = true,
+	showSelectionHighlight = true,
 }
 NephilistNameplates.PlayerFrameOptions = {
-	showName = false,
-	displaySelectionHighlight = false,
 	healthBarColorOverride = CreateColor(0, 0.7, 0), 
 	hideCastBar = true, 
+	-- showEliteIcon = false, 
+	-- showName = false,
 	showPowerBar = true,
-	showEliteIcon = false 
+	-- showSelectionHighlight = false,
 }
 local EnemyFrameOptions = NephilistNameplates.EnemyFrameOptions
 local FriendlyFrameOptions = NephilistNameplates.FriendlyFrameOptions
@@ -38,34 +40,6 @@ local function IsOnThreatList(unit)
 	return threatStatus ~= nil
 end
 
---[[
-local EnemyFrameOptions = {
-	showName = true, 
-	colorHealthBySelection = true,
-	displaySelectionHighlight = true,
-	considerSelectionInCombatAsHostile = true,
-	greyOutWhenTapDenied = true,
-	hideCastBar = false, 
-	showEliteIcon = true 
-}
-local FriendlyFrameOptions = {
-	showName = true,
-	colorHealthBySelection = true,
-	displaySelectionHighlight = true,
-	considerSelectionInCombatAsHostile = true,
-	colorHealthWithExtendedColors = true,
-	hideCastBar = false, 
-	showEliteIcon = true 
-}
-local PlayerFrameOptions = {
-	showName = false,
-	displaySelectionHighlight = false,
-	healthBarColorOverride = CreateColor(0, 0.7, 0), 
-	hideCastBar = true, 
-	showPowerBar = true,
-	showEliteIcon = false 
-}
-]]--
 
 --[[ Unit frame ]]-- 
 
@@ -114,7 +88,6 @@ function UnitFrame:RegisterEvents()
 		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player")
 		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
 		self:RegisterUnitEvent("UNIT_MAXPOWER", "player")
-		-- self:RegisterEvent("UNIT_POWER_FREQUENT")
 	end
 	self:SetScript("OnEvent", UnitFrame.OnEvent)
 end
@@ -185,6 +158,8 @@ function UnitFrame:SetOptions()
 	self.showBuffs = options.ShowBuffs
 	self.onlyShowOwnBuffs = options.OnlyShowOwnBuffs
 	self.showLevel = options.ShowLevel
+	self.showThreat = options.ShowThreat
+	self.threatRole = DriverFrame.threatRole
 
 	if UnitIsUnit("player", self.unit) then
 		self.optionTable = PlayerFrameOptions
@@ -254,46 +229,63 @@ function UnitFrame:UpdateLevel()
 end
 
 function UnitFrame:UpdateHealthColor() 
-	local healthBar = self.healthBar;
-	local options = self.optionTable;
-	local unit = self.unit;
-	local r, g, b;
-	if ( not UnitIsConnected(unit) ) then
-		r, g, b = 0.7, 0.7, 0.7;
-	else
-		if ( options.healthBarColorOverride ) then
-			local override = options.healthBarColorOverride;
-			r, g, b = override.r, override.g, override.b;
-		else
-			local _, englishClass = UnitClass(unit);
-			local classColor = RAID_CLASS_COLORS[englishClass];
-			if ( UnitIsPlayer(unit) and classColor and options.useClassColors ) then
-				r, g, b = classColor.r, classColor.g, classColor.b;
-			elseif ( self:IsTapDenied() ) then
-				r, g, b = 0.3, 0.3, 0.3;
-			elseif ( options.colorHealthBySelection ) then
-				-- Use color based on the type of unit (neutral, etc.)
-				if ( options.considerSelectionInCombatAsHostile and IsOnThreatList(self.displayedUnit) ) then
-					r, g, b = 1.0, 0.0, 0.0;
-				else
-					r, g, b = UnitSelectionColor(unit, options.colorHealthWithExtendedColors);
-				end
-			elseif ( UnitIsFriend("player", unit) ) then
-				r, g, b = 0.0, 1.0, 0.0;
-			else
-				r, g, b = 1.0, 0.0, 0.0;
-			end
+	local r, g, b = self:GetHealthColor()
+	local healthBar = self.healthBar
+	healthBar:SetStatusBarColor(r, g, b)
+	healthBar.background:SetColorTexture(0.15 + r/5, 0.15 + g/5, 0.15 + b/5, 1)
+end
+
+function UnitFrame:GetHealthColor()
+	local unit = self.unit
+	local optionTable = self.optionTable
+
+	if not UnitIsConnected(unit) then
+		return 0.7, 0.7, 0.7
+	end
+
+	if optionTable.healthBarColorOverride then
+		local override = optionTable.healthBarColorOverride
+		return override.r, override.g, override.b
+	end
+
+	if UnitIsPlayer(unit) and optionTable.showClassColor then
+		-- Set from cvars by DriverFrame:UpdateNamePlateOptions()
+		local _, englishClass = UnitClass(unit)
+		local classColor = RAID_CLASS_COLORS[englishClass]
+		if classColor then 
+			return classColor.r, classColor.g, classColor.b
 		end
 	end
-	if ( r ~= healthBar.r or g ~= healthBar.g or b ~= healthBar.b ) then
-		healthBar:SetStatusBarColor(r, g, b);
-		healthBar.background:SetColorTexture(0.15+r/5, 0.15+g/5, 0.15+b/5, 1);
-		healthBar.r, healthBar.g, healthBar.b = r, g, b;
+
+	if self:IsTapDenied() then
+		return 0.4, 0.4, 0.4
+	end
+
+--	if self.showThreat then
+--		isTanking, status = UnitDetailedThreatSituation("player", unit)
+--		if self.threatRole == "TANK" then
+--		else
+--		end		
+--	end
+
+	if optionTable.colorHealthBySelection then
+		-- Color by unit reaction (neutral, hostile, etc)
+		if optionTable.considerSelectionInCombatAsHostile and IsOnThreatList(self.displayedUnit) then
+			return 1.0, 0.0, 0.0
+		else
+			return UnitSelectionColor(unit, optionTable.colorHealthWithExtendedColors)
+		end
+	end
+
+	if UnitIsFriend("player", unit) then
+		return 0.0, 1.0, 0.0
+	else
+		return 1.0, 0.0, 0.0
 	end
 end
 
 function UnitFrame:IsTapDenied()
-	return self.optionTable.greyOutWhenTapDenied 
+	return self.optionTable.greyWhenTapDenied 
 		and UnitIsTapDenied(self.unit)
 		and not UnitPlayerControlled(self.unit)
 end
@@ -307,7 +299,7 @@ function UnitFrame:UpdateHealth()
 end
 
 function UnitFrame:UpdateSelectionHighlight() 
-	if not self.optionTable.displaySelectionHighlight then
+	if not self.optionTable.showSelectionHighlight then
 		self.selectionBorder:Hide()
 		return
 	end
@@ -380,13 +372,4 @@ function UnitFrame:UpdateCastBar()
 		CastingBarFrame_SetUnit(castBar, nil, nil, nil)
 	end
 end
-
---function UnitFrame:ShowHighlight()
---	self.UnitFrame.highlight:Show()
---end
---
---function UnitFrame:HideHighlight()
---	self.UnitFrame.highlight:Hide()
---end
-
 

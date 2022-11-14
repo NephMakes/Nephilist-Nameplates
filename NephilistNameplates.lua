@@ -10,6 +10,7 @@ local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame
 local PlayerPlate = NephilistNameplates.PlayerPlate
 
+--[[
 local EnemyFrameOptions = {
 	showName = true, 
 	colorHealthBySelection = true,
@@ -19,6 +20,7 @@ local EnemyFrameOptions = {
 	hideCastBar = false, 
 	showEliteIcon = true 
 }
+]]--
 
 function NephilistNameplates:Update()
 	-- Called by "Okay" button of addon options panel
@@ -56,12 +58,15 @@ function DriverFrame:OnEvent(event, ...)
 		end
 	elseif event == "DISPLAY_SIZE_CHANGED" then
 		self:UpdateNamePlateOptions()
+	elseif 
+		event == "PLAYER_TALENT_UPDATE" or
+		event == "ACTIVE_TALENT_GROUP_CHANGED" or
+		event == "TALENT_GROUP_ROLE_CHANGED"
+	then
+		self:UpdateNamePlateOptions()
 	elseif event == "CVAR_UPDATE" then
 		local name = ...
-		if
-			name == "SHOW_CLASS_COLOR_IN_V_KEY" or 
-			name == "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" 
-		then
+		if name == "SHOW_CLASS_COLOR_IN_V_KEY" then
 			self:UpdateNamePlateOptions()
 		end
 	end
@@ -76,19 +81,25 @@ DriverFrame:RegisterEvent("CVAR_UPDATE")
 DriverFrame:RegisterEvent("DISPLAY_SIZE_CHANGED")
 DriverFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 DriverFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 -- DriverFrame:RegisterEvent("PLAYER_LOGIN")
 -- DriverFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 -- DriverFrame:RegisterEvent("PLAYER_LOGOUT")
+-- 			name == "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" 
+
 
 function DriverFrame:OnAddonLoaded()
 	NephilistNameplates:LocalizeStrings()
 
-	-- Disable Retail-only options
 	if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then  -- Blizz globals in FrameXML/Constants.lua
+		-- Disable Retail-only options
 		local optionsPanel = NephilistNameplates.OptionsPanel
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.showBuffsButton)
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.onlyShowOwnBuffsButton)
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.hideClassBarButton)
+
+		DriverFrame:RegisterEvent("TALENT_GROUP_ROLE_CHANGED")
 	end
 
 --	local reset = false
@@ -128,13 +139,12 @@ function DriverFrame:HideBlizzard()
 end
 
 function DriverFrame:UpdateNamePlateOptions()
-
 	-- Get cvars
 	local enemyOptions = NephilistNameplates.EnemyFrameOptions
-	enemyOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate")
-	enemyOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash")
-	-- EnemyFrameOptions.useClassColors = GetCVarBool("ShowClassColorInNameplate")
-	-- EnemyFrameOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash")
+	local friendlyOptions = NephilistNameplates.FriendlyFrameOptions
+	enemyOptions.showClassColor = GetCVarBool("ShowClassColorInNameplate")
+	friendlyOptions.showClassColor = GetCVarBool("ShowClassColorInFriendlyNameplate")
+	-- enemyOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash")
 
 	local baseNamePlateWidth = 110
 	local baseNamePlateHeight = 45
@@ -144,7 +154,6 @@ function DriverFrame:UpdateNamePlateOptions()
 	-- /script SetCVar("nameplateHorizontalScale", 0.5)
 	-- /script print(GetCVar("nameplateVerticalScale"))
 	C_NamePlate.SetNamePlateSelfSize(baseNamePlateWidth, baseNamePlateHeight)
-
 	--[[
 	-- Somehow creating taint to have these here -- why would these get called in combat?
 	-- Make these options
@@ -156,6 +165,8 @@ function DriverFrame:UpdateNamePlateOptions()
 	SetCVar("nameplateMaxDistance", 40)  -- Default 60
 	]]--
 
+	self:UpdateThreatRole()
+
 	-- Update frames
 	for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 		local unitFrame = namePlate.UnitFrame
@@ -166,12 +177,19 @@ function DriverFrame:UpdateNamePlateOptions()
 	DriverFrame:UpdateClassResourceBar()  -- In Power.lua
 end
 
+function DriverFrame:UpdateThreatRole()
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		self.threatRole = GetSpecializationRole(GetSpecialization())
+	else
+		self.threatRole = GetTalentGroupRole(GetActiveTalentGroup())
+	end
+end
+
 function DriverFrame:OnNamePlateCreated(nameplate)
 	local unitFrame = CreateFrame("Button", "$parentUnitFrame", nameplate, "NephilistNameplatesTemplate")
 	unitFrame:SetAllPoints()
 	unitFrame:EnableMouse(false)
 	Mixin(unitFrame, UnitFrame)  -- Inherit UnitFrame:Methods()
-	-- unitFrame.highlight = unitFrame.healthBar.highlight
 	unitFrame.selectionBorder = unitFrame.healthBar.selectionBorder
 	unitFrame.highlight = unitFrame.healthBar.highlight
 	unitFrame.optionTable = {}
