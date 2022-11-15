@@ -7,7 +7,6 @@ NephilistNameplates.EnemyFrameOptions = {
 	colorHealthByReaction = true,
 	considerSelectionInCombatAsHostile = true,
 	greyWhenTapDenied = true,
-	-- hideCastBar = false, 
 	showEliteIcon = true, 
 	showName = true, 
 	-- showClassColor set by DriverFrame:UpdateNamePlateOptions()
@@ -17,7 +16,6 @@ NephilistNameplates.FriendlyFrameOptions = {
 	colorHealthByReaction = true,
 	colorHealthWithExtendedColors = true,
 	considerSelectionInCombatAsHostile = true,
-	-- hideCastBar = false, 
 	-- showClassColor set by DriverFrame:UpdateNamePlateOptions()
 	showEliteIcon = true, 
 	showName = true,
@@ -26,10 +24,7 @@ NephilistNameplates.FriendlyFrameOptions = {
 NephilistNameplates.PlayerFrameOptions = {
 	healthBarColorOverride = CreateColor(0, 0.7, 0), 
 	hideCastBar = true, 
-	-- showEliteIcon = false, 
-	-- showName = false,
 	showPowerBar = true,
-	-- showSelectionHighlight = false,
 }
 local EnemyFrameOptions = NephilistNameplates.EnemyFrameOptions
 local FriendlyFrameOptions = NephilistNameplates.FriendlyFrameOptions
@@ -55,9 +50,11 @@ function UnitFrame:Initialize()
 	self.selectionBorder:SetBackdrop(backdropInfo)
 	self.selectionBorder:SetBackdropColor(0, 0, 0, 0)
 	self.selectionBorder:SetBackdropBorderColor(1, 1, 1)
-	self.threatBorder:SetBackdrop(backdropInfo)
-	self.threatBorder:SetBackdropColor(0, 0, 0, 0)
-	self.threatBorder:SetBackdropBorderColor(1, 0, 0)
+--	self.threatBorder:SetBackdrop(backdropInfo)
+--	self.threatBorder:SetBackdropColor(0, 0, 0, 0)
+--	self.threatBorder:SetBackdropBorderColor(1, 0.0, 0.0)
+	self.healthBar.glowTop:SetVertexColor(1, 0, 0, 0.8)
+	self.healthBar.glowBottom:SetVertexColor(1, 0, 0, 0.8)
 	self.optionTable = {}
 	self.BuffFrame.buffList = {}
 end
@@ -252,7 +249,7 @@ function UnitFrame:UpdateHealthColor()
 	local healthBar = self.healthBar
 	healthBar:SetStatusBarColor(r, g, b)
 	healthBar.highlight:SetVertexColor(r, g, b)
-	healthBar.background:SetColorTexture(0.1 + r/5, 0.1 + g/5, 0.1 + b/5, 1)
+	healthBar.background:SetColorTexture(r/5, g/5, b/5, 1)
 end
 
 function UnitFrame:GetHealthColor()
@@ -279,6 +276,10 @@ function UnitFrame:GetHealthColor()
 
 	if self:IsTapDenied() then
 		return 0.4, 0.4, 0.4
+	end
+
+	if self.threatColor then
+		return self.threatColor.r, self.threatColor.g, self.threatColor.b
 	end
 
 	if optionTable.colorHealthByReaction then
@@ -386,13 +387,17 @@ end
 
 function UnitFrame:UpdateThreat()
 	if self.showThreat then
-		if not IsInGroup() and self.showThreatOnlyInGroup then break end
+		if not IsInGroup() and self.showThreatOnlyInGroup then 
+			self:HideThreat()
+			return
+		end
 		local unit = self.unit
 		if not UnitIsFriend("player", unit) and not UnitIsPlayer(unit) then
 			local isTanking, status = UnitDetailedThreatSituation("player", unit)
-			if 
+			if status and 
 				(self.threatRole == "TANK" and not isTanking) or 
-				(self.threatRole ~= "TANK" and isTanking)
+ 				(self.threatRole ~= "TANK" and isTanking)
+				-- not isTanking
 			then
 				self:ShowThreat()
 				return
@@ -403,13 +408,21 @@ function UnitFrame:UpdateThreat()
 end
 
 function UnitFrame:ShowThreat()
-	self.threatBorder:Show()
+	-- self.threatBorder:Show()
+	-- self.threatColor = {r = 0.6, g = 0, b = 0.3}
+	-- self:UpdateHealthColor()
+	self.healthBar.glowTop:Show()
+	self.healthBar.glowBottom:Show()
 	self:SetIgnoreParentAlpha(true)
 	self.threatAlpha = true
 end
 
 function UnitFrame:HideThreat()
-	self.threatBorder:Hide()
+	-- self.threatBorder:Hide()
+	-- self.threatColor = nil
+	-- self:UpdateHealthColor()
+	self.healthBar.glowTop:Hide()
+	self.healthBar.glowBottom:Hide()
 	self.threatAlpha = nil
 	self:UpdateMouseoverHighlight()
 end

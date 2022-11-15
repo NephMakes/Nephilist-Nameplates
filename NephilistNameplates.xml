@@ -67,18 +67,34 @@
 					<Anchor point="BOTTOMRIGHT" x="-2" y="9"/>
 				</Anchors>
 				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="border">
+							<Color r="0" g="0" b="0" a="1"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-1.5" y="1.5"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="1.5" y="-1.5"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture parentKey="background">
 							<Color r="0" g="0" b="0" a="1"/>
 						</Texture>
 					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="border">
-							<Color r="0" g="0" b="0" a="1"/>
+					<Layer level="BACKGROUND" textureSublevel="0">
+						<Texture parentKey="glowTop" file="Interface/AddOns/NephilistNameplates/GlowTop" alphaMode="BLEND" hidden="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-1" y="1"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.border" relativePoint="TOPLEFT" x="-4"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.border" relativePoint="TOPRIGHT"  x="4"/>
 							</Anchors>
+							<Size y="16"/>
+						</Texture>
+						<Texture parentKey="glowBottom" file="Interface/AddOns/NephilistNameplates/GlowBottom" alphaMode="BLEND" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.border" relativePoint="BOTTOMLEFT" x="-4"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.border" relativePoint="BOTTOMRIGHT"  x="4"/>
+							</Anchors>
+							<Size y="16"/>
 						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
@@ -95,17 +111,19 @@
 		<!-- Selection border -->
 			<Frame parentKey="selectionBorder" inherits="BackdropTemplate" frameStrata="HIGH">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-2.5" y="2.5" />
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="2.5" y="-2.5" />
+					<Anchor point="TOPLEFT" relativeKey="$parent.healthBar.border" relativePoint="TOPLEFT" x="-1.5" y="1.5" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar.border" relativePoint="BOTTOMRIGHT" x="1.5" y="-1.5" />
 				</Anchors>
 			</Frame>
 		<!-- Threat border -->
+			<!--
 			<Frame parentKey="threatBorder" inherits="BackdropTemplate" frameStrata="HIGH" hidden="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.selectionBorder" relativePoint="TOPLEFT" x="-1.5" y="1.5" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.selectionBorder" relativePoint="BOTTOMRIGHT" x="1.5" y="-1.5" />
 				</Anchors>
 			</Frame>
+			-->
 		<!-- Power bar -->
 			<StatusBar parentKey="powerBar">
 				<Anchors>
@@ -247,7 +265,7 @@
 				<FontString parentKey="levelText" inherits="SystemFont_NamePlate" justifyH="LEFT" text="Unit level here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.healthBar" relativePoint="RIGHT" x="3" y="-1" />
+						<Anchor point="LEFT" relativeKey="$parent.healthBar.border" relativePoint="RIGHT" x="3" y="-1" />
 					</Anchors>
 				</FontString>
 			</Layer>
