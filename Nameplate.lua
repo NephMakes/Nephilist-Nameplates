@@ -35,15 +35,31 @@ local EnemyFrameOptions = NephilistNameplates.EnemyFrameOptions
 local FriendlyFrameOptions = NephilistNameplates.FriendlyFrameOptions
 local PlayerFrameOptions = NephilistNameplates.PlayerFrameOptions
 
-local function IsOnThreatList(unit)
-	local _, threatStatus = UnitDetailedThreatSituation("player", unit)
-	return threatStatus ~= nil
-end
+--local function IsOnThreatList(unit)
+--	local _, threatStatus = UnitDetailedThreatSituation("player", unit)
+--	return threatStatus ~= nil
+--end
+
+local backdropInfo = {
+	bgFile = "interface/buttons/white8x8", 
+	edgeFile = "interface/buttons/white8x8", 
+	edgeSize = 1.5
+}
 
 
 --[[ Unit frame ]]-- 
 
 -- "Unit frame" here is non-interactable frame we attach to Blizz "Nameplate#" frames
+
+function UnitFrame:Initialize()
+	self.selectionBorder:SetBackdrop(backdropInfo)
+	self.selectionBorder:SetBackdropColor(0, 0, 0, 0)
+	self.selectionBorder:SetBackdropBorderColor(1, 1, 1)
+	-- self.threatBorder:SetBackdropColor(0, 0, 0, 0)
+	-- self.threatBorder:SetBackdropBorderColor(1, 1, 1)
+	self.optionTable = {}
+	self.BuffFrame.buffList = {}
+end
 
 function UnitFrame:SetUnit(unit)
 	self.unit = unit
@@ -103,8 +119,7 @@ function UnitFrame:UpdateEvents()
 	self:RegisterUnitEvent("UNIT_HEALTH", self.unit, displayedUnit)
 	self:RegisterUnitEvent("UNIT_AURA", self.unit, displayedUnit)
 	self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", self.unit, displayedUnit)
-	self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", displayedUnit)
-	-- self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", self.unit, displayedUnit)
+	self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", self.unit, displayedUnit)
 	-- self:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", self.unit, displayedUnit)  -- i.e. AFK, DND
 end
 
@@ -114,7 +129,7 @@ function UnitFrame:UnregisterEvents()
 end
 
 function UnitFrame:OnEvent(event, ...)
-	local arg1, arg2, arg3, arg4 = ...;
+	local arg1, arg2, arg3, arg4 = ...
 	if event == "PLAYER_TARGET_CHANGED" then
 		self:UpdateSelectionHighlight()
 	elseif event == "PLAYER_ENTERING_WORLD" then
@@ -234,7 +249,7 @@ function UnitFrame:UpdateHealthColor()
 	local healthBar = self.healthBar
 	healthBar:SetStatusBarColor(r, g, b)
 	healthBar.highlight:SetVertexColor(r, g, b)
-	healthBar.background:SetColorTexture(0.15 + r/5, 0.15 + g/5, 0.15 + b/5, 1)
+	healthBar.background:SetColorTexture(0.1 + r/5, 0.1 + g/5, 0.1 + b/5, 1)
 end
 
 function UnitFrame:GetHealthColor()
@@ -264,8 +279,8 @@ function UnitFrame:GetHealthColor()
 	end
 
 	if optionTable.colorHealthBySelection then
-		-- Color by unit reaction (neutral, hostile, etc)
-		if not UnitIsFriend("player", unit) and self.showThreat then
+		if false then
+		-- if not UnitIsFriend("player", unit) and self.showThreat then
 			isTanking, status = UnitDetailedThreatSituation("player", unit)
 			if self.threatRole == "TANK" then
 				if isTanking then
@@ -281,6 +296,7 @@ function UnitFrame:GetHealthColor()
 				end
 			end		
 		else
+			-- Color by unit reaction (neutral, hostile, etc)
 			return UnitSelectionColor(unit, optionTable.colorHealthWithExtendedColors)
 		end
 	end
@@ -319,7 +335,7 @@ function UnitFrame:UpdateSelectionHighlight()
 end
 
 function UnitFrame:ShowMouseoverHighlight()
-	self.highlight:Show()
+	self.healthBar.highlight:Show()
 	if self.optionTable.showName then
 		self.nameHighlight:Show()
 	end
@@ -336,7 +352,7 @@ function UnitFrame:UpdateMouseoverHighlight()
 end
 
 function UnitFrame:HideMouseoverHighlight()
-	self.highlight:Hide()
+	self.healthBar.highlight:Hide()
 	self.nameHighlight:Hide()
 	self:SetIgnoreParentAlpha(false)
 end

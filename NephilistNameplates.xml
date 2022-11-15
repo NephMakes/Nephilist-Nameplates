@@ -57,8 +57,10 @@
 
 	<Button name="NephilistNameplatesTemplate" parentKey="UnitFrame" useParentLevel="true" virtual="true">
 		<Frames>
-			<!-- Health bar -->
+		<!-- Health bar -->
 			<StatusBar parentKey="healthBar">
+				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
 				<Size y="5"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="2" y="9"/>
@@ -79,18 +81,9 @@
 							</Anchors>
 						</Texture>
 					</Layer>
-					<Layer level="BACKGROUND" textureSubLevel="0">
-						<Texture parentKey="selectionBorder" hidden="true">
-							<Color r="1" g="1" b="1" a="1"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-2.5" y="2.5"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="2.5" y="-2.5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="highlight" hidden="true" alphaMode="ADD">
-							<Color r="1" g="1" b="1" a="0.4"/>
+							<Color r="1" g="1" b="1" a="0.2"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" />
 								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" />
@@ -98,10 +91,16 @@
 						</Texture>
 					</Layer>
 				</Layers>
-				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
-				<BarColor r="1.0" g="0.7" b="0.0"/>
 			</StatusBar>
-			<!-- Power bar -->
+		<!-- Selection border -->
+			<Frame parentKey="selectionBorder" inherits="BackdropTemplate" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-2.5" y="2.5" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="2.5" y="-2.5" />
+				</Anchors>
+			</Frame>
+		<!-- Threat border -->
+		<!-- Power bar -->
 			<StatusBar parentKey="powerBar">
 				<Size y="5.0"/>
 				<Anchors>
@@ -127,7 +126,7 @@
 				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
 				<BarColor r="1.0" g="0.7" b="0.0"/>
 			</StatusBar>
-			<!-- Cast bar -->
+		<!-- Cast bar -->
 			<StatusBar parentKey="castBar" hidden="true">
 				<KeyValues>
 					<KeyValue key="iconWhenNoninterruptible" value="false" type="boolean"/>
@@ -221,7 +220,7 @@
 			</Frame>
 		</Frames>
 		<Layers>
-			<!-- Unit name -->
+		<!-- Unit name -->
 			<Layer level="BACKGROUND">
 				<FontString parentKey="name" inherits="FriendsFont_Small" wordwrap="false" justifyH="CENTER" text="Unit Hame Here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
@@ -235,9 +234,9 @@
 						<Anchor point="BOTTOM" relativeKey="$parent.name"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="statusText" inherits="GameFontDisable" />
+				<!-- <FontString parentKey="statusText" inherits="GameFontDisable" /> -->
 			</Layer>
-			<!-- Level text -->
+		<!-- Level text -->
 			<Layer level="OVERLAY">
 				<FontString parentKey="levelText" inherits="SystemFont_NamePlate" justifyH="LEFT" text="Unit level here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>

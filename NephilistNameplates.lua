@@ -2,14 +2,13 @@ local addonName, NephilistNameplates = ...
 
 -- Namespaces
 NephilistNameplates.DriverFrame = CreateFrame("Frame", "NephilistNameplatesFrame", UIParent)
-NephilistNameplates.UnitFrame = {}
 NephilistNameplates.PlayerPlate = CreateFrame("Button", "NephilistNameplatesPlayerPlate", UIParent)
+NephilistNameplates.UnitFrame = {}
 NephilistNameplates.Strings = {}
 
 local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame
 local PlayerPlate = NephilistNameplates.PlayerPlate
-
 
 function NephilistNameplates:Update()
 	-- Called by "Okay" button of addon options panel
@@ -54,10 +53,11 @@ function DriverFrame:OnEvent(event, ...)
 	then
 		self:UpdateNamePlateOptions()
 	elseif event == "CVAR_UPDATE" then
-		local name = ...
-		if name == "SHOW_CLASS_COLOR_IN_V_KEY" then
-			self:UpdateNamePlateOptions()
-		end
+		self:UpdateNamePlateOptions()
+--		local name = ...
+--		if name == "SHOW_CLASS_COLOR_IN_V_KEY" then
+--			self:UpdateNamePlateOptions()
+--		end
 	end
 end
 DriverFrame:SetScript("OnEvent", DriverFrame.OnEvent)
@@ -80,14 +80,14 @@ DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 function DriverFrame:OnAddonLoaded()
 	NephilistNameplates:LocalizeStrings()
 
-	if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then  -- Blizz globals in FrameXML/Constants.lua
+	if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+		-- Classic WoW
+		DriverFrame:RegisterEvent("TALENT_GROUP_ROLE_CHANGED")
 		-- Disable Retail-only options
 		local optionsPanel = NephilistNameplates.OptionsPanel
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.showBuffsButton)
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.onlyShowOwnBuffsButton)
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.hideClassBarButton)
-
-		DriverFrame:RegisterEvent("TALENT_GROUP_ROLE_CHANGED")
 	end
 
 --	local reset = false
@@ -99,15 +99,12 @@ end
 
 function DriverFrame:HideBlizzard()
 	NamePlateDriverFrame:UnregisterAllEvents()
-
-	-- Retail-only features
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then  
-
 		ClassNameplateManaBarFrame:Hide()
 		ClassNameplateManaBarFrame:UnregisterAllEvents()
-		-- Blizz mana bar appearing on level-up
 		ClassNameplateManaBarFrame:HookScript("OnShow", function(self) self:Hide() end)
-
+			-- Blizz mana bar appearing on level-up
+		--[[
 		local checkBox = InterfaceOptionsNamesPanelUnitNameplatesMakeLarger
 		if checkBox then
 			function checkBox.setFunc(value)
@@ -120,9 +117,9 @@ function DriverFrame:HideBlizzard()
 				end
 				DriverFrame:UpdateNamePlateOptions()
 			end
-			-- Is this written wrong? Are we defining or executing setFunc? 
-			-- Where does value come from? 
 		end
+		]]--
+		-- Should now be covered by blanket CVAR_UPDATE event
 	end
 end
 
@@ -142,6 +139,7 @@ function DriverFrame:UpdateNamePlateOptions()
 	-- /script SetCVar("nameplateHorizontalScale", 0.5)
 	-- /script print(GetCVar("nameplateVerticalScale"))
 	C_NamePlate.SetNamePlateSelfSize(baseNamePlateWidth, baseNamePlateHeight)
+
 	--[[
 	-- Somehow creating taint to have these here -- why would these get called in combat?
 	-- Make these options
@@ -178,10 +176,7 @@ function DriverFrame:OnNamePlateCreated(nameplate)
 	unitFrame:SetAllPoints()
 	unitFrame:EnableMouse(false)
 	Mixin(unitFrame, UnitFrame)  -- Inherit UnitFrame:Methods()
-	unitFrame.selectionBorder = unitFrame.healthBar.selectionBorder
-	unitFrame.highlight = unitFrame.healthBar.highlight
-	unitFrame.optionTable = {}
-	unitFrame.BuffFrame.buffList = {}
+	unitFrame:Initialize()
 end
 
 function DriverFrame:OnNamePlateAdded(unit)
