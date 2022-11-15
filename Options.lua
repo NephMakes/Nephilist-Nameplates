@@ -13,8 +13,8 @@ NephilistNameplates.Defaults = {
 	ShowEliteIcon = true, 
 	ShowLevel = true, 
 	ShowPlayerPlate = false, 
-	ShowThreat = true, 
-	-- ShowThreat = false, -- Will be off by default 
+	ShowThreat = false, 
+	ShowThreatOnlyInGroup = true, 
 	PlayerPlateLocked = true, 
 	PlayerPlateOutOfCombatAlpha = 0.2, 
 	PlayerPlatePosition = {"TOP", UIParent, "CENTER", 0, -150}, 
@@ -30,8 +30,8 @@ NephilistNameplates.OptionsPanel = NephilistNameplates:CreateOptionsPanel()
 local optionsPanel = NephilistNameplates.OptionsPanel
 optionsPanel.savedVariablesName = "NephilistNameplatesOptions"
 optionsPanel.defaults = NephilistNameplates.Defaults
-optionsPanel.defaultsFunc = NephilistNameplates.DriverFrame.UpdateNamePlateOptions
-optionsPanel.okayFunc = NephilistNameplates.DriverFrame.UpdateNamePlateOptions
+optionsPanel.defaultsFunc = NephilistNameplates.Update
+optionsPanel.okayFunc = NephilistNameplates.Update
 
 -- Show/Hide
 
@@ -41,7 +41,7 @@ optionsPanel.showHideText:SetPoint("TOPLEFT", optionsPanel.subtext, "BOTTOMLEFT"
 optionsPanel.showLevelButton = optionsPanel:CreateCheckButton("ShowLevel")
 local showLevelButton = optionsPanel.showLevelButton
 showLevelButton:SetPoint("TOPLEFT", optionsPanel.showHideText, "BOTTOMLEFT", 0, -8)
-showLevelButton.onValueChanged = DriverFrame.UpdateNamePlateOptions
+showLevelButton.onValueChanged = NephilistNameplates.Update
 
 optionsPanel.showBuffsButton = optionsPanel:CreateCheckButton("ShowBuffs")
 local showBuffsButton = optionsPanel.showBuffsButton
@@ -57,6 +57,17 @@ optionsPanel.hideClassBarButton = optionsPanel:CreateCheckButton("HideClassBar")
 local hideClassBarButton = optionsPanel.hideClassBarButton
 hideClassBarButton:SetPoint("TOPLEFT", optionsPanel.onlyShowOwnBuffsButton, "BOTTOMLEFT", 0, -8)
 -- hideClassBarButton.onValueChanged = function() end
+
+local showThreatButton = optionsPanel:CreateCheckButton("ShowThreat")
+optionsPanel.showThreatButton = showThreatButton
+showThreatButton:SetPoint("LEFT", optionsPanel.showLevelButton, 280, 0)
+showThreatButton.onValueChanged = NephilistNameplates.Update
+
+local showThreatOnlyInGroupButton = optionsPanel:CreateCheckButton("ShowThreatOnlyInGroup")
+optionsPanel.showThreatOnlyInGroupButton = showThreatOnlyInGroupButton
+showThreatOnlyInGroupButton:SetPoint("TOPLEFT", optionsPanel.showThreatButton, "BOTTOMLEFT", 0, -8)
+showThreatOnlyInGroupButton.onValueChanged = NephilistNameplates.Update
+
 
 -- Player nameplate
 

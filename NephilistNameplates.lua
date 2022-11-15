@@ -11,7 +11,7 @@ local UnitFrame = NephilistNameplates.UnitFrame
 local PlayerPlate = NephilistNameplates.PlayerPlate
 
 function NephilistNameplates:Update()
-	-- Called by "Okay" button of addon options panel
+	-- Called by "Okay" button of addon options panel and various checkboxes
 	DriverFrame:UpdateNamePlateOptions()
 end
 
@@ -75,7 +75,7 @@ DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 -- DriverFrame:RegisterEvent("PLAYER_LOGIN")
 -- DriverFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 -- DriverFrame:RegisterEvent("PLAYER_LOGOUT")
--- 			name == "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" 
+-- "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" 
 
 function DriverFrame:OnAddonLoaded()
 	NephilistNameplates:LocalizeStrings()
@@ -151,7 +151,7 @@ function DriverFrame:UpdateNamePlateOptions()
 	SetCVar("nameplateMaxDistance", 40)  -- Default 60
 	]]--
 
-	self:UpdateThreatRole()
+	DriverFrame:UpdateThreatRole()
 
 	-- Update frames
 	for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do

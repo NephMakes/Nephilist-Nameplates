@@ -28,6 +28,10 @@ Localization["enUS"] = {
 	-- ShowLevelTooltip = "Show unit level and difficulty",
 	ShowPlayerPlate = "Show static player nameplate",
 	ShowPlayerPlateTooltip = "Show nameplate for your character that doesn't move around on screen",
+	ShowThreat = "Show threat warning",
+	ShowThreatTooltip = "Highlight enemies attacking you when healing or doing damage, or not attacking you when tanking", 
+	ShowThreatOnlyInGroup = "Only when in a group",
+	ShowThreatOnlyInGroupTooltip = "Only show threat warnings when in a group",
 	Subtext = "These options let you change the appearance of unit nameplates"
 }
 
@@ -60,12 +64,16 @@ function NephilistNameplates:SetAllTheText()
 	optionsPanel.onlyShowOwnBuffsButton.Text:SetText(strings.OnlyShowOwnBuffs)
 	optionsPanel.showBuffsButton.Text:SetText(strings.ShowBuffs)
 	optionsPanel.showLevelButton.Text:SetText(strings.ShowLevel)
+	optionsPanel.showThreatButton.Text:SetText(strings.ShowThreat)
+	optionsPanel.showThreatButton.tooltipText = strings.ShowThreatTooltip
+	optionsPanel.showThreatOnlyInGroupButton.Text:SetText(strings.ShowThreatOnlyInGroupTooltip)
+	optionsPanel.showThreatOnlyInGroupButton.tooltipText = strings.ShowThreatOnlyInGroupTooltip
 
 	-- Player nameplate
 	optionsPanel.playerPlateText:SetText(strings.PlayerPlate)
 	optionsPanel.showPlayerPlateButton.Text:SetText(strings.ShowPlayerPlate)
-	optionsPanel.lockPlayerPlateButton.Text:SetText(strings.LockPlayerPlate)
 	optionsPanel.showPlayerPlateButton.tooltipText = strings.ShowPlayerPlateTooltip
+	optionsPanel.lockPlayerPlateButton.Text:SetText(strings.LockPlayerPlate)
 	optionsPanel.lockPlayerPlateButton.tooltipText = strings.LockPlayerPlateTooltip
 	optionsPanel.outOfCombatAlpha.Text:SetText(strings.OutOfCombatOpacity)
 	optionsPanel.outOfCombatAlpha.High:SetText(strings.High)

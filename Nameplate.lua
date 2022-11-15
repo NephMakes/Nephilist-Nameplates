@@ -4,7 +4,7 @@ local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame
 
 NephilistNameplates.EnemyFrameOptions = {
-	colorHealthBySelection = true,
+	colorHealthByReaction = true,
 	considerSelectionInCombatAsHostile = true,
 	greyWhenTapDenied = true,
 	-- hideCastBar = false, 
@@ -14,7 +14,7 @@ NephilistNameplates.EnemyFrameOptions = {
 	showSelectionHighlight = true, 
 }
 NephilistNameplates.FriendlyFrameOptions = {
-	colorHealthBySelection = true,
+	colorHealthByReaction = true,
 	colorHealthWithExtendedColors = true,
 	considerSelectionInCombatAsHostile = true,
 	-- hideCastBar = false, 
@@ -55,8 +55,9 @@ function UnitFrame:Initialize()
 	self.selectionBorder:SetBackdrop(backdropInfo)
 	self.selectionBorder:SetBackdropColor(0, 0, 0, 0)
 	self.selectionBorder:SetBackdropBorderColor(1, 1, 1)
-	-- self.threatBorder:SetBackdropColor(0, 0, 0, 0)
-	-- self.threatBorder:SetBackdropBorderColor(1, 1, 1)
+	self.threatBorder:SetBackdrop(backdropInfo)
+	self.threatBorder:SetBackdropColor(0, 0, 0, 0)
+	self.threatBorder:SetBackdropBorderColor(1, 0, 0)
 	self.optionTable = {}
 	self.BuffFrame.buffList = {}
 end
@@ -152,16 +153,16 @@ function UnitFrame:OnEvent(event, ...)
 			self:UpdateBuffs()
 		elseif event == "UNIT_THREAT_LIST_UPDATE" or event == "UNIT_THREAT_SITUATION_UPDATE" then
 			if self.optionTable.considerSelectionInCombatAsHostile then
-				self:UpdateName()
-				self:UpdateHealthColor()
+				self:UpdateName()  -- Why is this here?
+				self:UpdateThreat()
 			end
 			-- CompactUnitFrame_UpdateAggroFlash(self);
 			-- CompactUnitFrame_UpdateHealthBorder(self);
 		elseif event == "UNIT_NAME_UPDATE" then
 			self:UpdateName()
-			self:UpdateHealthColor()  -- Can signify now know unit's class
+			self:UpdateHealthColor()  -- Event can signal we now know unit class
 		elseif event == "UNIT_FACTION" then
-			self:UpdateName()  -- Why is this here in Blizzard_Nameplates?
+			self:UpdateName()
 			self:UpdateHealthColor()
 		elseif event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_PET" then
 			self:UpdateAll()
@@ -176,6 +177,7 @@ function UnitFrame:SetOptions()
 	self.showLevel = options.ShowLevel
 	self.showThreat = options.ShowThreat
 	self.threatRole = DriverFrame.threatRole
+	self.showThreatOnlyInGroup = options.ShowThreatOnlyInGroup
 
 	if UnitIsUnit("player", self.unit) then
 		self.optionTable = PlayerFrameOptions
@@ -201,6 +203,7 @@ function UnitFrame:UpdateAll()
 		self:UpdatePowerBar()
 		self:UpdateBuffs()
 		self:UpdateEliteIcon()
+		self:UpdateThreat()
 	end
 end
 
@@ -278,27 +281,9 @@ function UnitFrame:GetHealthColor()
 		return 0.4, 0.4, 0.4
 	end
 
-	if optionTable.colorHealthBySelection then
-		if false then
-		-- if not UnitIsFriend("player", unit) and self.showThreat then
-			isTanking, status = UnitDetailedThreatSituation("player", unit)
-			if self.threatRole == "TANK" then
-				if isTanking then
-					return 0.5, 0.25, 0.25
-				else
-					return 1.0, 0.0, 0.0
-				end
-			else
-				if isTanking then
-					return 1.0, 0.0, 0.0
-				else
-					return 0.5, 0.25, 0.25
-				end
-			end		
-		else
-			-- Color by unit reaction (neutral, hostile, etc)
-			return UnitSelectionColor(unit, optionTable.colorHealthWithExtendedColors)
-		end
+	if optionTable.colorHealthByReaction then
+		-- Color by unit reaction (neutral, hostile, etc)
+		return UnitSelectionColor(unit, optionTable.colorHealthWithExtendedColors)
 	end
 
 	if UnitIsFriend("player", unit) then
@@ -348,13 +333,15 @@ function UnitFrame:UpdateMouseoverHighlight()
 	if not UnitIsUnit("mouseover", self.unit) then
 		self:HideMouseoverHighlight()
 		self:SetScript("OnUpdate", nil)
+		if not self.threatAlpha then
+			self:SetIgnoreParentAlpha(false)
+		end
 	end
 end
 
 function UnitFrame:HideMouseoverHighlight()
 	self.healthBar.highlight:Hide()
 	self.nameHighlight:Hide()
-	self:SetIgnoreParentAlpha(false)
 end
 
 function UnitFrame:UpdateRaidTarget() 
@@ -396,4 +383,36 @@ function UnitFrame:UpdateCastBar()
 		CastingBarFrame_SetUnit(castBar, nil, nil, nil)
 	end
 end
+
+function UnitFrame:UpdateThreat()
+	if self.showThreat then
+		if not IsInGroup() and self.showThreatOnlyInGroup then break end
+		local unit = self.unit
+		if not UnitIsFriend("player", unit) and not UnitIsPlayer(unit) then
+			local isTanking, status = UnitDetailedThreatSituation("player", unit)
+			if 
+				(self.threatRole == "TANK" and not isTanking) or 
+				(self.threatRole ~= "TANK" and isTanking)
+			then
+				self:ShowThreat()
+				return
+			end
+		end
+	end
+	self:HideThreat()
+end
+
+function UnitFrame:ShowThreat()
+	self.threatBorder:Show()
+	self:SetIgnoreParentAlpha(true)
+	self.threatAlpha = true
+end
+
+function UnitFrame:HideThreat()
+	self.threatBorder:Hide()
+	self.threatAlpha = nil
+	self:UpdateMouseoverHighlight()
+end
+
+
 

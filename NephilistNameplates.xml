@@ -100,13 +100,19 @@
 				</Anchors>
 			</Frame>
 		<!-- Threat border -->
+			<Frame parentKey="threatBorder" inherits="BackdropTemplate" frameStrata="HIGH" hidden="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.selectionBorder" relativePoint="TOPLEFT" x="-1.5" y="1.5" />
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.selectionBorder" relativePoint="BOTTOMRIGHT" x="1.5" y="-1.5" />
+				</Anchors>
+			</Frame>
 		<!-- Power bar -->
 			<StatusBar parentKey="powerBar">
-				<Size y="5.0"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="BOTTOMLEFT" y="-1.6"/>
 					<Anchor point="TOPRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMTRIGHT" y="-1.6"/>
 				</Anchors>
+				<Size y="5.0"/>
 				<Layers>
 					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="border">
@@ -221,7 +227,7 @@
 		</Frames>
 		<Layers>
 		<!-- Unit name -->
-			<Layer level="BACKGROUND">
+			<Layer level="BORDER">
 				<FontString parentKey="name" inherits="FriendsFont_Small" wordwrap="false" justifyH="CENTER" text="Unit Hame Here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
 					<Anchors>
