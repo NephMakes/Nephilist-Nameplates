@@ -28,10 +28,12 @@ Localization["enUS"] = {
 	-- ShowLevelTooltip = "Show unit level and difficulty",
 	ShowPlayerPlate = "Show static player nameplate",
 	ShowPlayerPlateTooltip = "Show nameplate for your character that doesn't move around on screen",
-	ShowThreat = "Show threat warning",
-	ShowThreatTooltip = "Highlight enemies attacking you when healing or doing damage, or not attacking you when tanking", 
+	-- ShowThreat = "Show threat warning",
+	-- ShowThreatTooltip = "Highlight enemies attacking you when healing or doing damage, or not attacking you when tanking", 
+	ShowThreat = "Show enemy threat",
+	ShowThreatTooltip = "Color enemy health by threat in your role as a tank, healer, or damage dealer",
 	ShowThreatOnlyInGroup = "Only when in a group",
-	ShowThreatOnlyInGroupTooltip = "Only show threat warnings when in a group",
+	ShowThreatOnlyInGroupTooltip = "Only show threat when in a group",
 	Subtext = "These options let you change the appearance of unit nameplates"
 }
 

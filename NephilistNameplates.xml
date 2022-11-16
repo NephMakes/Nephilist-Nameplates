@@ -81,6 +81,7 @@
 							<Color r="0" g="0" b="0" a="1"/>
 						</Texture>
 					</Layer>
+					<!--
 					<Layer level="BACKGROUND" textureSublevel="0">
 						<Texture parentKey="glowTop" file="Interface/AddOns/NephilistNameplates/GlowTop" alphaMode="BLEND" hidden="true">
 							<Anchors>
@@ -97,6 +98,7 @@
 							<Size y="16"/>
 						</Texture>
 					</Layer>
+					-->
 					<Layer level="OVERLAY">
 						<Texture parentKey="highlight" hidden="true" alphaMode="ADD">
 							<Color r="1" g="1" b="1" a="0.2"/>
@@ -258,7 +260,6 @@
 						<Anchor point="BOTTOM" relativeKey="$parent.name"/>
 					</Anchors>
 				</FontString>
-				<!-- <FontString parentKey="statusText" inherits="GameFontDisable" /> -->
 			</Layer>
 		<!-- Level text -->
 			<Layer level="OVERLAY">
