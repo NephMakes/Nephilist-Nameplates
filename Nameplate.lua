@@ -30,11 +30,6 @@ local EnemyFrameOptions = NephilistNameplates.EnemyFrameOptions
 local FriendlyFrameOptions = NephilistNameplates.FriendlyFrameOptions
 local PlayerFrameOptions = NephilistNameplates.PlayerFrameOptions
 
---local function IsOnThreatList(unit)
---	local _, threatStatus = UnitDetailedThreatSituation("player", unit)
---	return threatStatus ~= nil
---end
-
 local backdropInfo = {
 	bgFile = "interface/buttons/white8x8", 
 	edgeFile = "interface/buttons/white8x8", 
@@ -53,8 +48,8 @@ function UnitFrame:Initialize()
 --	self.threatBorder:SetBackdrop(backdropInfo)
 --	self.threatBorder:SetBackdropColor(0, 0, 0, 0)
 --	self.threatBorder:SetBackdropBorderColor(1, 0.0, 0.0)
-	self.healthBar.glowTop:SetVertexColor(1, 0, 0, 0.8)
-	self.healthBar.glowBottom:SetVertexColor(1, 0, 0, 0.8)
+--	self.healthBar.glowTop:SetVertexColor(1, 0, 0, 0.8)
+--	self.healthBar.glowBottom:SetVertexColor(1, 0, 0, 0.8)
 	self.optionTable = {}
 	self.BuffFrame.buffList = {}
 end
@@ -153,8 +148,6 @@ function UnitFrame:OnEvent(event, ...)
 				self:UpdateName()  -- Why is this here?
 				self:UpdateThreat()
 			end
-			-- CompactUnitFrame_UpdateAggroFlash(self);
-			-- CompactUnitFrame_UpdateHealthBorder(self);
 		elseif event == "UNIT_NAME_UPDATE" then
 			self:UpdateName()
 			self:UpdateHealthColor()  -- Event can signal we now know unit class
@@ -400,7 +393,7 @@ function UnitFrame:UpdateThreat()
 
 	local isTanking, status = UnitDetailedThreatSituation("player", self.unit)
 	if status then
-		if self.threatRole == "TANK" then  -- For testing 
+		if self.threatRole == "TANK" then
 			if not isTanking then
 				self:ShowThreatBad()
 			elseif status < 3 then
