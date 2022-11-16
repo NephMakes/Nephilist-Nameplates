@@ -2,4 +2,8 @@
 
 Nephilist Nameplates is a UI addon for for World of Warcraft
 
-Nephilist Nameplates are designed for easy, fast recognition in hectic combat environments without obscuring the game world. Supports player nameplate, combat resources, buffs, and debuffs
+Simple, effective nameplates
+* Easy to set up
+* Easy to read in combat
+* Can show non-moving player nameplate (even in Classic)
+* Can show threat color for tanks, healers, and damage dealers
