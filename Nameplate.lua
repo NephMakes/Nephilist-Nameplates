@@ -326,11 +326,14 @@ function UnitFrame:ShowMouseoverHighlight()
 		self.nameHighlight:Show()
 	end
 	self:SetIgnoreParentAlpha(true)
+		-- Default UI behavior:
+		--   Classic: nontarget nameplates lower alpha when target exists
+		--   Retail:  alpha changes with distance but not selection
 	self:SetScript("OnUpdate", self.UpdateMouseoverHighlight)
 end
 
 function UnitFrame:UpdateMouseoverHighlight()
-	-- Because UnitIsUnit("mouseover", self.unit) true when UPDATE_MOUSEOVER_UNIT fired OnLeave
+	-- OnUpdate because UnitIsUnit("mouseover", self.unit) true when UPDATE_MOUSEOVER_UNIT fired OnLeave
 	if not UnitIsUnit("mouseover", self.unit) then
 		self:HideMouseoverHighlight()
 		self:SetScript("OnUpdate", nil)
@@ -386,43 +389,83 @@ function UnitFrame:UpdateCastBar()
 end
 
 function UnitFrame:UpdateThreat()
-	if self.showThreat then
-		if not IsInGroup() and self.showThreatOnlyInGroup then 
-			self:HideThreat()
-			return
-		end
-		local unit = self.unit
-		if not UnitIsFriend("player", unit) and not UnitIsPlayer(unit) then
-			local isTanking, status = UnitDetailedThreatSituation("player", unit)
-			if status and 
-				(self.threatRole == "TANK" and not isTanking) or 
- 				(self.threatRole ~= "TANK" and isTanking)
-				-- not isTanking
-			then
-				self:ShowThreat()
-				return
+	if not self.showThreat or 
+		(not IsInGroup() and self.showThreatOnlyInGroup) or 
+		UnitIsFriend("player", self.unit) or 
+		UnitIsPlayer(self.unit)
+	then
+		self:HideThreat()
+		return
+	end
+
+	local isTanking, status = UnitDetailedThreatSituation("player", self.unit)
+	if status then
+		if self.threatRole == "TANK" then  -- For testing 
+			if not isTanking then
+				self:ShowThreatBad()
+			elseif status < 3 then
+				self:ShowThreatDanger()
+			else
+				self:ShowThreatGood()
+			end
+		else
+			if isTanking then
+				self:ShowThreatBad()
+			elseif status > 0 then
+				self:ShowThreatDanger()
+			else
+				self:ShowThreatGood()
 			end
 		end
+	else
+		self:HideThreat()
 	end
-	self:HideThreat()
 end
 
-function UnitFrame:ShowThreat()
+function UnitFrame:ShowThreatBad()
 	-- self.threatBorder:Show()
-	-- self.threatColor = {r = 0.6, g = 0, b = 0.3}
-	-- self:UpdateHealthColor()
-	self.healthBar.glowTop:Show()
-	self.healthBar.glowBottom:Show()
+	self.threatColor = {r = 1, g = 0, b = 0}
+	self:UpdateHealthColor()
+	-- self.healthBar.glowTop:SetVertexColor(1, 0, 0)
+	-- self.healthBar.glowBottom:SetVertexColor(1, 0, 0)
+	-- self.healthBar.glowTop:Show()
+	-- self.healthBar.glowBottom:Show()
+
+	-- Full opacity for nameplates with threat warning (mostly affects Classic)
 	self:SetIgnoreParentAlpha(true)
 	self.threatAlpha = true
 end
 
+function UnitFrame:ShowThreatDanger()
+	-- self.threatBorder:Show()
+	self.threatColor = {r = 1.0, g = 0, b = 1.0}
+	self:UpdateHealthColor()
+	-- self.healthBar.glowTop:SetVertexColor(1, 0.5, 0)
+	-- self.healthBar.glowBottom:SetVertexColor(1, 0.5, 0)
+	-- self.healthBar.glowTop:Show()
+	-- self.healthBar.glowBottom:Show()
+
+	-- Full opacity for nameplates with threat warning (mostly affects Classic)
+	self:SetIgnoreParentAlpha(true)
+	self.threatAlpha = true
+end
+
+function UnitFrame:ShowThreatGood()
+	-- self.threatBorder:Hide()
+	self.threatColor = {r = 0.6, g = 0.0, b = 0.7}
+	self:UpdateHealthColor()
+	-- self.healthBar.glowTop:Hide()
+	-- self.healthBar.glowBottom:Hide()
+	self.threatAlpha = nil
+	self:UpdateMouseoverHighlight()
+end
+
 function UnitFrame:HideThreat()
 	-- self.threatBorder:Hide()
-	-- self.threatColor = nil
-	-- self:UpdateHealthColor()
-	self.healthBar.glowTop:Hide()
-	self.healthBar.glowBottom:Hide()
+	self.threatColor = nil
+	self:UpdateHealthColor()
+	-- self.healthBar.glowTop:Hide()
+	-- self.healthBar.glowBottom:Hide()
 	self.threatAlpha = nil
 	self:UpdateMouseoverHighlight()
 end

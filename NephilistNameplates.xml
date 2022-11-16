@@ -265,21 +265,10 @@
 				<FontString parentKey="levelText" inherits="SystemFont_NamePlate" justifyH="LEFT" text="Unit level here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.healthBar.border" relativePoint="RIGHT" x="3" y="-1" />
+						<Anchor point="LEFT" relativeKey="$parent.healthBar.border" relativePoint="RIGHT" x="2" y="-1" />
 					</Anchors>
 				</FontString>
 			</Layer>
-			<!--
-			<Layer level="OVERLAY" textureSubLevel="2">
-				<Texture parentKey="aggroHighlight" file="Interface/TargetingFrame/UI-TargetingFrame-BarFill" alpha="0" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" />
-						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" />
-					</Anchors>
-					<Color r="1" g="1" b="0"/>
-				</Texture>
-			</Layer>
-			-->
 		</Layers>
 	</Button>
 
