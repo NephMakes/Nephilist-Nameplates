@@ -1,6 +1,52 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
 
+	<Frame name="NephilistNameplates_BorderTemplate" ignoreParentScale="true" setAllPoints="true" useParentLevel="true" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-8">
+				<!-- Left -->
+				<Texture parentKey="Left" parentArray="Textures">
+					<Size x="1.0" />
+					<Anchors>
+						<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="0" y="1.0" />
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="0" y="-1.0" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+
+				<!-- Right -->
+				<Texture parentKey="Right" parentArray="Textures">
+					<Size x="1.0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="0" y="1.0" />
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="0" y="-1.0" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+
+				<!-- Bottom -->
+				<Texture parentKey="Bottom" parentArray="Textures">
+					<Size y="1.0" />
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" />
+						<Anchor point="TOPRIGHT" relativePoint="BOTTOMRIGHT" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+
+				<!-- Top -->
+				<Texture parentKey="Top" parentArray="Textures">
+					<Size y="1.0" />
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" />
+                        <Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" />
+					</Anchors>
+					<Color r="1" g="1" b="1" a="1"/>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Frame name="NephilistNameplates_BuffButtonTemplate" virtual="true" enableMouse="true" hidden="true">
 		<Size x="20" y="14"/>
 		<Layers>
@@ -19,18 +65,8 @@
 					<!-- <TexCoords left="0" right="1" top="0" bottom="0.7"/> -->
 				</Texture>
 			</Layer>
-			<!-- 
-			<Layer level="OVERLAY">
-				<Texture parentKey="Border" file="Interface/AddOns/NephilistNameplates/BuffBorderFlat" setAllPoints="true"/>
-			</Layer>
-			-->
 		</Layers>
 		<Frames>
-			<!-- 
-			<Cooldown parentKey="Cooldown" setAllPoints="true" drawEdge="false" hideCountdownNumbers="true" hidden="true">
-				<SwipeTexture file="Interface/AddOns/NephilistNameplates/BuffBorderFlat"/>
-			</Cooldown>
-			-->
 			<Cooldown parentKey="Cooldown" inherits="CooldownFrameTemplate" reverse="true" hideCountdownNumbers="true"/>
 			<Frame parentKey="CountFrame" setAllPoints="true">
 				<Layers>
@@ -57,16 +93,33 @@
 
 	<Button name="NephilistNameplatesTemplate" parentKey="UnitFrame" useParentLevel="true" virtual="true">
 		<Frames>
+		<!-- Loss bar -->
+			<StatusBar parentKey="lossBar" hidden="true" useParentLevel="true">
+				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
+				<BarColor r="1" g="1" b="1"/>
+			</StatusBar>
 		<!-- Health bar -->
 			<StatusBar parentKey="healthBar">
-				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
-				<BarColor r="1.0" g="0.7" b="0.0"/>
-				<Size y="5"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="2" y="9"/>
 					<Anchor point="BOTTOMRIGHT" x="-2" y="9"/>
 				</Anchors>
+				<Size y="5"/>
+				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+				<Frames>
+					<Frame parentKey="border" inherits="NephilistNameplates_BorderTemplate"/>
+				</Frames>
+				<Frames>
+					<Frame parentKey="selectionBorder" inherits="NephilistNameplates_BorderTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-1" y="1"/>
+							<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 				<Layers>
+					<!--
 					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="border">
 							<Color r="0" g="0" b="0" a="1"/>
@@ -76,11 +129,14 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					-->
+					<!--
 					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture parentKey="background">
 							<Color r="0" g="0" b="0" a="1"/>
 						</Texture>
 					</Layer>
+					-->
 					<!--
 					<Layer level="BACKGROUND" textureSublevel="0">
 						<Texture parentKey="glowTop" file="Interface/AddOns/NephilistNameplates/GlowTop" alphaMode="BLEND" hidden="true">
@@ -111,18 +167,11 @@
 				</Layers>
 			</StatusBar>
 		<!-- Selection border -->
+			<!--
 			<Frame parentKey="selectionBorder" inherits="BackdropTemplate" frameStrata="HIGH">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.healthBar.border" relativePoint="TOPLEFT" x="-1.5" y="1.5" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar.border" relativePoint="BOTTOMRIGHT" x="1.5" y="-1.5" />
-				</Anchors>
-			</Frame>
-		<!-- Threat border -->
-			<!--
-			<Frame parentKey="threatBorder" inherits="BackdropTemplate" frameStrata="HIGH" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.selectionBorder" relativePoint="TOPLEFT" x="-1.5" y="1.5" />
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.selectionBorder" relativePoint="BOTTOMRIGHT" x="1.5" y="-1.5" />
 				</Anchors>
 			</Frame>
 			-->
@@ -133,24 +182,29 @@
 					<Anchor point="TOPRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMTRIGHT" y="-1.6"/>
 				</Anchors>
 				<Size y="5.0"/>
+				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
+				<BarColor r="1.0" g="0.7" b="0.0"/>
+				<Frames>
+					<Frame parentKey="border" inherits="NephilistNameplates_BorderTemplate"/>
+				</Frames>
 				<Layers>
+					<!--
 					<Layer level="BACKGROUND" textureSubLevel="1">
 						<Texture parentKey="border">
 							<Color r="0" g="0" b="0" a="1"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.powerBar" relativePoint="TOPLEFT" x="-1" y="1"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.powerBar" relativePoint="BOTTOMRIGHT" x="1" y="-1"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.powerBar" relativePoint="TOPLEFT" x="-1.5" y="1.5"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.powerBar" relativePoint="BOTTOMRIGHT" x="1.5" y="-1.5"/>
 							</Anchors>
 						</Texture>
 					</Layer>
+					-->
 					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture parentKey="background">
 							<Color r="0" g="0" b="0" a="1"/>
 						</Texture>
 					</Layer>
 				</Layers>
-				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
-				<BarColor r="1.0" g="0.7" b="0.0"/>
 			</StatusBar>
 		<!-- Cast bar -->
 			<StatusBar parentKey="castBar" hidden="true">
@@ -247,6 +301,11 @@
 		</Frames>
 		<Layers>
 		<!-- Unit name -->
+			<Layer level="BACKGROUND">
+				<Texture parentKey="healthBackground">
+					<Color r="0" g="0" b="0" a="1"/>
+				</Texture>
+			</Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="name" inherits="FriendsFont_Small" wordwrap="false" justifyH="CENTER" text="Unit Hame Here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>

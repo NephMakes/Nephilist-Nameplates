@@ -5,6 +5,7 @@ NephilistNameplates.DriverFrame = CreateFrame("Frame", "NephilistNameplatesFrame
 NephilistNameplates.PlayerPlate = CreateFrame("Button", "NephilistNameplatesPlayerPlate", UIParent)
 NephilistNameplates.UnitFrame = {}
 NephilistNameplates.Strings = {}
+NephilistNameplates.LossBar = {}
 
 local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame

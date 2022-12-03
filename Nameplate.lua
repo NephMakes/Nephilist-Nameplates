@@ -2,14 +2,16 @@ local addonName, NephilistNameplates = ...
 
 local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame
+local LossBar = NephilistNameplates.LossBar
+
 
 NephilistNameplates.EnemyFrameOptions = {
 	colorHealthByReaction = true,
 	considerSelectionInCombatAsHostile = true,
 	greyWhenTapDenied = true,
+	-- showClassColor set by DriverFrame:UpdateNamePlateOptions()
 	showEliteIcon = true, 
 	showName = true, 
-	-- showClassColor set by DriverFrame:UpdateNamePlateOptions()
 	showSelectionHighlight = true, 
 }
 NephilistNameplates.FriendlyFrameOptions = {
@@ -37,21 +39,33 @@ local backdropInfo = {
 }
 
 
---[[ Unit frame ]]-- 
+--[[ UnitFrame ]]-- 
 
--- "Unit frame" here is non-interactable frame we attach to Blizz "Nameplate#" frames
+-- "UnitFrame" here is non-interactable frame we attach to Blizz "Nameplate#" frames
 
 function UnitFrame:Initialize()
-	self.selectionBorder:SetBackdrop(backdropInfo)
-	self.selectionBorder:SetBackdropColor(0, 0, 0, 0)
-	self.selectionBorder:SetBackdropBorderColor(1, 1, 1)
---	self.threatBorder:SetBackdrop(backdropInfo)
---	self.threatBorder:SetBackdropColor(0, 0, 0, 0)
---	self.threatBorder:SetBackdropBorderColor(1, 0.0, 0.0)
---	self.healthBar.glowTop:SetVertexColor(1, 0, 0, 0.8)
---	self.healthBar.glowBottom:SetVertexColor(1, 0, 0, 0.8)
+	local healthBar = self.healthBar
+	self.healthBackground:SetAllPoints(healthBar)
+	healthBar.background = self.healthBackground
+--	healthBar.glowTop:SetVertexColor(1, 0, 0, 0.8)
+--	healthBar.glowBottom:SetVertexColor(1, 0, 0, 0.8)
+
+--	self.selectionBorder:SetBackdrop(backdropInfo)
+--	self.selectionBorder:SetBackdropColor(0, 0, 0, 0)
+--	self.selectionBorder:SetBackdropBorderColor(1, 1, 1)
+	self.selectionBorder = healthBar.selectionBorder
+	for i, texture in ipairs(healthBar.border.Textures) do
+		texture:SetVertexColor(0, 0, 0, 1)
+	end
+	for i, texture in ipairs(self.powerBar.border.Textures) do
+		texture:SetVertexColor(0, 0, 0, 1)
+	end
+
 	self.optionTable = {}
 	self.BuffFrame.buffList = {}
+
+	Mixin(self.lossBar, LossBar)  -- Set LossBar methods
+	self.lossBar:Initialize()
 end
 
 function UnitFrame:SetUnit(unit)
@@ -211,7 +225,7 @@ function UnitFrame:UpdateName()
 		if unitLevel == -1 or classification == "worldboss" then
 			self.name:SetTextColor(1.0, 0.6, 0.0)  -- Orange
 		elseif classification == "rare" or classification == "rareelite" then
-			self.name:SetTextColor(0.5, 0.5, 1.0)  -- Blue
+			self.name:SetTextColor(0.3, 0.3, 1.0)  -- Blue
 		else
 			self.name:SetTextColor(0.7, 0.7, 0.7)  -- Light grey
 		end
@@ -281,7 +295,7 @@ function UnitFrame:GetHealthColor()
 	end
 
 	if UnitIsFriend("player", unit) then
-		return 0.0, 1.0, 0.0
+		return 0.0, 0.8, 0.0
 	else
 		return 1.0, 0.0, 0.0
 	end
@@ -294,11 +308,19 @@ function UnitFrame:IsTapDenied()
 end
 
 function UnitFrame:UpdateMaxHealth() 
-	self.healthBar:SetMinMaxValues(0, UnitHealthMax(self.displayedUnit))
+	local maxHealth = UnitHealthMax(self.displayedUnit)
+	self.healthBar:SetMinMaxValues(0, maxHealth)
+	self.lossBar:SetMinMaxValues(0, maxHealth)
 end
 
 function UnitFrame:UpdateHealth() 
-	self.healthBar:SetValue(UnitHealth(self.displayedUnit))
+	local currHealth = UnitHealth(self.displayedUnit)
+	if currHealth ~= self.currHealth then
+		self.healthBar:SetValue(currHealth)
+		-- self.lossBar:UpdateHealth(currHealth, self.currHealth)
+		self.currHealth = currHealth
+	end
+	-- self.lossBar:UpdateLossAnimation(currHealth)
 end
 
 function UnitFrame:UpdateSelectionHighlight() 
@@ -321,7 +343,7 @@ function UnitFrame:ShowMouseoverHighlight()
 	self:SetIgnoreParentAlpha(true)
 		-- Default UI behavior:
 		--   Classic: nontarget nameplates lower alpha when target exists
-		--   Retail:  alpha changes with distance but not selection
+		--   Retail:  alpha changes with distance
 	self:SetScript("OnUpdate", self.UpdateMouseoverHighlight)
 end
 
@@ -430,11 +452,10 @@ function UnitFrame:ShowThreatBad()
 end
 
 function UnitFrame:ShowThreatDanger()
-	-- self.threatBorder:Show()
-	self.threatColor = {r = 1.0, g = 0, b = 1.0}
+	self.threatColor = {r = 1.0, g = 0, b = 0.5}
 	self:UpdateHealthColor()
-	-- self.healthBar.glowTop:SetVertexColor(1, 0.5, 0)
-	-- self.healthBar.glowBottom:SetVertexColor(1, 0.5, 0)
+	-- self.healthBar.glowTop:SetVertexColor(1, 0, 0.5)
+	-- self.healthBar.glowBottom:SetVertexColor(1, 0, 0.5)
 	-- self.healthBar.glowTop:Show()
 	-- self.healthBar.glowBottom:Show()
 
@@ -444,7 +465,6 @@ function UnitFrame:ShowThreatDanger()
 end
 
 function UnitFrame:ShowThreatGood()
-	-- self.threatBorder:Hide()
 	self.threatColor = {r = 0.6, g = 0.0, b = 0.7}
 	self:UpdateHealthColor()
 	-- self.healthBar.glowTop:Hide()
@@ -454,7 +474,6 @@ function UnitFrame:ShowThreatGood()
 end
 
 function UnitFrame:HideThreat()
-	-- self.threatBorder:Hide()
 	self.threatColor = nil
 	self:UpdateHealthColor()
 	-- self.healthBar.glowTop:Hide()
