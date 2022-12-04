@@ -1,151 +1,131 @@
--- Animated health loss bar
+-- Animated bar showing health loss
 
 local addonName, NephilistNameplates = ...
-
 local LossBar = NephilistNameplates.LossBar
-local UnitFrame = NephilistNameplates.UnitFrame
 
+-- Local versions of global functions
+local GetTime = GetTime
+local UnitHealthMax = UnitHealthMax
+local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs  -- Only in retail
+
+--[[ LossBar functions ]]-- 
 
 function LossBar:Initialize()
 	self:SetAllPoints(self:GetParent().healthBar)
-	self:SetDuration(0.25)
+	self:SetDuration(0.3)  -- 0.25
 	self:SetStartDelay(0.1)
 	self:SetPauseDelay(0.05)
 	self:SetPostponeDelay(0.05)
 end
 
 function LossBar:SetDuration(duration)
-	self.animationDuration = duration or 0
+	self.duration = duration or 0
 end
 
 function LossBar:SetStartDelay(delay)
-	self.animationStartDelay = delay or 0
+	self.startDelay = delay or 0
 end
 
 function LossBar:SetPauseDelay(delay)
-	self.animationPauseDelay = delay or 0
+	self.pauseDelay = delay or 0
 end
 
 function LossBar:SetPostponeDelay(delay)
-	self.animationPostponeDelay = delay or 0
+	self.postponeDelay = delay or 0
 end
 
 function LossBar:UpdateHealth(currentHealth, previousHealth)
+	-- Called by UnitFrame:UpdateHealth()
+
 	local delta = currentHealth - previousHealth
 	local hasLoss = delta < 0
-	local hasBegun = self.animationStartTime ~= nil
-	local isAnimating = hasBegun and self.animationCompletePercent > 0
+	local hasBegun = self.startTime ~= nil
+	local isAnimating = hasBegun and self.progress > 0
 
 	if hasLoss and not hasBegun then
-		-- self:BeginAnimation(previousHealth)
+		self:UpdateDuration(delta)
+		self:StartAnimation(previousHealth)
 	elseif hasLoss and hasBegun and not isAnimating then
-		-- self:PostponeStartTime()
+		self:PostponeStartTime()
 	elseif hasLoss and isAnimating then
-		-- Reset the starting value of the health to what the animated loss bar was when the new incoming damage happened
-		-- and pause briefly when new damage occurs.
-		-- self.animationStartValue = self:GetHealthLossAnimationData(previousHealth, self.animationStartValue)
-		self.animationStartTime = GetTime() + self.animationPauseDelay
-	elseif not hasLoss and hasBegun and currentHealth >= self.animationStartValue then
-		-- self:CancelAnimation()
+		-- Reset starting value and pause briefly
+		self.startHealth = self:GetLossProgress(previousHealth, self.startHealth)
+		self:UpdateDuration(delta)
+		self.startTime = GetTime() + self.pauseDelay
+	elseif not hasLoss and hasBegun and currentHealth >= self.startHealth then
+		self:CancelAnimation()
 	end
 end
 
-function LossBar:BeginAnimation(value)
-	self.animationStartValue = value
-	self.animationStartTime = GetTime() + self.animationStartDelay
-	self.animationCompletePercent = 0
+function LossBar:UpdateDuration(healthDelta)
+	-- Assumes healthDelta < 0
+	local maxHealth = UnitHealthMax(self:GetParent().displayedUnit)
+	self.duration = 0.3 - (1.2 * healthDelta / maxHealth)
+		-- Range 0.3 to 1.5 sec
+end
+
+function LossBar:StartAnimation(startHealth)
+	self.startHealth = startHealth
+	self.startTime = GetTime() + self.startDelay
+	self.progress = 0
 	self:Show()
-	self:SetValue(self.animationStartValue)
+	self:SetValue(self.startHealth)
+	self:SetScript("OnUpdate", LossBar.OnUpdate)
 end
 
-function LossBar:PostponeStartTime()
-	self.animationStartTime = self.animationStartTime + self.animationPostponeDelay
+function LossBar:OnUpdate()
+	self:UpdateAnimation(self:GetParent().currentHealth)
 end
 
-function LossBar:GetHealthLossAnimationData(currentHealth, previousHealth)
-	if self.animationStartTime then
-		local totalElapsedTime = GetTime() - self.animationStartTime
-		if totalElapsedTime > 0 then
-			local animCompletePercent = totalElapsedTime / self.animationDuration
-			if animCompletePercent < 1 and previousHealth > currentHealth then
+function LossBar:UpdateAnimation(currentHealth)
+	-- Called by UnitFrame:UpdateHealth() and LossBar:OnUpdate()
+
+	if UnitGetTotalAbsorbs then 
+		local totalAbsorb = UnitGetTotalAbsorbs(self.unit) or 0
+		if totalAbsorb > 0 then
+			self:CancelAnimation()
+		end
+	end
+
+	if self.startTime then
+		local lossBarHealth, progress = self:GetLossProgress(currentHealth, self.startHealth)
+		self.progress = progress
+		if progress >= 1 then
+			self:CancelAnimation()
+		else
+			self:SetValue(lossBarHealth)
+		end
+	end
+end
+
+function LossBar:GetLossProgress(currentHealth, previousHealth)
+	-- Returns lossBarHealth, time progress
+	if self.startTime then
+		local elapsedTime = GetTime() - self.startTime
+		if elapsedTime > 0 then
+			local progress = elapsedTime / self.duration
+			if progress < 1 and previousHealth > currentHealth then
 				local healthDelta = previousHealth - currentHealth
-				local animatedLossAmount = previousHealth - (animCompletePercent * healthDelta);
-				return animatedLossAmount, animCompletePercent
+				local lossBarHealth = previousHealth - (progress * healthDelta)
+				return lossBarHealth, progress
 			end
 		else
 			return previousHealth, 0
 		end
 	end
-	return 0, 1 -- Animated loss amount is 0, and the animation is fully complete.
+	return 0, 1
 end
 
-function LossBar:UpdateLossAnimation(currentHealth)
-	-- Called by ...
-
-	local totalAbsorb = UnitGetTotalAbsorbs(self.unit) or 0
-	if totalAbsorb > 0 then
-		self:CancelAnimation()
-	end
-
-	if self.animationStartTime then
-		local animationValue, animationCompletePercent = self:GetHealthLossAnimationData(currentHealth, self.animationStartValue)
-		self.animationCompletePercent = animationCompletePercent
-		if animationCompletePercent >= 1 then
-			self:CancelAnimation()
-		else
-			self:SetValue(animationValue)
-		end
-	end
+function LossBar:PostponeStartTime()
+	self.startTime = self.startTime + self.postponeDelay
 end
 
 function LossBar:CancelAnimation()
 	self:Hide()
-	self.animationStartTime = nil
-	self.animationCompletePercent = nil
+	self.startTime = nil
+	self.progress = nil
+	self:SetScript("OnUpdate", nil)
 end
-
-
-
---[[ Blizzard code for reference ]]-- 
-
---[[
-local AnimatedHealthLossMixin = {};
-
-function AnimatedHealthLossMixin:SetUnitHealthBar(unit, healthBar)
-	if self.unit ~= unit then
-		healthBar.AnimatedLossBar = self;
-
-		self.unit = unit;
-		self:SetAllPoints(healthBar);
-		self:UpdateHealthMinMax();
-	end
-end
-
-function UnitFrameHealthBar_OnUpdate(self)
-	if ( not self.disconnected and not self.lockValues) then
-		local currValue = UnitHealth(self.unit);
-		local animatedLossBar = self.AnimatedLossBar;
-
-		if ( currValue ~= self.currValue ) then
-			if ( not self.ignoreNoUnit or UnitGUID(self.unit) ) then
-
-				if animatedLossBar then
-					animatedLossBar:UpdateHealth(currValue, self.currValue);
-				end
-
-				self:SetValue(currValue);
-				self.currValue = currValue;
-				TextStatusBar_UpdateTextString(self);
-				UnitFrameHealPredictionBars_Update(self.unitFrame);
-			end
-		end
-
-		if animatedLossBar then
-			animatedLossBar:UpdateLossAnimation(currValue);
-		end
-	end
-end
-]]--
 
 
 

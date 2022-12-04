@@ -32,12 +32,6 @@ local EnemyFrameOptions = NephilistNameplates.EnemyFrameOptions
 local FriendlyFrameOptions = NephilistNameplates.FriendlyFrameOptions
 local PlayerFrameOptions = NephilistNameplates.PlayerFrameOptions
 
-local backdropInfo = {
-	bgFile = "interface/buttons/white8x8", 
-	edgeFile = "interface/buttons/white8x8", 
-	edgeSize = 1.5
-}
-
 
 --[[ UnitFrame ]]-- 
 
@@ -46,13 +40,6 @@ local backdropInfo = {
 function UnitFrame:Initialize()
 	local healthBar = self.healthBar
 	self.healthBackground:SetAllPoints(healthBar)
-	healthBar.background = self.healthBackground
---	healthBar.glowTop:SetVertexColor(1, 0, 0, 0.8)
---	healthBar.glowBottom:SetVertexColor(1, 0, 0, 0.8)
-
---	self.selectionBorder:SetBackdrop(backdropInfo)
---	self.selectionBorder:SetBackdropColor(0, 0, 0, 0)
---	self.selectionBorder:SetBackdropBorderColor(1, 1, 1)
 	self.selectionBorder = healthBar.selectionBorder
 	for i, texture in ipairs(healthBar.border.Textures) do
 		texture:SetVertexColor(0, 0, 0, 1)
@@ -60,6 +47,9 @@ function UnitFrame:Initialize()
 	for i, texture in ipairs(self.powerBar.border.Textures) do
 		texture:SetVertexColor(0, 0, 0, 1)
 	end
+
+--	healthBar.glowTop:SetVertexColor(1, 0, 0, 0.8)
+--	healthBar.glowBottom:SetVertexColor(1, 0, 0, 0.8)
 
 	self.optionTable = {}
 	self.BuffFrame.buffList = {}
@@ -256,7 +246,7 @@ function UnitFrame:UpdateHealthColor()
 	local healthBar = self.healthBar
 	healthBar:SetStatusBarColor(r, g, b)
 	healthBar.highlight:SetVertexColor(r, g, b)
-	healthBar.background:SetColorTexture(r/5, g/5, b/5, 1)
+	self.healthBackground:SetStatusBarColor(r/5, g/5, b/5, 1)
 end
 
 function UnitFrame:GetHealthColor()
@@ -314,13 +304,16 @@ function UnitFrame:UpdateMaxHealth()
 end
 
 function UnitFrame:UpdateHealth() 
-	local currHealth = UnitHealth(self.displayedUnit)
-	if currHealth ~= self.currHealth then
-		self.healthBar:SetValue(currHealth)
-		-- self.lossBar:UpdateHealth(currHealth, self.currHealth)
-		self.currHealth = currHealth
+	local currentHealth = UnitHealth(self.displayedUnit)
+	if not self.currentHealth then
+		self.currentHealth = currentHealth
 	end
-	-- self.lossBar:UpdateLossAnimation(currHealth)
+	if currentHealth ~= self.currentHealth then
+		self.healthBar:SetValue(currentHealth)
+		self.lossBar:UpdateHealth(currentHealth, self.currentHealth)
+		self.currentHealth = currentHealth
+	end
+	self.lossBar:UpdateAnimation(currentHealth)
 end
 
 function UnitFrame:UpdateSelectionHighlight() 

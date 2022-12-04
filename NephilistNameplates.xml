@@ -93,8 +93,13 @@
 
 	<Button name="NephilistNameplatesTemplate" parentKey="UnitFrame" useParentLevel="true" virtual="true">
 		<Frames>
+		<!-- Health background -->
+			<StatusBar parentKey="healthBackground" useParentLevel="true">
+				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
+				<BarColor r="0" g="0" b="0"/>
+			</StatusBar>
 		<!-- Loss bar -->
-			<StatusBar parentKey="lossBar" hidden="true" useParentLevel="true">
+			<StatusBar parentKey="lossBar" hidden="true">
 				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
 				<BarColor r="1" g="1" b="1"/>
 			</StatusBar>
@@ -109,8 +114,6 @@
 				<BarColor r="1.0" g="0.7" b="0.0"/>
 				<Frames>
 					<Frame parentKey="border" inherits="NephilistNameplates_BorderTemplate"/>
-				</Frames>
-				<Frames>
 					<Frame parentKey="selectionBorder" inherits="NephilistNameplates_BorderTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" x="-1" y="1"/>
@@ -119,24 +122,6 @@
 					</Frame>
 				</Frames>
 				<Layers>
-					<!--
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="border">
-							<Color r="0" g="0" b="0" a="1"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.healthBar" relativePoint="TOPLEFT" x="-1.5" y="1.5"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar" relativePoint="BOTTOMRIGHT" x="1.5" y="-1.5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					-->
-					<!--
-					<Layer level="BACKGROUND" textureSubLevel="2">
-						<Texture parentKey="background">
-							<Color r="0" g="0" b="0" a="1"/>
-						</Texture>
-					</Layer>
-					-->
 					<!--
 					<Layer level="BACKGROUND" textureSublevel="0">
 						<Texture parentKey="glowTop" file="Interface/AddOns/NephilistNameplates/GlowTop" alphaMode="BLEND" hidden="true">
@@ -166,15 +151,6 @@
 					</Layer>
 				</Layers>
 			</StatusBar>
-		<!-- Selection border -->
-			<!--
-			<Frame parentKey="selectionBorder" inherits="BackdropTemplate" frameStrata="HIGH">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.healthBar.border" relativePoint="TOPLEFT" x="-1.5" y="1.5" />
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.healthBar.border" relativePoint="BOTTOMRIGHT" x="1.5" y="-1.5" />
-				</Anchors>
-			</Frame>
-			-->
 		<!-- Power bar -->
 			<StatusBar parentKey="powerBar">
 				<Anchors>
@@ -188,17 +164,6 @@
 					<Frame parentKey="border" inherits="NephilistNameplates_BorderTemplate"/>
 				</Frames>
 				<Layers>
-					<!--
-					<Layer level="BACKGROUND" textureSubLevel="1">
-						<Texture parentKey="border">
-							<Color r="0" g="0" b="0" a="1"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" relativeKey="$parent.powerBar" relativePoint="TOPLEFT" x="-1.5" y="1.5"/>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.powerBar" relativePoint="BOTTOMRIGHT" x="1.5" y="-1.5"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					-->
 					<Layer level="BACKGROUND" textureSubLevel="2">
 						<Texture parentKey="background">
 							<Color r="0" g="0" b="0" a="1"/>
@@ -301,11 +266,6 @@
 		</Frames>
 		<Layers>
 		<!-- Unit name -->
-			<Layer level="BACKGROUND">
-				<Texture parentKey="healthBackground">
-					<Color r="0" g="0" b="0" a="1"/>
-				</Texture>
-			</Layer>
 			<Layer level="BORDER">
 				<FontString parentKey="name" inherits="FriendsFont_Small" wordwrap="false" justifyH="CENTER" text="Unit Hame Here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
