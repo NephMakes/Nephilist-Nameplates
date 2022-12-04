@@ -301,6 +301,7 @@ function UnitFrame:UpdateMaxHealth()
 	local maxHealth = UnitHealthMax(self.displayedUnit)
 	self.healthBar:SetMinMaxValues(0, maxHealth)
 	self.lossBar:SetMinMaxValues(0, maxHealth)
+	self.lossBar.maxHealth = maxHealth
 end
 
 function UnitFrame:UpdateHealth() 

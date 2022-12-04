@@ -5,14 +5,14 @@ local LossBar = NephilistNameplates.LossBar
 
 -- Local versions of global functions
 local GetTime = GetTime
-local UnitHealthMax = UnitHealthMax
+-- local UnitHealthMax = UnitHealthMax
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs  -- Only in retail
 
 --[[ LossBar functions ]]-- 
 
 function LossBar:Initialize()
 	self:SetAllPoints(self:GetParent().healthBar)
-	self:SetDuration(0.3)  -- 0.25
+	self:SetDuration(0.25)
 	self:SetStartDelay(0.1)
 	self:SetPauseDelay(0.05)
 	self:SetPostponeDelay(0.05)
@@ -59,9 +59,9 @@ end
 
 function LossBar:UpdateDuration(healthDelta)
 	-- Assumes healthDelta < 0
-	local maxHealth = UnitHealthMax(self:GetParent().displayedUnit)
-	self.duration = 0.3 - (1.2 * healthDelta / maxHealth)
-		-- Range 0.3 to 1.5 sec
+	-- local maxHealth = UnitHealthMax(self:GetParent().displayedUnit)
+	local maxHealth = self.maxHealth or UnitHealthMax(self:GetParent().displayedUnit)
+	self.duration = 0.5 - (1.0 * healthDelta / maxHealth)  -- 0.5-1.5 sec
 end
 
 function LossBar:StartAnimation(startHealth)
@@ -126,8 +126,3 @@ function LossBar:CancelAnimation()
 	self.progress = nil
 	self:SetScript("OnUpdate", nil)
 end
-
-
-
-
-
