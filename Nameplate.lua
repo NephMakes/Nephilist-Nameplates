@@ -36,7 +36,7 @@ local PlayerFrameOptions = NephilistNameplates.PlayerFrameOptions
 local BAR_HEIGHT = 5
 local BAR_HEIGHT_MIN_PIXELS = 5
 local BORDER_SIZE = 1
-local BORDER_MIN_PIXELS = 1
+local BORDER_MIN_PIXELS = 2
 
 
 --[[ UnitFrame ]]-- 
