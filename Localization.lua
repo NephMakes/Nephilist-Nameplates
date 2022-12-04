@@ -23,6 +23,8 @@ Localization["enUS"] = {
 	ShowBuffsTooltip = "Show important buffs and debuffs on nameplates",
 	ShowClassResource = "Show class-specific combat resources",
 	ShowClassResourceTooltip = "Show combo points, runes, holy power, etc.", 
+	ShowDamage = "Show damage", 
+	ShowDamageTooltip = "Show recent damage on health bar", 
 	ShowHide = "Show/Hide", 
 	ShowLevel = "Show unit level and difficulty",
 	-- ShowLevelTooltip = "Show unit level and difficulty",
@@ -70,6 +72,8 @@ function NephilistNameplates:SetAllTheText()
 	optionsPanel.showThreatButton.tooltipText = strings.ShowThreatTooltip
 	optionsPanel.showThreatOnlyInGroupButton.Text:SetText(strings.ShowThreatOnlyInGroupTooltip)
 	optionsPanel.showThreatOnlyInGroupButton.tooltipText = strings.ShowThreatOnlyInGroupTooltip
+	optionsPanel.showLossBarButton.Text:SetText(strings.ShowDamage)
+	optionsPanel.showLossBarButton.tooltipText = strings.ShowDamageTooltip
 
 	-- Player nameplate
 	optionsPanel.playerPlateText:SetText(strings.PlayerPlate)

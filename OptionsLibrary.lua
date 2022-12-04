@@ -1,4 +1,4 @@
---[[ Nephilist Options Library v0.6 ]]--
+--[[ Nephilist Options Library v0.7 ]]--
 
 -- Caveats: 
 --   CheckButton variables must be boolean (not 1/0)
@@ -6,7 +6,7 @@
 
 -- Not yet implemented: 
 --   ColorPicker opacity
---   Dependent controls (control:Enable(), control:Disable())
+--   Dependent controls like control:Enable(), control:Disable()
 --   Option subcategories
 --   "Requires UI reload" popup
 
@@ -358,7 +358,7 @@ function MyAddon:CreateColorPicker(optionName)
 	colorPicker:SetNormalTexture("Interface\\ChatFrame\\ChatFrameColorSwatch");
 	colorPicker.normalTexture = colorPicker:GetNormalTexture();
 	colorPicker.normalTexture:SetDrawLayer("ARTWORK", 1);
-	colorPicker.background = colorPicker:CreateTexture("BACKGROUND", nil, -5);
+	colorPicker.background = colorPicker:CreateTexture(nil, "BACKGROUND", nil, -5);
 	colorPicker.background:SetSize(14, 14);
 	colorPicker.background:SetColorTexture(1, 1, 1);
 	colorPicker.background:SetPoint("CENTER");

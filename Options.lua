@@ -12,6 +12,7 @@ NephilistNameplates.Defaults = {
 	ShowBuffs = true, 
 	ShowEliteIcon = true, 
 	ShowLevel = true, 
+	ShowLossBar = true, 
 	ShowPlayerPlate = false, 
 	ShowThreat = false, 
 	ShowThreatOnlyInGroup = false, 
@@ -67,6 +68,11 @@ local showThreatOnlyInGroupButton = optionsPanel:CreateCheckButton("ShowThreatOn
 optionsPanel.showThreatOnlyInGroupButton = showThreatOnlyInGroupButton
 showThreatOnlyInGroupButton:SetPoint("TOPLEFT", optionsPanel.showThreatButton, "BOTTOMLEFT", 0, -8)
 showThreatOnlyInGroupButton.onValueChanged = NephilistNameplates.Update
+
+local showLossBarButton = optionsPanel:CreateCheckButton("ShowLossBar")
+optionsPanel.showLossBarButton = showLossBarButton
+showLossBarButton:SetPoint("TOPLEFT", optionsPanel.showThreatOnlyInGroupButton, "BOTTOMLEFT", 0, -8)
+showLossBarButton.onValueChanged = NephilistNameplates.Update
 
 
 -- Player nameplate
