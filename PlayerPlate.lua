@@ -56,6 +56,7 @@ function PlayerPlate:Update()
 		self.outOfCombatAlpha = options.PlayerPlateOutOfCombatAlpha
 
 		self.UnitFrame:SetOptions()
+		self.UnitFrame:UpdateLayout()
 		self.UnitFrame:UpdateAll()
 	else
 		self.inUse = false

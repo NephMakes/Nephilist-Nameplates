@@ -8,6 +8,7 @@
 NephilistNameplates.xml
 NephilistNameplates.lua
 Nameplate.lua
+BarBorder.lua
 Auras.lua
 Power.lua
 LossBar.lua

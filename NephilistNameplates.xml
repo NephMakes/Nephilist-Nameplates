@@ -122,7 +122,6 @@
 					</Frame>
 				</Frames>
 				<Layers>
-					<!--
 					<Layer level="BACKGROUND" textureSublevel="0">
 						<Texture parentKey="glowTop" file="Interface/AddOns/NephilistNameplates/GlowTop" alphaMode="BLEND" hidden="true">
 							<Anchors>
@@ -139,7 +138,6 @@
 							<Size y="16"/>
 						</Texture>
 					</Layer>
-					-->
 					<Layer level="OVERLAY">
 						<Texture parentKey="highlight" hidden="true" alphaMode="ADD">
 							<Color r="1" g="1" b="1" a="0.2"/>
@@ -285,7 +283,7 @@
 				<FontString parentKey="levelText" inherits="SystemFont_NamePlate" justifyH="LEFT" text="Unit level here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.healthBar.border" relativePoint="RIGHT" x="2" y="-1" />
+						<Anchor point="LEFT" relativeKey="$parent.healthBar.border" relativePoint="RIGHT" x="2.5" y="-1" />
 					</Anchors>
 				</FontString>
 			</Layer>

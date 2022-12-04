@@ -3,6 +3,7 @@ local addonName, NephilistNameplates = ...
 local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame
 local LossBar = NephilistNameplates.LossBar
+local BarBorder = NephilistNameplates.BarBorder
 
 
 NephilistNameplates.EnemyFrameOptions = {
@@ -32,30 +33,56 @@ local EnemyFrameOptions = NephilistNameplates.EnemyFrameOptions
 local FriendlyFrameOptions = NephilistNameplates.FriendlyFrameOptions
 local PlayerFrameOptions = NephilistNameplates.PlayerFrameOptions
 
+local BAR_HEIGHT = 5
+local BAR_HEIGHT_MIN_PIXELS = 5
+local BORDER_SIZE = 1
+local BORDER_MIN_PIXELS = 1
+
 
 --[[ UnitFrame ]]-- 
 
 -- "UnitFrame" here is non-interactable frame we attach to Blizz "Nameplate#" frames
 
 function UnitFrame:Initialize()
-	local healthBar = self.healthBar
-	self.healthBackground:SetAllPoints(healthBar)
-	self.selectionBorder = healthBar.selectionBorder
-	for i, texture in ipairs(healthBar.border.Textures) do
-		texture:SetVertexColor(0, 0, 0, 1)
-	end
-	for i, texture in ipairs(self.powerBar.border.Textures) do
-		texture:SetVertexColor(0, 0, 0, 1)
-	end
+	self.healthBackground:SetAllPoints(self.healthBar)
+	self.selectionBorder = self.healthBar.selectionBorder
 
---	healthBar.glowTop:SetVertexColor(1, 0, 0, 0.8)
---	healthBar.glowBottom:SetVertexColor(1, 0, 0, 0.8)
+	local healthBorder = self.healthBar.border
+	local powerBorder = self.powerBar.border
+	local selectionBorder = self.selectionBorder
+	Mixin(healthBorder, BarBorder)
+	Mixin(powerBorder, BarBorder)
+	Mixin(selectionBorder, BarBorder)
+	healthBorder:SetBorderSizes(BORDER_SIZE, BORDER_MIN_PIXELS)
+	powerBorder:SetBorderSizes(BORDER_SIZE, BORDER_MIN_PIXELS)
+	selectionBorder:SetBorderSizes(BORDER_SIZE, BORDER_MIN_PIXELS)
+	healthBorder:SetVertexColor(0, 0, 0, 1)
+	powerBorder:SetVertexColor(0, 0, 0, 1)
+	selectionBorder:SetVertexColor(1, 1, 1, 1)
 
 	self.optionTable = {}
 	self.BuffFrame.buffList = {}
 
-	Mixin(self.lossBar, LossBar)  -- Set LossBar methods
+	Mixin(self.lossBar, LossBar)
 	self.lossBar:Initialize()
+end
+
+function UnitFrame:UpdateLayout()
+	local healthBar = self.healthBar
+	local powerBar = self.powerBar
+	local selectionBorder = self.selectionBorder
+
+	PixelUtil.SetHeight(healthBar, BAR_HEIGHT, BAR_HEIGHT_MIN_PIXELS)
+	PixelUtil.SetHeight(powerBar, BAR_HEIGHT, BAR_HEIGHT_MIN_PIXELS)
+	PixelUtil.SetPoint(powerBar, "TOPLEFT", healthBar, "BOTTOMLEFT", 0, -BORDER_SIZE, 0, BORDER_MIN_PIXELS)
+	PixelUtil.SetPoint(powerBar, "TOPRIGHT", healthBar, "BOTTOMRIGHT", 0, -BORDER_SIZE, 0, BORDER_MIN_PIXELS)
+
+	healthBar.border:UpdateSizes()
+	powerBar.border:UpdateSizes()
+	selectionBorder:UpdateSizes()
+
+	PixelUtil.SetPoint(selectionBorder, "TOPLEFT", healthBar, "TOPLEFT", -BORDER_SIZE, BORDER_SIZE, -BORDER_MIN_PIXELS, BORDER_MIN_PIXELS)
+	PixelUtil.SetPoint(selectionBorder, "BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", BORDER_SIZE, -BORDER_SIZE, BORDER_MIN_PIXELS, -BORDER_MIN_PIXELS)
 end
 
 function UnitFrame:SetUnit(unit)
@@ -432,7 +459,6 @@ function UnitFrame:UpdateThreat()
 end
 
 function UnitFrame:ShowThreatBad()
-	-- self.threatBorder:Show()
 	self.threatColor = {r = 1, g = 0, b = 0}
 	self:UpdateHealthColor()
 	-- self.healthBar.glowTop:SetVertexColor(1, 0, 0)

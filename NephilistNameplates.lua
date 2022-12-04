@@ -6,6 +6,7 @@ NephilistNameplates.PlayerPlate = CreateFrame("Button", "NephilistNameplatesPlay
 NephilistNameplates.UnitFrame = {}
 NephilistNameplates.Strings = {}
 NephilistNameplates.LossBar = {}
+NephilistNameplates.BarBorder = {}
 
 local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame
@@ -27,7 +28,7 @@ function DriverFrame:OnEvent(event, ...)
 		end
 	elseif event == "VARIABLES_LOADED" then
 		self:HideBlizzard()
-		self:UpdateNamePlateOptions();
+		self:UpdateNamePlateOptions()
 	elseif event == "NAME_PLATE_CREATED" then 
 		local nameplate = ...
 		self:OnNamePlateCreated(nameplate)
@@ -55,10 +56,6 @@ function DriverFrame:OnEvent(event, ...)
 		self:UpdateNamePlateOptions()
 	elseif event == "CVAR_UPDATE" then
 		self:UpdateNamePlateOptions()
---		local name = ...
---		if name == "SHOW_CLASS_COLOR_IN_V_KEY" then
---			self:UpdateNamePlateOptions()
---		end
 	end
 end
 DriverFrame:SetScript("OnEvent", DriverFrame.OnEvent)
@@ -150,6 +147,7 @@ function DriverFrame:UpdateNamePlateOptions()
 	for i, namePlate in ipairs(C_NamePlate.GetNamePlates()) do
 		local unitFrame = namePlate.UnitFrame
 		unitFrame:SetOptions()
+		unitFrame:UpdateLayout()
 		unitFrame:UpdateAll()
 	end
 	PlayerPlate:Update()
@@ -175,6 +173,7 @@ end
 function DriverFrame:OnNamePlateAdded(unit)
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit)
 	local unitFrame = namePlate.UnitFrame
+	unitFrame:UpdateLayout()
 	unitFrame:SetUnit(unit)
 	unitFrame:SetOptions()
 	unitFrame:UpdateAll()

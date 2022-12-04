@@ -5,8 +5,8 @@ local LossBar = NephilistNameplates.LossBar
 
 -- Local versions of global functions
 local GetTime = GetTime
--- local UnitHealthMax = UnitHealthMax
 local UnitGetTotalAbsorbs = UnitGetTotalAbsorbs  -- Only in retail
+
 
 --[[ LossBar functions ]]-- 
 
