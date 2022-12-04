@@ -199,6 +199,7 @@ function UnitFrame:SetOptions()
 	self.showThreat = options.ShowThreat
 	self.threatRole = DriverFrame.threatRole
 	self.showThreatOnlyInGroup = options.ShowThreatOnlyInGroup
+	self.showLossBar = options.ShowLossBar
 
 	if UnitIsUnit("player", self.unit) then
 		self.optionTable = PlayerFrameOptions
@@ -338,10 +339,14 @@ function UnitFrame:UpdateHealth()
 	end
 	if currentHealth ~= self.currentHealth then
 		self.healthBar:SetValue(currentHealth)
-		self.lossBar:UpdateHealth(currentHealth, self.currentHealth)
+		if self.showLossBar then
+			self.lossBar:UpdateHealth(currentHealth, self.currentHealth)
+		end
 		self.currentHealth = currentHealth
 	end
-	self.lossBar:UpdateAnimation(currentHealth)
+	if self.showLossBar then
+		self.lossBar:UpdateAnimation(currentHealth)
+	end
 end
 
 function UnitFrame:UpdateSelectionHighlight() 
