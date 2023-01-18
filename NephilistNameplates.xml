@@ -268,7 +268,7 @@
 				<FontString parentKey="name" inherits="FriendsFont_Small" wordwrap="false" justifyH="CENTER" text="Unit Hame Here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
 					<Anchors>
-						<Anchor point="BOTTOM" relativeKey="$parent.healthBar" relativePoint="TOP" y="3"/>
+						<Anchor point="BOTTOM" relativeKey="$parent.healthBar" relativePoint="TOP" y="2"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="nameHighlight" inherits="FriendsFont_Small" wordwrap="false" justifyH="CENTER" text="Unit Hame Here" hidden="true">

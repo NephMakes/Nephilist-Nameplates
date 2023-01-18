@@ -1,3 +1,5 @@
+-- PlayerPlate is a static frame that acts like Blizz nameplate with self.unit = "player"
+
 local addonName, NephilistNameplates = ...
 
 local PlayerPlate = NephilistNameplates.PlayerPlate
@@ -7,15 +9,7 @@ local function round(x)
 	return floor(x + 0.5)
 end
 
-
---[[ Player plate ]]--
-
--- PlayerPlate is a static frame that acts like Blizz nameplate with self.unit = "player"
-
 do
---	PlayerPlate.texture = PlayerPlate:CreateTexture()
---	PlayerPlate.texture:SetAllPoints()
---	PlayerPlate.texture:SetColorTexture(0, 1, 0, 0.5)
 	PlayerPlate:SetWidth(140)
 	PlayerPlate:SetHeight(20)
 end
@@ -140,40 +134,5 @@ function PlayerPlate:OnClick(button)
 		InterfaceOptionsFrame_OpenToCategory(NephilistNameplates.OptionsPanel)
 	end
 end
-PlayerPlate:RegisterForClicks("OnClick", "RightButtonUp")
+PlayerPlate:RegisterForClicks("RightButtonUp")
 PlayerPlate:SetScript("OnClick", PlayerPlate.OnClick)
-
---[[
-function PlayerPlate:OnClick(button)
-	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
-	if button == "RightButton" then
-		ToggleDropDownMenu(1, nil, EngravedRuneFrameTabDropDown, self:GetName(), 0, 0)
-		return
-	end
-	CloseDropDownMenus()
-end
-
-function PlayerPlate:InitializeTabDropDown()
-	local strings = Engraved.Strings;
-	local info = UIDropDownMenu_CreateInfo();
-
-	info.text = strings.LOCK_RUNE_DISPLAY;
-	info.func = RuneFrame.SetLocked;
-	info.arg1 = true;
-	info.isNotRadio = true;
-	info.notCheckable = true;
-	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-
---	info.text = strings.OPEN_OPTIONS_MENU;
---	info.func = nil;
---	info.isNotRadio = true;
---	info.notCheckable = true;
---	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
---
---	info.text = strings.RESET_POSITIONS;
---	info.func = nil;
---	info.isNotRadio = true;
---	info.notCheckable = true;
---	UIDropDownMenu_AddButton(info, UIDROPDOWNMENU_MENU_LEVEL);
-end
-]]--

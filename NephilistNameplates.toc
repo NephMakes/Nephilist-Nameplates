@@ -1,6 +1,6 @@
 ## Interface: 100002
 ## Title: Nephilist Nameplates
-## Version: 2.5.0
+## Version: 2.5.1
 ## Notes: Simple, effective nameplates
 ## Author: NephMakes / lieandswell
 ## SavedVariablesPerCharacter: NephilistNameplatesOptions
