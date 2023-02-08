@@ -183,6 +183,7 @@ end
 function DriverFrame:OnNamePlateRemoved(unit)
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit)
 	namePlate.UnitFrame:SetUnit(nil)
+	CastingBarFrame_SetUnit(namePlate.UnitFrame.castBar, nil, nil, nil)
 end
 
 function DriverFrame:OnTargetChanged()

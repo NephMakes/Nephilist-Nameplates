@@ -98,7 +98,7 @@
 				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
 				<BarColor r="0" g="0" b="0"/>
 			</StatusBar>
-		<!-- Loss bar -->
+		<!-- Health loss bar -->
 			<StatusBar parentKey="lossBar" hidden="true">
 				<BarTexture parentKey="barTexture" file="Interface/AddOns/NephilistNameplates/NephilistBarClean"/>
 				<BarColor r="1" g="1" b="1"/>
