@@ -48,10 +48,10 @@ function DriverFrame:OnEvent(event, ...)
 		end
 	elseif event == "DISPLAY_SIZE_CHANGED" then
 		self:UpdateNamePlateOptions()
-	elseif 
-		event == "PLAYER_TALENT_UPDATE" or
+	elseif event == "PLAYER_TALENT_UPDATE" or
 		event == "ACTIVE_TALENT_GROUP_CHANGED" or
-		event == "TALENT_GROUP_ROLE_CHANGED"
+		event == "TALENT_GROUP_ROLE_CHANGED" or 
+		event == "CHARACTER_POINTS_CHANGED"
 	then
 		self:UpdateNamePlateOptions()
 	elseif event == "CVAR_UPDATE" then
@@ -68,8 +68,8 @@ DriverFrame:RegisterEvent("CVAR_UPDATE")
 DriverFrame:RegisterEvent("DISPLAY_SIZE_CHANGED")
 DriverFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
 DriverFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
-DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
-DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+-- DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+-- DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 -- DriverFrame:RegisterEvent("PLAYER_LOGIN")
 -- DriverFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 -- DriverFrame:RegisterEvent("PLAYER_LOGOUT")
@@ -78,14 +78,24 @@ DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 function DriverFrame:OnAddonLoaded()
 	NephilistNameplates:LocalizeStrings()
 
+	-- Disable Retail-only options
 	if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
-		-- Classic WoW
-		DriverFrame:RegisterEvent("TALENT_GROUP_ROLE_CHANGED")
-		-- Disable Retail-only options
 		local optionsPanel = NephilistNameplates.OptionsPanel
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.showBuffsButton)
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.onlyShowOwnBuffsButton)
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.hideClassBarButton)
+	end
+
+	-- Register expansion-specific events
+	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+		DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+	elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
+		DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+		DriverFrame:RegisterEvent("TALENT_GROUP_ROLE_CHANGED")
+	elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
+		DriverFrame:RegisterEvent("CHARACTER_POINTS_CHANGED")
 	end
 
 --	local reset = false
@@ -157,7 +167,7 @@ end
 function DriverFrame:UpdateThreatRole()
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 		self.threatRole = GetSpecializationRole(GetSpecialization())
-	else
+	elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
 		self.threatRole = GetTalentGroupRole(GetActiveTalentGroup())
 	end
 end

@@ -97,7 +97,7 @@ function UnitFrame:SetUnit(unit)
 end
 
 function UnitFrame:UpdateInVehicle() 
-	if UnitHasVehicleUI(self.unit) then
+	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitHasVehicleUI(self.unit) then
 		if not self.inVehicle then
 			self.inVehicle = true
 			local prefix, id, suffix = string.match(self.unit, "([^%d]+)([%d]*)(.*)")
