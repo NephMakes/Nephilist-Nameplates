@@ -27,9 +27,6 @@ function CastBar:OnLoad(unit, showTradeSkills, showShield)
 	self.nonInterruptibleColor = CreateColor(0.3, 0.3, 0.3)
 	self:AddWidgetForFade(self.BorderShield)
 
-	--classic cast bars should flash green when finished casting
-	--CastingBarFrame_SetUseStartColorForFinished(self, true)
-	-- CastingBarFrame_SetUseStartColorForFlash(self, true)
 	self.finishedColorSameAsStart = true
 	self.flashColorSameAsStart = true
 
@@ -135,12 +132,6 @@ function CastBar:OnEvent(event, ...)
 		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit)
 		self.notInterruptible = notInterruptible
 
-		--[[
-		if notInterruptible then
-			CastingBarFrame_SetUseStartColorForFinished(self, false)
-		end
-		]]--
-
 		if not name or (not self.showTradeSkills and isTradeSkill) then
 			self:Hide()
 			return
@@ -164,14 +155,6 @@ function CastBar:OnEvent(event, ...)
 		if self.Text then
 			self.Text:SetText(text)
 		end
-		--[[
-		if self.Icon then
-			CastingBarFrame_SetIcon(self, texture)
-			if self.iconWhenNoninterruptible then
-				self.Icon:SetShown(not notInterruptible)
-			end
-		end
-		]]--
 		self:ApplyAlpha(1)
 		self.holdTime = 0
 		self.casting = true
@@ -182,14 +165,8 @@ function CastBar:OnEvent(event, ...)
 		if self.BorderShield then
 			if self.showShield and notInterruptible then
 				self.BorderShield:Show()
-				if self.BarBorder then
-					self.BarBorder:Hide()
-				end
 			else
 				self.BorderShield:Hide()
-				if self.BarBorder then
-					self.BarBorder:Show()
-				end
 			end
 		end
 		if self.showCastbar then
@@ -260,7 +237,7 @@ function CastBar:OnEvent(event, ...)
 					self.Spark:Show()
 				end
 				if self.Flash then
-					self.Flash:SetAlpha(0.0)
+					self.Flash:SetAlpha(0)
 					self.Flash:Hide()
 				end
 				self.casting = true
@@ -293,11 +270,6 @@ function CastBar:OnEvent(event, ...)
 		if self.Text then
 			self.Text:SetText(text)
 		end
-		--[[
-		if self.Icon then
-			CastingBarFrame_SetIcon(self, texture)
-		end
-		]]--
 		if self.Spark then
 			self.Spark:Hide()
 		end
@@ -309,14 +281,8 @@ function CastBar:OnEvent(event, ...)
 		if self.BorderShield then
 			if self.showShield and notInterruptible then
 				self.BorderShield:Show()
-				if self.BarBorder then
-					self.BarBorder:Hide()
-				end
 			else
 				self.BorderShield:Hide()
-				if self.BarBorder then
-					self.BarBorder:Show()
-				end
 			end
 		end
 		if self.showCastbar then
@@ -336,7 +302,6 @@ function CastBar:OnEvent(event, ...)
 			self:SetValue(self.value)
 		end
 	elseif event == "UNIT_SPELLCAST_INTERRUPTIBLE" or event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" then
-		-- CastingBarFrame_UpdateInterruptibleState(self, event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
 		self:UpdateInterruptibleState(event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
 	end
 end
@@ -351,24 +316,12 @@ function CastBar:UpdateInterruptibleState(notInterruptible)
 		end
 
 		if self.BorderShield then
-			if elf.showShield and notInterruptible then
+			if self.showShield and notInterruptible then
 				self.BorderShield:Show()
-				if self.BarBorder then
-					self.BarBorder:Hide()
-				end
 			else
 				self.BorderShield:Hide()
-				if self.BarBorder then
-					self.BarBorder:Show()
-				end
 			end
 		end
-
-		--[[
-		if self.Icon and self.iconWhenNoninterruptible then
-			self.Icon:SetShown(not notInterruptible)
-		end
-		]]--
 	end
 end
 
@@ -386,7 +339,7 @@ function CastBar:OnUpdate(elapsed)
 		end
 		if self.Spark then
 			local sparkPosition = (self.value / self.maxValue) * self:GetWidth()
-			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, self.Spark.offsetY or 2)
+			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, 0)
 		end
 	elseif self.channeling then
 		self.value = self.value - elapsed

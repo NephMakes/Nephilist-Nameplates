@@ -206,8 +206,6 @@
 								<Anchor point="CENTER" relativePoint="LEFT" x="-1" y="0"/>
 							</Anchors>
 						</Texture>
-						<!-- <Texture parentKey="Icon" hidden="true" forceAlpha="true">
-						</Texture> -->
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture parentKey="Spark" file="Interface\CastingBar\UI-CastingBar-Spark" alphaMode="ADD">
