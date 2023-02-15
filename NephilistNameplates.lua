@@ -5,6 +5,7 @@ NephilistNameplates.DriverFrame = CreateFrame("Frame", "NephilistNameplatesFrame
 NephilistNameplates.PlayerPlate = CreateFrame("Button", "NephilistNameplatesPlayerPlate", UIParent)
 NephilistNameplates.UnitFrame = {}
 NephilistNameplates.Strings = {}
+NephilistNameplates.CastBar = {}
 NephilistNameplates.LossBar = {}
 NephilistNameplates.BarBorder = {}
 
@@ -193,7 +194,7 @@ end
 function DriverFrame:OnNamePlateRemoved(unit)
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit)
 	namePlate.UnitFrame:SetUnit(nil)
-	CastingBarFrame_SetUnit(namePlate.UnitFrame.castBar, nil, nil, nil)
+	namePlate.UnitFrame.castBar:SetUnit(nil, nil, nil)
 end
 
 function DriverFrame:OnTargetChanged()

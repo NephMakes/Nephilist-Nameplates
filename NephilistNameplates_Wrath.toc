@@ -1,6 +1,6 @@
 ## Interface: 30401
 ## Title: Nephilist Nameplates
-## Version: 2.5.3
+## Version: 2.5.4
 ## Notes: Simple, effective nameplates
 ## Author: NephMakes / lieandswell
 ## SavedVariablesPerCharacter: NephilistNameplatesOptions
@@ -12,6 +12,7 @@ BarBorder.lua
 Auras.lua
 Power.lua
 LossBar.lua
+CastBar.lua
 PlayerPlate.lua
 OptionsLibrary.lua
 Options.lua

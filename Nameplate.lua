@@ -4,6 +4,7 @@ local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame
 local LossBar = NephilistNameplates.LossBar
 local BarBorder = NephilistNameplates.BarBorder
+local CastBar = NephilistNameplates.CastBar
 
 
 NephilistNameplates.EnemyFrameOptions = {
@@ -65,6 +66,9 @@ function UnitFrame:Initialize()
 
 	Mixin(self.lossBar, LossBar)
 	self.lossBar:Initialize()
+
+	Mixin(self.castBar, CastBar)
+	self.castBar:Initialize()
 end
 
 function UnitFrame:UpdateLayout()
@@ -176,7 +180,7 @@ function UnitFrame:OnEvent(event, ...)
 			self:UpdateBuffs()
 		elseif event == "UNIT_THREAT_LIST_UPDATE" or event == "UNIT_THREAT_SITUATION_UPDATE" then
 			if self.optionTable.considerSelectionInCombatAsHostile then
-				self:UpdateName()  -- Why is this here?
+				self:UpdateName()  -- We've been bamboozled! 
 				self:UpdateThreat()
 			end
 		elseif event == "UNIT_NAME_UPDATE" then
@@ -226,6 +230,7 @@ function UnitFrame:UpdateAll()
 		self:UpdateBuffs()
 		self:UpdateEliteIcon()
 		self:UpdateThreat()
+		-- self.castBar:Update()
 	end
 end
 
@@ -416,16 +421,16 @@ end
 
 function UnitFrame:UpdateCastBar()
 	local castBar = self.castBar
-	castBar.startCastColor = CreateColor(0.6, 0.6, 0.6)
-	castBar.startChannelColor = CreateColor(0.6, 0.6, 0.6)
-	castBar.finishedCastColor = CreateColor(0.6, 0.6, 0.6)
-	castBar.failedCastColor = CreateColor(0.5, 0.2, 0.2)
-	castBar.nonInterruptibleColor = CreateColor(0.3, 0.3, 0.3)
-	CastingBarFrame_AddWidgetForFade(castBar, castBar.BorderShield)
+--	castBar.startCastColor = CreateColor(0.6, 0.6, 0.6)
+--	castBar.startChannelColor = CreateColor(0.6, 0.6, 0.6)
+--	castBar.finishedCastColor = CreateColor(0.6, 0.6, 0.6)
+--	castBar.failedCastColor = CreateColor(0.5, 0.2, 0.2)
+--	castBar.nonInterruptibleColor = CreateColor(0.3, 0.3, 0.3)
+--	castBar:AddWidgetForFade(castBar.BorderShield)
 	if not self.optionTable.hideCastBar then
-		CastingBarFrame_SetUnit(castBar, self.unit, false, true)
+		castBar:SetUnit(self.unit, false, true)
 	else
-		CastingBarFrame_SetUnit(castBar, nil, nil, nil)
+		castBar:SetUnit(nil, nil, nil)
 	end
 end
 
