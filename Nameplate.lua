@@ -421,12 +421,6 @@ end
 
 function UnitFrame:UpdateCastBar()
 	local castBar = self.castBar
---	castBar.startCastColor = CreateColor(0.6, 0.6, 0.6)
---	castBar.startChannelColor = CreateColor(0.6, 0.6, 0.6)
---	castBar.finishedCastColor = CreateColor(0.6, 0.6, 0.6)
---	castBar.failedCastColor = CreateColor(0.5, 0.2, 0.2)
---	castBar.nonInterruptibleColor = CreateColor(0.3, 0.3, 0.3)
---	castBar:AddWidgetForFade(castBar.BorderShield)
 	if not self.optionTable.hideCastBar then
 		castBar:SetUnit(self.unit, false, true)
 	else

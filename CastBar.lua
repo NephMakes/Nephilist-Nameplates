@@ -145,47 +145,38 @@ function CastBar:OnEvent(event, ...)
 			self.Flash:SetVertexColor(1, 1, 1)
 		end
 		
-		if self.Spark then
-			self.Spark:Show()
-		end
+		self.Spark:Show()
 		self.value = GetTime() - (startTime / 1000)
 		self.maxValue = (endTime - startTime) / 1000
 		self:SetMinMaxValues(0, self.maxValue)
 		self:SetValue(self.value)
-		if self.Text then
-			self.Text:SetText(text)
-		end
+		self.Text:SetText(text)
 		self:ApplyAlpha(1)
+
 		self.holdTime = 0
 		self.casting = true
 		self.castID = castID
 		self.channeling = nil
 		self.fadeOut = nil
 
-		if self.BorderShield then
-			if self.showShield and notInterruptible then
-				self.BorderShield:Show()
-			else
-				self.BorderShield:Hide()
-			end
+		if self.showShield and notInterruptible then
+			self.BorderShield:Show()
+		else
+			self.BorderShield:Hide()
 		end
 		if self.showCastbar then
 			self:Show()
 		end
-
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" then
 		if not self:IsVisible() then
 			self:Hide()
 		end
-		if ( (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
-		     (self.channeling and event == "UNIT_SPELLCAST_CHANNEL_STOP") ) then
-			if self.Spark then
-				self.Spark:Hide()
-			end
-			if self.Flash then
-				self.Flash:SetAlpha(0.0)
-				self.Flash:Show()
-			end
+		if (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
+			(self.channeling and event == "UNIT_SPELLCAST_CHANNEL_STOP") 
+		then
+			self.Spark:Hide()
+			self.Flash:SetAlpha(0.0)
+			self.Flash:Show()
 			self:SetValue(self.maxValue)
 			if event == "UNIT_SPELLCAST_STOP" then
 				self.casting = nil
@@ -200,18 +191,17 @@ function CastBar:OnEvent(event, ...)
 			self.holdTime = 0
 		end
 	elseif event == "UNIT_SPELLCAST_FAILED" or event == "UNIT_SPELLCAST_INTERRUPTED" then
-		if ( self:IsShown() and (self.casting and select(2, ...) == self.castID) and not self.fadeOut ) then
+		if self:IsShown() and 
+			(self.casting and select(2, ...) == self.castID) and 
+			not self.fadeOut
+		then
 			self:SetValue(self.maxValue)
 			self:SetStatusBarColor(self.failedCastColor:GetRGB())
-			if self.Spark then
-				self.Spark:Hide()
-			end
-			if self.Text then
-				if event == "UNIT_SPELLCAST_FAILED" then
-					self.Text:SetText(FAILED)
-				else
-					self.Text:SetText(INTERRUPTED)
-				end
+			self.Spark:Hide()
+			if event == "UNIT_SPELLCAST_FAILED" then
+				self.Text:SetText(FAILED)
+			else
+				self.Text:SetText(INTERRUPTED)
 			end
 			self.casting = nil
 			self.channeling = nil
@@ -233,13 +223,9 @@ function CastBar:OnEvent(event, ...)
 			self:SetMinMaxValues(0, self.maxValue)
 			if not self.casting then
 				self:SetStatusBarColor(self:GetEffectiveStartColor(false):GetRGB())
-				if self.Spark then
-					self.Spark:Show()
-				end
-				if self.Flash then
-					self.Flash:SetAlpha(0)
-					self.Flash:Hide()
-				end
+				self.Spark:Show()
+				self.Flash:SetAlpha(0)
+				self.Flash:Hide()
 				self.casting = true
 				self.channeling = nil
 				self.flash = nil
@@ -267,23 +253,17 @@ function CastBar:OnEvent(event, ...)
 		self.maxValue = (endTime - startTime) / 1000
 		self:SetMinMaxValues(0, self.maxValue)
 		self:SetValue(self.value)
-		if self.Text then
-			self.Text:SetText(text)
-		end
-		if self.Spark then
-			self.Spark:Hide()
-		end
+		self.Text:SetText(text)
+		self.Spark:Hide()
 		self:ApplyAlpha(1)
 		self.holdTime = 0
 		self.casting = nil
 		self.channeling = true
 		self.fadeOut = nil
-		if self.BorderShield then
-			if self.showShield and notInterruptible then
-				self.BorderShield:Show()
-			else
-				self.BorderShield:Hide()
-			end
+		if self.showShield and notInterruptible then
+			self.BorderShield:Show()
+		else
+			self.BorderShield:Hide()
 		end
 		if self.showCastbar then
 			self:Show()
@@ -301,7 +281,9 @@ function CastBar:OnEvent(event, ...)
 			self:SetMinMaxValues(0, self.maxValue)
 			self:SetValue(self.value)
 		end
-	elseif event == "UNIT_SPELLCAST_INTERRUPTIBLE" or event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" then
+	elseif event == "UNIT_SPELLCAST_INTERRUPTIBLE" or 
+		event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" 
+	then
 		self:UpdateInterruptibleState(event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
 	end
 end
@@ -315,12 +297,10 @@ function CastBar:UpdateInterruptibleState(notInterruptible)
 			self.Flash:SetVertexColor(startColor:GetRGB())
 		end
 
-		if self.BorderShield then
-			if self.showShield and notInterruptible then
-				self.BorderShield:Show()
-			else
-				self.BorderShield:Hide()
-			end
+		if self.showShield and notInterruptible then
+			self.BorderShield:Show()
+		else
+			self.BorderShield:Hide()
 		end
 	end
 end
@@ -334,13 +314,9 @@ function CastBar:OnUpdate(elapsed)
 			return
 		end
 		self:SetValue(self.value)
-		if self.Flash then
-			self.Flash:Hide()
-		end
-		if self.Spark then
-			local sparkPosition = (self.value / self.maxValue) * self:GetWidth()
-			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, 0)
-		end
+		self.Flash:Hide()
+		local sparkPosition = (self.value / self.maxValue) * self:GetWidth()
+		self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, 0)
 	elseif self.channeling then
 		self.value = self.value - elapsed
 		if self.value <= 0 then
@@ -348,24 +324,16 @@ function CastBar:OnUpdate(elapsed)
 			return
 		end
 		self:SetValue(self.value)
-		if self.Flash then
-			self.Flash:Hide()
-		end
+		self.Flash:Hide()
 	elseif GetTime() < self.holdTime then
 		return
 	elseif self.flash then
 		local alpha = 0
-		if self.Flash then
-			alpha = self.Flash:GetAlpha() + CASTING_BAR_FLASH_STEP
-		end
+		alpha = self.Flash:GetAlpha() + CASTING_BAR_FLASH_STEP
 		if alpha < 1 then
-			if self.Flash then
-				self.Flash:SetAlpha(alpha)
-			end
+			self.Flash:SetAlpha(alpha)
 		else
-			if self.Flash then
-				self.Flash:SetAlpha(1.0)
-			end
+			self.Flash:SetAlpha(1)
 			self.flash = nil
 		end
 	elseif self.fadeOut then
@@ -383,13 +351,9 @@ function CastBar:FinishSpell()
 	if not self.finishedColorSameAsStart then
 		self:SetStatusBarColor(self.finishedCastColor:GetRGB())
 	end
-	if self.Spark then
-		self.Spark:Hide()
-	end
-	if self.Flash then
-		self.Flash:SetAlpha(0)
-		self.Flash:Show()
-	end
+	self.Spark:Hide()
+	self.Flash:SetAlpha(0)
+	self.Flash:Show()
 	self.flash = true
 	self.fadeOut = true
 	self.casting = nil
