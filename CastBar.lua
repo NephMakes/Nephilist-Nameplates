@@ -29,7 +29,6 @@ function CastBar:OnLoad()
 	self.finishedCastColor = CreateColor(0.7, 0.7, 0.7)
 	self.failedCastColor = CreateColor(0.5, 0.2, 0.2)
 	self.nonInterruptibleColor = CreateColor(0.3, 0.3, 0.3)
-	-- self.flashColor = CreateColor(1, 1, 1)
 	self.Flash:SetVertexColor(1, 1, 1)
 
 	self:SetUnit(nil)
@@ -127,7 +126,6 @@ function CastBar:OnEvent(event, ...)
 
 		local startColor = self:GetEffectiveStartColor(false)
 		self:SetStatusBarColor(startColor:GetRGB())
-		-- self.Flash:SetVertexColor(1, 1, 1)
 		
 		self.Spark:Show()
 		self.value = GetTime() - (startTime / 1000)
@@ -218,7 +216,6 @@ function CastBar:OnEvent(event, ...)
 			return
 		end
 		local startColor = self:GetEffectiveStartColor(true)
-		-- self.Flash:SetVertexColor(1, 1, 1)
 		self:SetStatusBarColor(startColor:GetRGB())
 		self.value = (endTime / 1000) - GetTime()
 		self.maxValue = (endTime - startTime) / 1000
@@ -260,7 +257,6 @@ function CastBar:UpdateInterruptibleState(notInterruptible)
 	if self.casting or self.channeling then
 		local startColor = self:GetEffectiveStartColor(self.channeling)
 		self:SetStatusBarColor(startColor:GetRGB())
-		-- self.Flash:SetVertexColor(1, 1, 1)
 		if notInterruptible then
 			self.BorderShield:Show()
 		else
