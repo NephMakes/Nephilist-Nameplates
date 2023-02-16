@@ -3,6 +3,13 @@
 local _, NephilistNameplates = ...
 local CastBar = NephilistNameplates.CastBar
 
+-- Constants
+local ALPHA_STEP = 0.05
+local FLASH_STEP = 0.2
+local HOLD_TIME = 1
+local FAILED = FAILED  -- Blizz localized string
+local INTERRUPTED = INTERRUPTED  -- Blizz localized string
+
 -- Local versions of global functions
 local GetTime = GetTime
 local UnitCastingInfo = UnitCastingInfo
@@ -11,47 +18,28 @@ local UnitChannelInfo = UnitChannelInfo
 
 --[[ CastBar functions ]]-- 
 
-function CastBar:Initialize()
+function CastBar:OnLoad()
 	-- Called by NephilistNameplates.UnitFrame:Initialize()
 	self:SetScript("OnShow", self.OnShow)
 	self:SetScript("OnEvent", self.OnEvent)
 	self:SetScript("OnUpdate", self.OnUpdate)
-	self:OnLoad(nil, false, true)
-end
 
-function CastBar:OnLoad(unit, showTradeSkills, showShield)
 	self.startCastColor = CreateColor(0.6, 0.6, 0.6)
 	self.startChannelColor = CreateColor(0.6, 0.6, 0.6)
-	self.finishedCastColor = CreateColor(0.6, 0.6, 0.6)
+	self.finishedCastColor = CreateColor(0.7, 0.7, 0.7)
 	self.failedCastColor = CreateColor(0.5, 0.2, 0.2)
 	self.nonInterruptibleColor = CreateColor(0.3, 0.3, 0.3)
-	self:AddWidgetForFade(self.BorderShield)
+	-- self.flashColor = CreateColor(1, 1, 1)
+	self.Flash:SetVertexColor(1, 1, 1)
 
-	self.finishedColorSameAsStart = true
-	self.flashColorSameAsStart = true
-
-	self:SetUnit(unit, showTradeSkills, showShield)
-
-	self.showCastbar = true
+	self:SetUnit(nil)
 	self.notInterruptible = false
 end
 
-function CastBar:Update()
-end
-
-function CastBar:AddWidgetForFade(widget)
-	-- Fade additional widgets with cast bar in case they're not parented or use ignoreParentAlpha
-	if not self.additionalFadeWidgets then
-		self.additionalFadeWidgets = {}
-	end
-	self.additionalFadeWidgets[widget] = true
-end
-
-function CastBar:SetUnit(unit, showTradeSkills, showShield)
+function CastBar:SetUnit(unit)
+	-- Called by CastBar:OnLoad(), NephilistNameplates.UnitFrame:UpdateCastBar()
 	if self.unit ~= unit then
 		self.unit = unit
-		self.showTradeSkills = showTradeSkills
-		self.showShield = showShield
 
 		self.casting = nil
 		self.channeling = nil
@@ -103,7 +91,7 @@ function CastBar:OnShow()
 end
 
 function CastBar:GetEffectiveStartColor(isChannel)
-	return isChannel and self.startChannelColor or self.startCastColor
+	return (isChannel and self.startChannelColor) or self.startCastColor
 end
 
 function CastBar:OnEvent(event, ...)
@@ -129,21 +117,17 @@ function CastBar:OnEvent(event, ...)
 	end
 
 	if event == "UNIT_SPELLCAST_START" then
-		local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit)
+		local name, text, _, startTime, endTime, _, castID, notInterruptible = UnitCastingInfo(unit)
 		self.notInterruptible = notInterruptible
 
-		if not name or (not self.showTradeSkills and isTradeSkill) then
+		if not name then
 			self:Hide()
 			return
 		end
 
 		local startColor = self:GetEffectiveStartColor(false)
 		self:SetStatusBarColor(startColor:GetRGB())
-		if self.flashColorSameAsStart then
-			self.Flash:SetVertexColor(startColor:GetRGB())
-		else
-			self.Flash:SetVertexColor(1, 1, 1)
-		end
+		-- self.Flash:SetVertexColor(1, 1, 1)
 		
 		self.Spark:Show()
 		self.value = GetTime() - (startTime / 1000)
@@ -151,7 +135,7 @@ function CastBar:OnEvent(event, ...)
 		self:SetMinMaxValues(0, self.maxValue)
 		self:SetValue(self.value)
 		self.Text:SetText(text)
-		self:ApplyAlpha(1)
+		self:SetAlpha(1)
 
 		self.holdTime = 0
 		self.casting = true
@@ -159,14 +143,12 @@ function CastBar:OnEvent(event, ...)
 		self.channeling = nil
 		self.fadeOut = nil
 
-		if self.showShield and notInterruptible then
+		if notInterruptible then
 			self.BorderShield:Show()
 		else
 			self.BorderShield:Hide()
 		end
-		if self.showCastbar then
-			self:Show()
-		end
+		self:Show()
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" then
 		if not self:IsVisible() then
 			self:Hide()
@@ -175,14 +157,12 @@ function CastBar:OnEvent(event, ...)
 			(self.channeling and event == "UNIT_SPELLCAST_CHANNEL_STOP") 
 		then
 			self.Spark:Hide()
-			self.Flash:SetAlpha(0.0)
+			self.Flash:SetAlpha(0)
 			self.Flash:Show()
 			self:SetValue(self.maxValue)
 			if event == "UNIT_SPELLCAST_STOP" then
 				self.casting = nil
-				if not self.finishedColorSameAsStart then
-					self:SetStatusBarColor(self.finishedCastColor:GetRGB())
-				end
+				self:SetStatusBarColor(self.finishedCastColor:GetRGB())
 			else
 				self.channeling = nil
 			end
@@ -206,15 +186,13 @@ function CastBar:OnEvent(event, ...)
 			self.casting = nil
 			self.channeling = nil
 			self.fadeOut = true
-			self.holdTime = GetTime() + CASTING_BAR_HOLD_TIME
+			self.holdTime = GetTime() + HOLD_TIME
 		end
 	elseif event == "UNIT_SPELLCAST_DELAYED" then
 		if self:IsShown() then
-			local name, text, texture, startTime, endTime, isTradeSkill, castID, notInterruptible = UnitCastingInfo(unit)
+			local name, _, _, startTime, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
 			self.notInterruptible = notInterruptible
-
-			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
-				-- if there is no name, there is no bar
+			if not name then
 				self:Hide()
 				return
 			end
@@ -233,21 +211,14 @@ function CastBar:OnEvent(event, ...)
 			end
 		end
 	elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-		local name, text, texture, startTime, endTime, isTradeSkill, notInterruptible, spellID = UnitChannelInfo(unit)
+		local name, text, _, startTime, endTime, _, notInterruptible, _ = UnitChannelInfo(unit)
 		self.notInterruptible = notInterruptible
-
-		if ( not name or (not self.showTradeSkills and isTradeSkill)) then
-			-- if there is no name, there is no bar
+		if not name then
 			self:Hide()
 			return
 		end
-
 		local startColor = self:GetEffectiveStartColor(true)
-		if self.flashColorSameAsStart then
-			self.Flash:SetVertexColor(startColor:GetRGB())
-		else
-			self.Flash:SetVertexColor(1, 1, 1)
-		end
+		-- self.Flash:SetVertexColor(1, 1, 1)
 		self:SetStatusBarColor(startColor:GetRGB())
 		self.value = (endTime / 1000) - GetTime()
 		self.maxValue = (endTime - startTime) / 1000
@@ -255,24 +226,21 @@ function CastBar:OnEvent(event, ...)
 		self:SetValue(self.value)
 		self.Text:SetText(text)
 		self.Spark:Hide()
-		self:ApplyAlpha(1)
+		self:SetAlpha(1)
 		self.holdTime = 0
 		self.casting = nil
 		self.channeling = true
 		self.fadeOut = nil
-		if self.showShield and notInterruptible then
+		if notInterruptible then
 			self.BorderShield:Show()
 		else
 			self.BorderShield:Hide()
 		end
-		if self.showCastbar then
-			self:Show()
-		end
+		self:Show()
 	elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
 		if self:IsShown() then
-			local name, text, texture, startTime, endTime, isTradeSkill = UnitChannelInfo(unit)
-			if ( not name or (not self.showTradeSkills and isTradeSkill)) then
-				-- if there is no name, there is no bar
+			local name, _, _, startTime, endTime, _ = UnitChannelInfo(unit)
+			if not name then
 				self:Hide()
 				return
 			end
@@ -292,12 +260,8 @@ function CastBar:UpdateInterruptibleState(notInterruptible)
 	if self.casting or self.channeling then
 		local startColor = self:GetEffectiveStartColor(self.channeling)
 		self:SetStatusBarColor(startColor:GetRGB())
-
-		if self.flashColorSameAsStart then
-			self.Flash:SetVertexColor(startColor:GetRGB())
-		end
-
-		if self.showShield and notInterruptible then
+		-- self.Flash:SetVertexColor(1, 1, 1)
+		if notInterruptible then
 			self.BorderShield:Show()
 		else
 			self.BorderShield:Hide()
@@ -329,7 +293,7 @@ function CastBar:OnUpdate(elapsed)
 		return
 	elseif self.flash then
 		local alpha = 0
-		alpha = self.Flash:GetAlpha() + CASTING_BAR_FLASH_STEP
+		alpha = self.Flash:GetAlpha() + FLASH_STEP
 		if alpha < 1 then
 			self.Flash:SetAlpha(alpha)
 		else
@@ -337,9 +301,9 @@ function CastBar:OnUpdate(elapsed)
 			self.flash = nil
 		end
 	elseif self.fadeOut then
-		local alpha = self:GetAlpha() - CASTING_BAR_ALPHA_STEP
+		local alpha = self:GetAlpha() - ALPHA_STEP
 		if alpha > 0 then
-			self:ApplyAlpha(alpha)
+			self:SetAlpha(alpha)
 		else
 			self.fadeOut = nil
 			self:Hide()
@@ -348,9 +312,7 @@ function CastBar:OnUpdate(elapsed)
 end
 
 function CastBar:FinishSpell()
-	if not self.finishedColorSameAsStart then
-		self:SetStatusBarColor(self.finishedCastColor:GetRGB())
-	end
+	self:SetStatusBarColor(self.finishedCastColor:GetRGB())
 	self.Spark:Hide()
 	self.Flash:SetAlpha(0)
 	self.Flash:Show()
@@ -358,13 +320,4 @@ function CastBar:FinishSpell()
 	self.fadeOut = true
 	self.casting = nil
 	self.channeling = nil
-end
-
-function CastBar:ApplyAlpha(alpha)
-	self:SetAlpha(alpha)
-	if self.additionalFadeWidgets then
-		for widget in pairs(self.additionalFadeWidgets) do
-			widget:SetAlpha(alpha)
-		end
-	end
 end

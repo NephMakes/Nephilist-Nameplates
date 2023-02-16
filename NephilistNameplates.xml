@@ -200,7 +200,7 @@
 								<Anchor point="CENTER"/>
 							</Anchors>
 						</FontString>
-						<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield" forceAlpha="true">
+						<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield">
 							<Size x="15" y="15"/>
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="LEFT" x="-1" y="0"/>

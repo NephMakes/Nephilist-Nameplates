@@ -68,7 +68,7 @@ function UnitFrame:Initialize()
 	self.lossBar:Initialize()
 
 	Mixin(self.castBar, CastBar)
-	self.castBar:Initialize()
+	self.castBar:OnLoad()
 end
 
 function UnitFrame:UpdateLayout()
@@ -230,7 +230,6 @@ function UnitFrame:UpdateAll()
 		self:UpdateBuffs()
 		self:UpdateEliteIcon()
 		self:UpdateThreat()
-		-- self.castBar:Update()
 	end
 end
 
@@ -419,15 +418,6 @@ function UnitFrame:UpdateEliteIcon()
 	end
 end
 
-function UnitFrame:UpdateCastBar()
-	local castBar = self.castBar
-	if not self.optionTable.hideCastBar then
-		castBar:SetUnit(self.unit, false, true)
-	else
-		castBar:SetUnit(nil, nil, nil)
-	end
-end
-
 function UnitFrame:UpdateThreat()
 	if not self.showThreat or 
 		(not IsInGroup() and self.showThreatOnlyInGroup) or 
@@ -504,6 +494,14 @@ function UnitFrame:HideThreat()
 	-- self.healthBar.glowBottom:Hide()
 	self.threatAlpha = nil
 	self:UpdateMouseoverHighlight()
+end
+
+function UnitFrame:UpdateCastBar()
+	if not self.optionTable.hideCastBar then
+		self.castBar:SetUnit(self.unit)
+	else
+		self.castBar:SetUnit(nil)
+	end
 end
 
 
