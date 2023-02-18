@@ -81,7 +81,8 @@ function LossBar:UpdateAnimation(currentHealth)
 	-- Called by UnitFrame:UpdateHealth() and LossBar:OnUpdate()
 
 	if UnitGetTotalAbsorbs then 
-		local totalAbsorb = UnitGetTotalAbsorbs(self.unit) or 0
+		-- local totalAbsorb = UnitGetTotalAbsorbs(self.unit) or 0
+		local totalAbsorb = UnitGetTotalAbsorbs(self:GetParent().displayedUnit) or 0
 		if totalAbsorb > 0 then
 			self:CancelAnimation()
 		end
