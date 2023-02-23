@@ -6,7 +6,6 @@ local LossBar = NephilistNameplates.LossBar
 local BarBorder = NephilistNameplates.BarBorder
 local CastBar = NephilistNameplates.CastBar
 
-
 NephilistNameplates.EnemyFrameOptions = {
 	colorHealthByReaction = true,
 	considerSelectionInCombatAsHostile = true,
@@ -38,6 +37,8 @@ local BAR_HEIGHT = 5
 local BAR_HEIGHT_MIN_PIXELS = 5
 local BORDER_SIZE = 1
 local BORDER_MIN_PIXELS = 2
+
+local UnitHasVehicleUI = UnitHasVehicleUI or function(unit) return false end  -- Retail/Wrath or Classic Era
 
 
 --[[ UnitFrame ]]-- 
@@ -100,21 +101,20 @@ function UnitFrame:SetUnit(unit)
 	end
 end
 
-function UnitFrame:UpdateInVehicle() 
-	if WOW_PROJECT_ID ~= WOW_PROJECT_CLASSIC and UnitHasVehicleUI(self.unit) then
-		if not self.inVehicle then
-			self.inVehicle = true
+function UnitFrame:UpdateInVehicle()
+	if UnitHasVehicleUI(self.unit) then
+		self.inVehicle = true
+		if self.unit == "player" then
+			self.displayedUnit = "vehicle"
+		else
 			local prefix, id, suffix = string.match(self.unit, "([^%d]+)([%d]*)(.*)")
 			self.displayedUnit = prefix.."pet"..id..suffix
-			self:UpdateEvents()
 		end
 	else
-		if self.inVehicle then
-			self.inVehicle = false
-			self.displayedUnit = self.unit
-			self:UpdateEvents()
-		end
+		self.inVehicle = false
+		self.displayedUnit = self.unit
 	end
+	self:UpdateEvents()
 end
 
 function UnitFrame:RegisterEvents()
@@ -128,17 +128,11 @@ function UnitFrame:RegisterEvents()
 	self:RegisterEvent("UNIT_FACTION")
 	-- self:RegisterEvent("UNIT_CONNECTION")
 	self:UpdateEvents()
-	if UnitIsUnit("player", self.unit) then
-		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", "player")
-		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player")
-		self:RegisterUnitEvent("UNIT_MAXPOWER", "player")
-	end
 	self:SetScript("OnEvent", UnitFrame.OnEvent)
 end
 
 function UnitFrame:UpdateEvents()
 	-- These events affected if unit in vehicle
-	-- Sometimes getting Lua error when entering/exiting during combat?
 	local displayedUnit
 	if self.unit ~= self.displayedUnit then
 		displayedUnit = self.displayedUnit
@@ -148,7 +142,11 @@ function UnitFrame:UpdateEvents()
 	self:RegisterUnitEvent("UNIT_AURA", self.unit, displayedUnit)
 	self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", self.unit, displayedUnit)
 	self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", self.unit, displayedUnit)
-	-- self:RegisterUnitEvent("PLAYER_FLAGS_CHANGED", self.unit, displayedUnit)  -- i.e. AFK, DND
+	if UnitIsUnit("player", self.unit) then
+		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", self.unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", self.unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_MAXPOWER", self.unit, displayedUnit)
+	end
 end
 
 function UnitFrame:UnregisterEvents()

@@ -167,7 +167,10 @@ end
 
 function DriverFrame:UpdateThreatRole()
 	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-		self.threatRole = GetSpecializationRole(GetSpecialization())
+		local spec = GetSpecialization()
+		if spec then
+			self.threatRole = GetSpecializationRole(spec)
+		end
 	elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
 		self.threatRole = GetTalentGroupRole(GetActiveTalentGroup())
 	end

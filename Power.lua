@@ -9,7 +9,7 @@ function UnitFrame:UpdatePowerBar()
 	local powerBar = self.powerBar
 	if self.optionTable.showPowerBar == true then
 		powerBar:Show()
-		local powerType, powerToken = UnitPowerType("player")
+		local powerType, powerToken = UnitPowerType(self.displayedUnit)
 		if self.powerToken ~= powerToken or self.powerType ~= powerType then
 			self.powerToken = powerToken
 			self.powerType = powerType
@@ -33,11 +33,11 @@ function UnitFrame:UpdatePowerBarColor()
 end
 
 function UnitFrame:UpdateMaxPower()
-	self.powerBar:SetMinMaxValues(0, UnitPowerMax("player", self.powerType))
+	self.powerBar:SetMinMaxValues(0, UnitPowerMax(self.displayedUnit, self.powerType))
 end
 
 function UnitFrame:UpdatePower()
-	self.powerBar:SetValue(UnitPower("player", self.powerType))
+	self.powerBar:SetValue(UnitPower(self.displayedUnit, self.powerType))
 end
 
 
