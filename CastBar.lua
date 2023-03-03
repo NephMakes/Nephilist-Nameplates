@@ -276,7 +276,7 @@ function CastBar:OnUpdate(elapsed)
 		self:SetValue(self.value)
 		self.Flash:Hide()
 		local sparkPosition = (self.value / self.maxValue) * self:GetWidth()
-		self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, 0)
+		self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, -1)
 	elseif self.channeling then
 		self.value = self.value - elapsed
 		if self.value <= 0 then

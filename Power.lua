@@ -26,7 +26,7 @@ function UnitFrame:UpdatePowerBarColor()
 	local powerToken = self.powerToken
 	local powerBar = self.powerBar
 	if powerToken then
-		info = PowerBarColor[powerToken]
+		local info = PowerBarColor[powerToken]
 		powerBar:SetStatusBarColor(info.r, info.g, info.b)
 		powerBar.background:SetColorTexture(0.15+info.r/5, 0.15+info.g/5, 0.15+info.b/5, 1)
 	end

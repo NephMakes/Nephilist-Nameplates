@@ -13,6 +13,10 @@ local DriverFrame = NephilistNameplates.DriverFrame
 local UnitFrame = NephilistNameplates.UnitFrame
 local PlayerPlate = NephilistNameplates.PlayerPlate
 
+local IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+local IS_CLASSIC_WRATH = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
+local IS_CLASSIC_ERA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+
 function NephilistNameplates:Update()
 	-- Called by "Okay" button of addon options panel and various checkboxes
 	DriverFrame:UpdateNamePlateOptions()
@@ -20,6 +24,37 @@ end
 
 
 --[[ Driver frame ]]--
+
+function DriverFrame:OnLoad()
+	DriverFrame:SetScript("OnEvent", DriverFrame.OnEvent)
+
+	DriverFrame:RegisterEvent("ADDON_LOADED")
+	DriverFrame:RegisterEvent("VARIABLES_LOADED")
+	DriverFrame:RegisterEvent("NAME_PLATE_CREATED")
+	DriverFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
+	DriverFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
+	DriverFrame:RegisterEvent("FORBIDDEN_NAME_PLATE_CREATED")
+	DriverFrame:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED")
+	DriverFrame:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_REMOVED")
+	DriverFrame:RegisterEvent("CVAR_UPDATE")
+	DriverFrame:RegisterEvent("DISPLAY_SIZE_CHANGED")
+	DriverFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
+	DriverFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+
+	if IS_RETAIL then
+		DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+		self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED")
+		self:RegisterEvent("PLAYER_SOFT_FRIEND_CHANGED")
+		self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED")
+	elseif IS_CLASSIC_WRATH then
+		DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+		DriverFrame:RegisterEvent("TALENT_GROUP_ROLE_CHANGED")
+	elseif IS_CLASSIC_ERA then
+		DriverFrame:RegisterEvent("CHARACTER_POINTS_CHANGED")
+	end
+end
 
 function DriverFrame:OnEvent(event, ...) 
 	if event == "ADDON_LOADED" then
@@ -30,17 +65,22 @@ function DriverFrame:OnEvent(event, ...)
 	elseif event == "VARIABLES_LOADED" then
 		self:HideBlizzard()
 		self:UpdateNamePlateOptions()
-	elseif event == "NAME_PLATE_CREATED" then 
+	elseif event == "NAME_PLATE_CREATED" or event == "FORBIDDEN_NAME_PLATE_CREATED" then 
 		local nameplate = ...
 		self:OnNamePlateCreated(nameplate)
-	elseif event == "NAME_PLATE_UNIT_ADDED" then 
+	elseif event == "NAME_PLATE_UNIT_ADDED" or event == "FORBIDDEN_NAME_PLATE_UNIT_ADDED" then 
 		local unit = ...
 		self:OnNamePlateAdded(unit)
-	elseif event == "NAME_PLATE_UNIT_REMOVED" then 
+	elseif event == "NAME_PLATE_UNIT_REMOVED" or event == "FORBIDDEN_NAME_PLATE_UNIT_REMOVED" then 
 		local unit = ...
 		self:OnNamePlateRemoved(unit)
 	elseif event == "PLAYER_TARGET_CHANGED" then
 		self:OnTargetChanged()
+	elseif event == "PLAYER_SOFT_INTERACT_CHANGED" or 
+		event == "PLAYER_SOFT_FRIEND_CHANGED" or 
+		event == "PLAYER_SOFT_ENEMY_CHANGED"
+	then
+		self:OnSoftTargetUpdate()
 	elseif event == "UPDATE_MOUSEOVER_UNIT" then
 		-- Fires OnEnter and OnLeave
 		local nameplate = C_NamePlate.GetNamePlateForUnit("mouseover")
@@ -59,76 +99,25 @@ function DriverFrame:OnEvent(event, ...)
 		self:UpdateNamePlateOptions()
 	end
 end
-DriverFrame:SetScript("OnEvent", DriverFrame.OnEvent)
-DriverFrame:RegisterEvent("ADDON_LOADED")
-DriverFrame:RegisterEvent("VARIABLES_LOADED")
-DriverFrame:RegisterEvent("NAME_PLATE_CREATED")
-DriverFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
-DriverFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
-DriverFrame:RegisterEvent("CVAR_UPDATE")
-DriverFrame:RegisterEvent("DISPLAY_SIZE_CHANGED")
-DriverFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
-DriverFrame:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
--- DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
--- DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
--- DriverFrame:RegisterEvent("PLAYER_LOGIN")
--- DriverFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
--- DriverFrame:RegisterEvent("PLAYER_LOGOUT")
--- "SHOW_NAMEPLATE_LOSE_AGGRO_FLASH" 
 
 function DriverFrame:OnAddonLoaded()
 	NephilistNameplates:LocalizeStrings()
-
-	-- Disable Retail-only options
-	if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+	if not IS_RETAIL then
+		-- Disable Retail-only options
 		local optionsPanel = NephilistNameplates.OptionsPanel
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.showBuffsButton)
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.onlyShowOwnBuffsButton)
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.hideClassBarButton)
 	end
-
-	-- Register expansion-specific events
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-		DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-		DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
-	elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
-		DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
-		DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
-		DriverFrame:RegisterEvent("TALENT_GROUP_ROLE_CHANGED")
-	elseif WOW_PROJECT_ID == WOW_PROJECT_CLASSIC then
-		DriverFrame:RegisterEvent("CHARACTER_POINTS_CHANGED")
-	end
-
---	local reset = false
---	if NephilistNameplatesOptions and NephilistNameplates.Version and NephilistNameplates.Version < "2.0.3" then
---		reset = true
---	end
 	NephilistNameplates:UpdateOptions("NephilistNameplatesOptions", NephilistNameplates.Defaults, false)
 end
 
 function DriverFrame:HideBlizzard()
 	NamePlateDriverFrame:UnregisterAllEvents()
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then  
+	if IS_RETAIL then  
 		ClassNameplateManaBarFrame:Hide()
 		ClassNameplateManaBarFrame:UnregisterAllEvents()
-		ClassNameplateManaBarFrame:HookScript("OnShow", function(self) self:Hide() end)
-			-- Blizz mana bar appearing on level-up
-		--[[
-		local checkBox = InterfaceOptionsNamesPanelUnitNameplatesMakeLarger
-		if checkBox then
-			function checkBox.setFunc(value)
-				if value == "1" then
-					SetCVar("NamePlateHorizontalScale", checkBox.largeHorizontalScale)
-					SetCVar("NamePlateVerticalScale", checkBox.largeVerticalScale)
-				else
-					SetCVar("NamePlateHorizontalScale", checkBox.normalHorizontalScale)
-					SetCVar("NamePlateVerticalScale", checkBox.normalVerticalScale)
-				end
-				DriverFrame:UpdateNamePlateOptions()
-			end
-		end
-		]]--
-		-- Should now be covered by blanket CVAR_UPDATE event
+		ClassNameplateManaBarFrame:HookScript("OnShow", function(self) self:Hide() end)  -- Appears on level up
 	end
 end
 
@@ -138,9 +127,8 @@ function DriverFrame:UpdateNamePlateOptions()
 	local friendlyOptions = NephilistNameplates.FriendlyFrameOptions
 	enemyOptions.showClassColor = GetCVarBool("ShowClassColorInNameplate")
 	friendlyOptions.showClassColor = GetCVarBool("ShowClassColorInFriendlyNameplate")
-	-- enemyOptions.playLoseAggroHighlight = GetCVarBool("ShowNamePlateLoseAggroFlash")
 
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if IS_RETAIL then
 		local baseNamePlateWidth = 110
 		local baseNamePlateHeight = 45
 		-- local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"))
@@ -166,12 +154,12 @@ function DriverFrame:UpdateNamePlateOptions()
 end
 
 function DriverFrame:UpdateThreatRole()
-	if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+	if IS_RETAIL then
 		local spec = GetSpecialization()
 		if spec then
 			self.threatRole = GetSpecializationRole(spec)
 		end
-	elseif WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC then
+	elseif IS_CLASSIC_WRATH then
 		self.threatRole = GetTalentGroupRole(GetActiveTalentGroup())
 	end
 end
@@ -191,6 +179,9 @@ function DriverFrame:OnNamePlateAdded(unit)
 	unitFrame:SetUnit(unit)
 	unitFrame:SetOptions()
 	unitFrame:UpdateAll()
+	if IS_RETAIL then
+		self:OnSoftTargetUpdate()
+	end
 	self:UpdateClassResourceBar()
 end
 
@@ -202,4 +193,32 @@ end
 
 function DriverFrame:OnTargetChanged()
 	DriverFrame:UpdateClassResourceBar()  -- in Power.lua
+end
+
+function DriverFrame:OnSoftTargetUpdate()
+	local iconSize = tonumber(GetCVar("SoftTargetNameplateSize"))
+	local doEnemyIcon = GetCVarBool("SoftTargetIconEnemy")
+	local doFriendIcon = GetCVarBool("SoftTargetIconFriend")
+	local doInteractIcon = GetCVarBool("SoftTargetIconInteract")
+	for _, frame in pairs(C_NamePlate.GetNamePlates(issecure())) do
+		local icon = frame.UnitFrame.SoftTargetFrame.Icon
+		local hasCursorTexture = false
+		if iconSize > 0 then
+			if (doEnemyIcon and UnitIsUnit(frame.namePlateUnitToken, "softenemy")) or
+				(doFriendIcon and UnitIsUnit(frame.namePlateUnitToken, "softfriend")) or
+				(doInteractIcon and UnitIsUnit(frame.namePlateUnitToken, "softinteract"))
+			then
+				hasCursorTexture = SetUnitCursorTexture(icon, frame.namePlateUnitToken)
+			end
+		end
+		if hasCursorTexture then
+			icon:Show()
+		else
+			icon:Hide()
+		end
+	end
+end
+
+do
+	DriverFrame:OnLoad()
 end
