@@ -23,13 +23,11 @@ function UnitFrame:UpdatePowerBar()
 end
 
 function UnitFrame:UpdatePowerBarColor()
-	local powerToken = self.powerToken
 	local powerBar = self.powerBar
-	if powerToken then
-		local info = PowerBarColor[powerToken]
-		powerBar:SetStatusBarColor(info.r, info.g, info.b)
-		powerBar.background:SetColorTexture(0.15+info.r/5, 0.15+info.g/5, 0.15+info.b/5, 1)
-	end
+	local powerToken = self.powerToken or 0
+	local info = PowerBarColor[powerToken]
+	powerBar:SetStatusBarColor(info.r, info.g, info.b)
+	powerBar.background:SetColorTexture(0.15+info.r/5, 0.15+info.g/5, 0.15+info.b/5, 1)
 end
 
 function UnitFrame:UpdateMaxPower()
