@@ -33,9 +33,9 @@ function DriverFrame:OnLoad()
 	DriverFrame:RegisterEvent("NAME_PLATE_CREATED")
 	DriverFrame:RegisterEvent("NAME_PLATE_UNIT_ADDED")
 	DriverFrame:RegisterEvent("NAME_PLATE_UNIT_REMOVED")
-	DriverFrame:RegisterEvent("FORBIDDEN_NAME_PLATE_CREATED")
-	DriverFrame:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED")
-	DriverFrame:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_REMOVED")
+	-- DriverFrame:RegisterEvent("FORBIDDEN_NAME_PLATE_CREATED")
+	-- DriverFrame:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED")
+	-- DriverFrame:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_REMOVED")
 	DriverFrame:RegisterEvent("CVAR_UPDATE")
 	DriverFrame:RegisterEvent("DISPLAY_SIZE_CHANGED")
 	DriverFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
@@ -83,7 +83,7 @@ function DriverFrame:OnEvent(event, ...)
 		self:OnSoftTargetUpdate()
 	elseif event == "UPDATE_MOUSEOVER_UNIT" then
 		-- Fires OnEnter and OnLeave
-		local nameplate = C_NamePlate.GetNamePlateForUnit("mouseover")
+		local nameplate = C_NamePlate.GetNamePlateForUnit("mouseover", issecure())
 		if nameplate then 
 			nameplate.UnitFrame:ShowMouseoverHighlight()
 		end
@@ -173,22 +173,27 @@ function DriverFrame:OnNamePlateCreated(nameplate)
 end
 
 function DriverFrame:OnNamePlateAdded(unit)
-	local namePlate = C_NamePlate.GetNamePlateForUnit(unit)
-	local unitFrame = namePlate.UnitFrame
-	unitFrame:UpdateLayout()
-	unitFrame:SetUnit(unit)
-	unitFrame:SetOptions()
-	unitFrame:UpdateAll()
-	if IS_RETAIL then
-		self:OnSoftTargetUpdate()
+	local namePlate = C_NamePlate.GetNamePlateForUnit(unit, issecure())
+	if namePlate then
+		local unitFrame = namePlate.UnitFrame
+		unitFrame:UpdateLayout()
+		unitFrame:SetUnit(unit)
+		unitFrame:SetOptions()
+		unitFrame:UpdateAll()
+		if IS_RETAIL then
+			self:OnSoftTargetUpdate()
+		end
+		self:UpdateClassResourceBar()
 	end
-	self:UpdateClassResourceBar()
 end
 
 function DriverFrame:OnNamePlateRemoved(unit)
-	local namePlate = C_NamePlate.GetNamePlateForUnit(unit)
-	namePlate.UnitFrame:SetUnit(nil)
-	namePlate.UnitFrame.castBar:SetUnit(nil)
+	-- local namePlate = C_NamePlate.GetNamePlateForUnit(unit, issecure())
+	local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
+	if namePlate then
+		namePlate.UnitFrame:SetUnit(nil)
+		namePlate.UnitFrame.castBar:SetUnit(nil)
+	end
 end
 
 function DriverFrame:OnTargetChanged()

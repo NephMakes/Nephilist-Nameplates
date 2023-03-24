@@ -24,10 +24,10 @@ end
 
 function UnitFrame:UpdatePowerBarColor()
 	local powerBar = self.powerBar
-	local powerToken = self.powerToken or 0
-	local info = PowerBarColor[powerToken]
+	local powerToken = self.powerToken
+	local info = PowerBarColor[powerToken] or {r = 0.3, g = 0.3, b = 1}
 	powerBar:SetStatusBarColor(info.r, info.g, info.b)
-	powerBar.background:SetColorTexture(0.15+info.r/5, 0.15+info.g/5, 0.15+info.b/5, 1)
+	powerBar.background:SetColorTexture(0.15+info.r/6, 0.15+info.g/6, 0.15+info.b/6, 1)
 end
 
 function UnitFrame:UpdateMaxPower()
