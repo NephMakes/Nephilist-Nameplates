@@ -1,4 +1,4 @@
-## Interface: 30402
+## Interface: 40400
 ## Title: Nephilist Nameplates
 ## Version: 2.5.11
 ## Notes: Simple, effective nameplates
