@@ -1,6 +1,6 @@
-## Interface: 100207
+## Interface: 110000, 40400, 11503
 ## Title: Nephilist Nameplates
-## Version: 2.5.11
+## Version: 2.5.12
 ## Notes: Simple, effective nameplates
 ## Author: NephMakes / lieandswell
 ## SavedVariablesPerCharacter: NephilistNameplatesOptions

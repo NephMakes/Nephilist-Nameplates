@@ -1,4 +1,4 @@
---[[ Nephilist Options Library v0.7 ]]--
+--[[ Nephilist Options Library v0.8 ]]--
 
 -- Caveats: 
 --   CheckButton variables must be boolean (not 1/0)
@@ -42,23 +42,23 @@ local function UpdateTable(destination, source)
 end
 
 function MyAddon:UpdateOptions(savedVariablesName, defaults, reset)
-	local options = _G[savedVariablesName];
-	if ( options and not reset ) then
-		options = UpdateTable(options, defaults);
-		options.Version = GetAddOnMetadata(addonName, "Version");
+	local options = _G[savedVariablesName]
+	if options and not reset then
+		options = UpdateTable(options, defaults)
+		options.Version = C_AddOns.GetAddOnMetadata(addonName, "Version")
 	else
-		options = CopyTable(defaults); 
-		_G[savedVariablesName] = options;
+		options = CopyTable(defaults)
+		_G[savedVariablesName] = options
 	end
-	return options;
+	return options
 end
 
 function MyAddon:GetOption(optionName, options)
-	return options[optionName]; 
+	return options[optionName]
 end
 
 function MyAddon:SetOption(optionName, value, options)
-	options[optionName] = value; 
+	options[optionName] = value
 end
 
 
@@ -66,38 +66,44 @@ end
 
 function MyAddon:CreateOptionsPanel() 
 	local name = "InterfaceOptions"..addonName.."Panel"
-	-- local optionsPanel = CreateFrame("Frame", name, InterfaceOptionsFramePanelContainer); 
+	-- local optionsPanel = CreateFrame("Frame", name, InterfaceOptionsFramePanelContainer)
 		-- InterfaceOptionsFramePanelContainer removed in patch 10.0.0
-	local optionsPanel = CreateFrame("Frame", name); 
+	local optionsPanel = CreateFrame("Frame", name)
 
-	local title = GetAddOnMetadata(addonName, "Title");
-	local version = GetAddOnMetadata(addonName, "Version");
-	optionsPanel.title = optionsPanel:CreateFontString(nil, nil, "GameFontNormalLarge");
-	optionsPanel.title:SetPoint("TOPLEFT", 16, -16);
-	optionsPanel.title:SetText(title.." v"..version);
+	local title = C_AddOns.GetAddOnMetadata(addonName, "Title")
+	local version = C_AddOns.GetAddOnMetadata(addonName, "Version")
+	optionsPanel.title = optionsPanel:CreateFontString(nil, nil, "GameFontNormalLarge")
+	optionsPanel.title:SetPoint("TOPLEFT", 16, -16)
+	optionsPanel.title:SetText(title.." v"..version)
 
-	optionsPanel.subtext = optionsPanel:CreateFontString(nil, nil, "GameFontHighlightSmall");
-	optionsPanel.subtext:SetPoint("TOPLEFT", optionsPanel.title, "BOTTOMLEFT", 0, -8);
-	optionsPanel.subtext:SetPoint("RIGHT", optionsPanel, "RIGHT", -32, 0);
-	optionsPanel.subtext:SetJustifyH("LEFT");
-	optionsPanel.subtext:SetText("");
+	optionsPanel.subtext = optionsPanel:CreateFontString(nil, nil, "GameFontHighlightSmall")
+	optionsPanel.subtext:SetPoint("TOPLEFT", optionsPanel.title, "BOTTOMLEFT", 0, -8)
+	optionsPanel.subtext:SetPoint("RIGHT", optionsPanel, "RIGHT", -32, 0)
+	optionsPanel.subtext:SetJustifyH("LEFT")
+	optionsPanel.subtext:SetText("")
 
-	optionsPanel.CreateCheckButton = MyAddon.CreateCheckButton;
-	optionsPanel.CreateSlider = MyAddon.CreateSlider;
-	optionsPanel.CreateDropDownMenu = MyAddon.CreateDropDownMenu;
-	optionsPanel.CreateColorPicker = MyAddon.CreateColorPicker;
+	optionsPanel.CreateCheckButton = MyAddon.CreateCheckButton
+	optionsPanel.CreateSlider = MyAddon.CreateSlider
+	optionsPanel.CreateDropDownMenu = MyAddon.CreateDropDownMenu
+	optionsPanel.CreateColorPicker = MyAddon.CreateColorPicker
 
-	optionsPanel.name = addonName;
-	optionsPanel.refresh = MyAddon.OptionsPanelRefresh;
-	optionsPanel.cancel = MyAddon.OptionsPanelCancel;
-	optionsPanel.default = MyAddon.OptionsPanelDefaults;
-	optionsPanel.okay = MyAddon.OptionsPanelOkay;
-	InterfaceOptions_AddCategory(optionsPanel);
+	optionsPanel.name = addonName
+	optionsPanel.refresh = MyAddon.OptionsPanelRefresh  -- Deprecated
+	optionsPanel.cancel = MyAddon.OptionsPanelCancel  -- Deprecated
+	optionsPanel.default = MyAddon.OptionsPanelDefaults  -- Deprecated
+	optionsPanel.okay = MyAddon.OptionsPanelOkay  -- Deprecated
+	optionsPanel.OnCommit = MyAddon.OptionsPanelOkay
+	optionsPanel.OnCancel = MyAddon.OptionsPanelCancel
+	optionsPanel.OnDefault = MyAddon.OptionsPanelDefaults
+	optionsPanel.OnRefresh = MyAddon.OptionsPanelRefresh
+	local category, layout = Settings.RegisterCanvasLayoutCategory(optionsPanel, optionsPanel.name, optionsPanel.name)
+	category.ID = optionsPanel.name
+	Settings.RegisterAddOnCategory(category)
 
 	-- optionsPanel:RegisterEvent("ADDON_LOADED");
 	-- optionsPanel:SetScript("OnEvent",  MyAddon.OptionsPanel_OnEvent);
 
-	return optionsPanel;
+	return optionsPanel
 end
 -- Usage: 
 --   optionsPanel = MyAddon:CreateOptionsPanel()

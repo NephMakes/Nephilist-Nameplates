@@ -1,6 +1,10 @@
 # Changelog
 ## Nephilist Nameplates
 
+v2.5.12
+* Updated Table of Contents for patches 11.0.0, 1.15.3
+* Updated API calls for patch 11.0.0
+
 v2.5.11
 * Updated for Retail patch 10.2.7
 * Updated for Cataclysm Classic patch 4.4.0

@@ -20,7 +20,7 @@ NephilistNameplates.Defaults = {
 	PlayerPlateOutOfCombatAlpha = 0.2, 
 	PlayerPlatePosition = {"TOP", UIParent, "CENTER", 0, -150}, 
 	OnlyShowOwnBuffs = true, 
-	Version = GetAddOnMetadata(addonName, "Version")
+	Version = C_AddOns.GetAddOnMetadata(addonName, "Version")
 }
 
 
