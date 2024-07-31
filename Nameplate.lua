@@ -371,7 +371,7 @@ function UnitFrame:ShowMouseoverHighlight()
 	self:SetIgnoreParentAlpha(true)
 		-- Default UI behavior:
 		--   Classic: nontarget nameplates lower alpha when target exists
-		--   Retail:  alpha changes with distance
+		--   Retail: alpha changes with distance
 	self:SetScript("OnUpdate", self.UpdateMouseoverHighlight)
 end
 

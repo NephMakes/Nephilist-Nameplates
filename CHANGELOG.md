@@ -4,7 +4,7 @@
 v2.5.12
 * Updated Table of Contents for patches 11.0.0, 1.15.3
 * Updated API calls for patch 11.0.0
-* Fixed bug with soft targets
+* Fixed lua error with soft targets
 
 v2.5.11
 * Updated for Retail patch 10.2.7
