@@ -14,6 +14,7 @@ local UnitFrame = NephilistNameplates.UnitFrame
 local PlayerPlate = NephilistNameplates.PlayerPlate
 
 local IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+local IS_CLASSIC_CATA = WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC
 local IS_CLASSIC_WRATH = WOW_PROJECT_ID == WOW_PROJECT_WRATH_CLASSIC
 local IS_CLASSIC_ERA = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
@@ -44,6 +45,14 @@ function DriverFrame:OnLoad()
 	if IS_RETAIL then
 		DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
 		DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+		self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED")
+		self:RegisterEvent("PLAYER_SOFT_FRIEND_CHANGED")
+		self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED")
+	elseif IS_CLASSIC_CATA then
+		DriverFrame:RegisterEvent("ACTIVE_TALENT_GROUP_CHANGED")
+		DriverFrame:RegisterEvent("PLAYER_TALENT_UPDATE")
+		DriverFrame:RegisterEvent("TALENT_GROUP_ROLE_CHANGED")
+		-- Not yet implemented: 
 		self:RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED")
 		self:RegisterEvent("PLAYER_SOFT_FRIEND_CHANGED")
 		self:RegisterEvent("PLAYER_SOFT_ENEMY_CHANGED")
@@ -208,7 +217,7 @@ function DriverFrame:OnSoftTargetUpdate()
 	for _, frame in pairs(C_NamePlate.GetNamePlates(issecure())) do
 		local icon = frame.UnitFrame.SoftTargetFrame.Icon
 		local hasCursorTexture = false
-		if iconSize > 0 then
+		if frame.namePlateUnitToken and iconSize > 0 then
 			if (doEnemyIcon and UnitIsUnit(frame.namePlateUnitToken, "softenemy")) or
 				(doFriendIcon and UnitIsUnit(frame.namePlateUnitToken, "softfriend")) or
 				(doInteractIcon and UnitIsUnit(frame.namePlateUnitToken, "softinteract"))
