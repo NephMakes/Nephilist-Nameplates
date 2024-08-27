@@ -37,58 +37,62 @@ end
 
 function CastBar:SetUnit(unit)
 	-- Called by CastBar:OnLoad(), NephilistNameplates.UnitFrame:UpdateCastBar()
-	if self.unit ~= unit then
-		self.unit = unit
+	if self.unit == unit then return end  -- Job's done
 
-		self.casting = nil
-		self.channeling = nil
-		self.holdTime = 0
-		self.fadeOut = nil
+	self.unit = unit
+	self.casting = nil
+	self.channeling = nil
+	self.holdTime = 0
+	self.fadeOut = nil
 
-		if unit then
-			self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-			self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE")
-			self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
-			self:RegisterEvent("UNIT_SPELLCAST_DELAYED")
-			self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-			self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
-			self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-			self:RegisterEvent("PLAYER_ENTERING_WORLD")
-			self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit)
-			self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit)
-			self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit)
-
-			self:OnEvent("PLAYER_ENTERING_WORLD")
-		else
-			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE")
-			self:UnregisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
-			self:UnregisterEvent("UNIT_SPELLCAST_DELAYED")
-			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
-			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-			self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-			self:UnregisterEvent("UNIT_SPELLCAST_START")
-			self:UnregisterEvent("UNIT_SPELLCAST_STOP")
-			self:UnregisterEvent("UNIT_SPELLCAST_FAILED")
-
-			self:Hide()
-		end
+	if unit then
+		self:RegisterEvents(unit)
+		self:OnEvent("PLAYER_ENTERING_WORLD")
+	else
+		self:UnregisterEvents()
+		self:Hide()
 	end
 end
 
+function CastBar:RegisterEvents(unit)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE")
+	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
+	self:RegisterEvent("UNIT_SPELLCAST_DELAYED")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
+	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit)
+	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit)
+	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit)
+end
+
+function CastBar:UnregisterEvents()
+	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+	self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE")
+	self:UnregisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
+	self:UnregisterEvent("UNIT_SPELLCAST_DELAYED")
+	self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+	self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
+	self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
+	self:UnregisterEvent("UNIT_SPELLCAST_START")
+	self:UnregisterEvent("UNIT_SPELLCAST_STOP")
+	self:UnregisterEvent("UNIT_SPELLCAST_FAILED")
+end
+
 function CastBar:OnShow()
-	if self.unit then
-		if self.casting then
-			local _, _, _, startTime = UnitCastingInfo(self.unit)
-			if startTime then
-				self.value = GetTime() - (startTime / 1000)
-			end
-		else
-			local _, _, _, _, endTime = UnitChannelInfo(self.unit)
-			if endTime then
-				self.value = (endTime / 1000) - GetTime()
-			end
+	if not self.unit then return end
+	if self.casting then
+		local _, _, _, startTime = UnitCastingInfo(self.unit)
+		if startTime then
+			self.value = GetTime() - (startTime / 1000)
+		end
+	else
+		local _, _, _, _, endTime = UnitChannelInfo(self.unit)
+		if endTime then
+			self.value = (endTime / 1000) - GetTime()
 		end
 	end
 end
