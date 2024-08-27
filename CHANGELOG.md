@@ -1,6 +1,9 @@
 # Changelog
 ## Nephilist Nameplates
 
+vX.X.X
+* Fixed: Castbars now show if they become interruptible mid-cast
+
 v2.5.12
 * Updated Table of Contents for patches 11.0.0, 1.15.3
 * Updated API calls for patch 11.0.0

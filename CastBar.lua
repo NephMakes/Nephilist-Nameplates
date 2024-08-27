@@ -47,6 +47,8 @@ function CastBar:SetUnit(unit)
 
 		if unit then
 			self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+			self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE")
+			self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
 			self:RegisterEvent("UNIT_SPELLCAST_DELAYED")
 			self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 			self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
@@ -59,6 +61,8 @@ function CastBar:SetUnit(unit)
 			self:OnEvent("PLAYER_ENTERING_WORLD")
 		else
 			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTED")
+			self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE")
+			self:UnregisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
 			self:UnregisterEvent("UNIT_SPELLCAST_DELAYED")
 			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_START")
 			self:UnregisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
