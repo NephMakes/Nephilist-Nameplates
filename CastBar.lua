@@ -36,15 +36,13 @@ function CastBar:OnLoad()
 end
 
 function CastBar:SetUnit(unit)
-	-- Called by CastBar:OnLoad(), NephilistNameplates.UnitFrame:UpdateCastBar()
+	-- Called by CastBar:OnLoad, NephilistNameplates.UnitFrame:UpdateCastBar
 	if self.unit == unit then return end  -- Job's done
-
 	self.unit = unit
 	self.casting = nil
 	self.channeling = nil
 	self.holdTime = 0
 	self.fadeOut = nil
-
 	if unit then
 		self:RegisterEvents(unit)
 		self:OnEvent("PLAYER_ENTERING_WORLD")
@@ -119,45 +117,14 @@ function CastBar:OnEvent(event, ...)
 		end
 	end
 
-	if arg1 ~= unit then
-		return
-	end
+	if arg1 ~= unit then return end
 
 	if event == "UNIT_SPELLCAST_START" then
-		local name, text, _, startTime, endTime, _, castID, notInterruptible = UnitCastingInfo(unit)
-		self.notInterruptible = notInterruptible
-
-		if not name then
-			self:Hide()
-			return
-		end
-
-		local startColor = self:GetEffectiveStartColor(false)
-		self:SetStatusBarColor(startColor:GetRGB())
-		
-		self.Spark:Show()
-		self.value = GetTime() - (startTime / 1000)
-		self.maxValue = (endTime - startTime) / 1000
-		self:SetMinMaxValues(0, self.maxValue)
-		self:SetValue(self.value)
-		self.Text:SetText(text)
-		self:SetAlpha(1)
-
-		self.holdTime = 0
-		self.casting = true
-		self.castID = castID
-		self.channeling = nil
-		self.fadeOut = nil
-
-		if notInterruptible then
-			self.BorderShield:Show()
-		else
-			self.BorderShield:Hide()
-		end
-		self:Show()
+		self:UNIT_SPELLCAST_START(unit)
 	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" then
 		if not self:IsVisible() then
 			self:Hide()
+			return
 		end
 		if (self.casting and event == "UNIT_SPELLCAST_STOP" and select(2, ...) == self.castID) or
 			(self.channeling and event == "UNIT_SPELLCAST_CHANNEL_STOP") 
@@ -195,80 +162,139 @@ function CastBar:OnEvent(event, ...)
 			self.holdTime = GetTime() + HOLD_TIME
 		end
 	elseif event == "UNIT_SPELLCAST_DELAYED" then
-		if self:IsShown() then
-			local name, _, _, startTime, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
-			self.notInterruptible = notInterruptible
-			if not name then
-				self:Hide()
-				return
-			end
-			self.value = GetTime() - (startTime / 1000)
-			self.maxValue = (endTime - startTime) / 1000
-			self:SetMinMaxValues(0, self.maxValue)
-			if not self.casting then
-				self:SetStatusBarColor(self:GetEffectiveStartColor(false):GetRGB())
-				self.Spark:Show()
-				self.Flash:SetAlpha(0)
-				self.Flash:Hide()
-				self.casting = true
-				self.channeling = nil
-				self.flash = nil
-				self.fadeOut = nil
-			end
-		end
+		self:UNIT_SPELLCAST_DELAYED(unit)
 	elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
-		local name, text, _, startTime, endTime, _, notInterruptible, _ = UnitChannelInfo(unit)
-		self.notInterruptible = notInterruptible
-		if not name then
-			self:Hide()
-			return
-		end
-		local startColor = self:GetEffectiveStartColor(true)
-		self:SetStatusBarColor(startColor:GetRGB())
-		self.value = (endTime / 1000) - GetTime()
-		self.maxValue = (endTime - startTime) / 1000
-		self:SetMinMaxValues(0, self.maxValue)
-		self:SetValue(self.value)
-		self.Text:SetText(text)
-		self.Spark:Hide()
-		self:SetAlpha(1)
-		self.holdTime = 0
-		self.casting = nil
-		self.channeling = true
-		self.fadeOut = nil
-		if notInterruptible then
-			self.BorderShield:Show()
-		else
-			self.BorderShield:Hide()
-		end
-		self:Show()
+		self:UNIT_SPELLCAST_CHANNEL_START(unit)
 	elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
-		if self:IsShown() then
-			local name, _, _, startTime, endTime, _ = UnitChannelInfo(unit)
-			if not name then
-				self:Hide()
-				return
-			end
-			self.value = (endTime / 1000) - GetTime()
-			self.maxValue = (endTime - startTime) / 1000
-			self:SetMinMaxValues(0, self.maxValue)
-			self:SetValue(self.value)
-		end
-	elseif event == "UNIT_SPELLCAST_INTERRUPTIBLE" or 
-		event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" 
-	then
-		self:UpdateInterruptibleState(event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
+		self:UNIT_SPELLCAST_CHANNEL_UPDATE(unit)
+	elseif event == "UNIT_SPELLCAST_INTERRUPTIBLE" then
+		self:UNIT_SPELLCAST_INTERRUPTIBLE()
+	elseif event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" then
+		self:UNIT_SPELLCAST_NOT_INTERRUPTIBLE()
 	end
 end
 
-function CastBar:UpdateInterruptibleState(notInterruptible)
+function CastBar:UNIT_SPELLCAST_START(unit)
+	local name, text, _, startTime, endTime, _, castID, notInterruptible = UnitCastingInfo(unit)
+	self.notInterruptible = notInterruptible
+
+	if not name then
+		self:Hide()
+		return
+	end
+
+	local startColor = self:GetEffectiveStartColor(false)
+	self:SetStatusBarColor(startColor:GetRGB())
+	
+	self.Spark:Show()
+	self.value = GetTime() - (startTime / 1000)
+	self.maxValue = (endTime - startTime) / 1000
+	self:SetMinMaxValues(0, self.maxValue)
+	self:SetValue(self.value)
+	self.Text:SetText(text)
+	self:SetAlpha(1)
+
+	self.holdTime = 0
+	self.casting = true
+	self.castID = castID
+	self.channeling = nil
+	self.fadeOut = nil
+
+	if notInterruptible then
+		self.BorderShield:Show()
+	else
+		self.BorderShield:Hide()
+	end
+	self:Show()
+end
+
+function CastBar:UNIT_SPELLCAST_DELAYED(unit)
+	if not self:IsShown() then return end
+
+	local name, _, _, startTime, endTime, _, _, notInterruptible = UnitCastingInfo(unit)
+	self.notInterruptible = notInterruptible
+
+	if not name then
+		self:Hide()
+		return
+	end
+
+	self.value = GetTime() - (startTime / 1000)
+	self.maxValue = (endTime - startTime) / 1000
+	self:SetMinMaxValues(0, self.maxValue)
+	if not self.casting then
+		self:SetStatusBarColor(self:GetEffectiveStartColor(false):GetRGB())
+		self.Spark:Show()
+		self.Flash:SetAlpha(0)
+		self.Flash:Hide()
+		self.casting = true
+		self.channeling = nil
+		self.flash = nil
+		self.fadeOut = nil
+	end
+end
+
+function CastBar:UNIT_SPELLCAST_CHANNEL_START(unit)
+	local name, text, _, startTime, endTime, _, notInterruptible, _ = UnitChannelInfo(unit)
+	self.notInterruptible = notInterruptible
+
+	if not name then
+		self:Hide()
+		return
+	end
+
+	local startColor = self:GetEffectiveStartColor(true)
+	self:SetStatusBarColor(startColor:GetRGB())
+	self.value = (endTime / 1000) - GetTime()
+	self.maxValue = (endTime - startTime) / 1000
+	self:SetMinMaxValues(0, self.maxValue)
+	self:SetValue(self.value)
+	self.Text:SetText(text)
+	self.Spark:Hide()
+	self:SetAlpha(1)
+
+	self.holdTime = 0
+	self.casting = nil
+	self.channeling = true
+	self.fadeOut = nil
+
+	if notInterruptible then
+		self.BorderShield:Show()
+	else
+		self.BorderShield:Hide()
+	end
+	self:Show()
+end
+
+function CastBar:UNIT_SPELLCAST_CHANNEL_UPDATE(unit)
+	if not self:IsShown() then return end
+	local name, _, _, startTime, endTime, _ = UnitChannelInfo(unit)
+	if not name then
+		self:Hide()
+		return
+	end
+	self.value = (endTime / 1000) - GetTime()
+	self.maxValue = (endTime - startTime) / 1000
+	self:SetMinMaxValues(0, self.maxValue)
+	self:SetValue(self.value)
+end
+
+function CastBar:UNIT_SPELLCAST_INTERRUPTIBLE()
+	self:UpdateInterruptible(true)
+end
+
+function CastBar:UNIT_SPELLCAST_NOT_INTERRUPTIBLE()
+	self:UpdateInterruptible(false)
+end
+
+function CastBar:UpdateInterruptible(isInterruptible)
 	if self.casting or self.channeling then
 		local startColor = self:GetEffectiveStartColor(self.channeling)
 		self:SetStatusBarColor(startColor:GetRGB())
-		if notInterruptible then
-			self.BorderShield:Show()
-		else
+		if isInterruptible then
 			self.BorderShield:Hide()
+		else
+			self.BorderShield:Show()
 		end
 	end
 end
