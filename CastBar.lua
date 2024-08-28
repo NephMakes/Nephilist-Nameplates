@@ -54,21 +54,21 @@ function CastBar:SetUnit(unit)
 end
 
 function CastBar:RegisterEvents(unit)
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	-- self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterUnitEvent("UNIT_SPELLCAST_START", unit)
 	self:RegisterUnitEvent("UNIT_SPELLCAST_STOP", unit)
 	self:RegisterUnitEvent("UNIT_SPELLCAST_FAILED", unit)
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_UPDATE")
-	self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-	self:RegisterEvent("UNIT_SPELLCAST_DELAYED")
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
-	self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE")
-	self:RegisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
+	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", unit)
+	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_UPDATE", unit)
+	self:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_STOP", unit)
+	self:RegisterUnitEvent("UNIT_SPELLCAST_DELAYED", unit)
+	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTED", unit)
+	self:RegisterUnitEvent("UNIT_SPELLCAST_INTERRUPTIBLE", unit)
+	self:RegisterUnitEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE", unit)
 end
 
 function CastBar:UnregisterEvents()
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	-- self:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	self:UnregisterEvent("UNIT_SPELLCAST_START")
 	self:UnregisterEvent("UNIT_SPELLCAST_STOP")
 	self:UnregisterEvent("UNIT_SPELLCAST_FAILED")
@@ -98,7 +98,6 @@ function CastBar:OnShow()
 end
 
 function CastBar:OnEvent(event, unit, ...)
-	if unit ~= self.unit then return end
 	local eventFunction = self[event]
 	if eventFunction then
 		eventFunction(self, unit, ...)
@@ -107,6 +106,8 @@ end
 
 function CastBar:PLAYER_ENTERING_WORLD(unit)
 	-- Check if cast in progress
+	-- Will only have valid unit when called by castbar:SetUnit 
+	-- (not castbar:OnEvent)
 	local channelName = UnitChannelInfo(unit)
 	local castName = UnitCastingInfo(unit)
 	if channelName then

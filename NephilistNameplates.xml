@@ -197,7 +197,8 @@
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<FontString parentKey="Text" inherits="FriendsFont_Small" text="Spell Name Here">
 							<Anchors>
-								<Anchor point="CENTER" x="0" y="-1"/>
+								<Anchor point="TOPLEFT" x="5" y="-1"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="-1"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield">
