@@ -101,27 +101,15 @@ end
 
 function CastBar:OnEvent(event, ...)
 	local arg1 = ...
-
 	local unit = self.unit
-	if event == "PLAYER_ENTERING_WORLD" then
-		local nameChannel = UnitChannelInfo(unit)
-		local nameSpell = UnitCastingInfo(unit)
-		if nameChannel then
-			event = "UNIT_SPELLCAST_CHANNEL_START"
-			arg1 = unit
-		elseif nameSpell then
-			event = "UNIT_SPELLCAST_START"
-			arg1 = unit
-		else
-			self:FinishSpell()
-		end
-	end
-
 	if arg1 ~= unit then return end
 
-	if event == "UNIT_SPELLCAST_START" then
-		self:UNIT_SPELLCAST_START(unit)
-	elseif event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" then
+	local eventFunction = self[event]
+	if eventFunction then
+		eventFunction(self, unit, ...)
+	end
+
+	if event == "UNIT_SPELLCAST_STOP" or event == "UNIT_SPELLCAST_CHANNEL_STOP" then
 		if not self:IsVisible() then
 			self:Hide()
 			return
@@ -161,16 +149,19 @@ function CastBar:OnEvent(event, ...)
 			self.fadeOut = true
 			self.holdTime = GetTime() + HOLD_TIME
 		end
-	elseif event == "UNIT_SPELLCAST_DELAYED" then
-		self:UNIT_SPELLCAST_DELAYED(unit)
-	elseif event == "UNIT_SPELLCAST_CHANNEL_START" then
+	end
+end
+
+function CastBar:PLAYER_ENTERING_WORLD(unit)
+	-- Check if cast in progress
+	local channelName = UnitChannelInfo(unit)
+	local castName = UnitCastingInfo(unit)
+	if channelName then
 		self:UNIT_SPELLCAST_CHANNEL_START(unit)
-	elseif event == "UNIT_SPELLCAST_CHANNEL_UPDATE" then
-		self:UNIT_SPELLCAST_CHANNEL_UPDATE(unit)
-	elseif event == "UNIT_SPELLCAST_INTERRUPTIBLE" then
-		self:UNIT_SPELLCAST_INTERRUPTIBLE()
-	elseif event == "UNIT_SPELLCAST_NOT_INTERRUPTIBLE" then
-		self:UNIT_SPELLCAST_NOT_INTERRUPTIBLE()
+	elseif castName then
+		self:UNIT_SPELLCAST_START(unit)
+	else
+		self:FinishSpell()
 	end
 end
 
