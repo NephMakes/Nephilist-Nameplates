@@ -197,13 +197,13 @@
 					<Layer level="OVERLAY" textureSubLevel="1">
 						<FontString parentKey="Text" inherits="FriendsFont_Small" text="Spell Name Here">
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="CENTER" x="0" y="-1"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="BorderShield" atlas="nameplates-InterruptShield">
 							<Size x="15" y="15"/>
 							<Anchors>
-								<Anchor point="CENTER" relativePoint="LEFT" x="-1" y="0"/>
+								<Anchor point="CENTER" relativePoint="LEFT" x="-1.5" y="-0.5"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -284,7 +284,7 @@
 				<FontString parentKey="levelText" inherits="SystemFont_NamePlate" justifyH="LEFT" text="Unit level here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
 					<Anchors>
-						<Anchor point="LEFT" relativeKey="$parent.healthBar.border" relativePoint="RIGHT" x="2.5" y="-1" />
+						<Anchor point="LEFT" relativeKey="$parent.healthBar.border" relativePoint="RIGHT" x="4" y="-1" />
 					</Anchors>
 				</FontString>
 			</Layer>
