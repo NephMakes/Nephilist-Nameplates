@@ -282,7 +282,7 @@
 			</Layer>
 		<!-- Level text -->
 			<Layer level="OVERLAY">
-				<FontString parentKey="levelText" inherits="SystemFont_NamePlate" justifyH="LEFT" text="Unit level here">
+				<FontString parentKey="levelText" inherits="FriendsFont_Small" justifyH="LEFT" text="Unit level here">
 					<Color r="0.7" g="0.7" b="0.7" a="1"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.healthBar.border" relativePoint="RIGHT" x="4" y="-1" />

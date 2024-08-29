@@ -42,7 +42,7 @@ local BORDER_MIN_PIXELS = 2
 local UnitHasVehicleUI = UnitHasVehicleUI or function(unit) return false end  
 
 
---[[ UnitFrame ]]-- 
+--[[ Setup ]]-- 
 
 -- "UnitFrame" here is non-interactable frame we attach to Blizz "Nameplate#"
 
@@ -81,10 +81,11 @@ function UnitFrame:OnNamePlateAdded(unit)
 	self:UpdateAll()
 end
 
-function UnitFrame:OnNamePlateRemoved(unit)
+function UnitFrame:OnNamePlateRemoved()
 	self:SetUnit(nil)
 	self:UnregisterEvents()
 	self.castBar:SetUnit(nil)
+	self.currentHealth = nil
 end
 
 function UnitFrame:SetUnit(unit)
@@ -115,39 +116,42 @@ end
 
 function UnitFrame:RegisterEvents()
 	-- Call after UnitFrame:SetOptions
-	self:SetScript("OnEvent", UnitFrame.OnEvent)
-	self:RegisterEvent("UNIT_NAME_UPDATE")
+	-- self:SetScript("OnEvent", UnitFrame.OnEvent)
+	self:SetScript("OnEvent", self.OnEvent)
+	local unit = self.unit
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("UNIT_PET")
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE")
 	self:RegisterEvent("RAID_TARGET_UPDATE")
-	self:RegisterEvent("UNIT_FACTION")
-	-- self:RegisterEvent("UNIT_CONNECTION")
+	self:RegisterUnitEvent("UNIT_PET", unit)
+	self:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", unit)
+	self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", unit)
+	self:RegisterUnitEvent("UNIT_FACTION", unit)
+	self:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
+	-- self:RegisterEvent("UNIT_CONNECTION", unit)
 	self:UpdateEvents()
 end
 
 function UnitFrame:UpdateEvents()
 	-- Events affected if unit in vehicle
 	-- Called by UnitFrame:RegisterEvents, UnitFrame:UpdateInVehicle
+	local unit = self.unit
 	local displayedUnit
-	if self.unit ~= self.displayedUnit then
+	if unit ~= self.displayedUnit then
 		displayedUnit = self.displayedUnit
 	end
-	self:RegisterUnitEvent("UNIT_MAXHEALTH", self.unit, displayedUnit)
-	self:RegisterUnitEvent("UNIT_HEALTH", self.unit, displayedUnit)
-	if UnitIsUnit("player", self.unit) then
-		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", self.unit, displayedUnit)
-		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", self.unit, displayedUnit)
-		self:RegisterUnitEvent("UNIT_MAXPOWER", self.unit, displayedUnit)
+	self:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit)
+	self:RegisterUnitEvent("UNIT_MAXHEALTH", unit, displayedUnit)
+	if UnitIsUnit("player", unit) then
+		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit, displayedUnit)
 	end
 	if self.showBuffs then
-		self:RegisterUnitEvent("UNIT_AURA", self.unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit)
 	end
 	if self.showThreat then
-		self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", self.unit, displayedUnit)
-		self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", self.unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", unit, displayedUnit)
 	end
 end
 
@@ -173,6 +177,9 @@ function UnitFrame:UpdateLayout()
 	PixelUtil.SetPoint(selectionBorder, "TOPLEFT", healthBar, "TOPLEFT", -BORDER_SIZE, BORDER_SIZE, -BORDER_MIN_PIXELS, BORDER_MIN_PIXELS)
 	PixelUtil.SetPoint(selectionBorder, "BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", BORDER_SIZE, -BORDER_SIZE, BORDER_MIN_PIXELS, -BORDER_MIN_PIXELS)
 end
+
+
+--[[ Action ]]-- 
 
 function UnitFrame:UpdateAll()
 	self:UpdateInVehicle()
@@ -223,7 +230,7 @@ function UnitFrame:UpdateName()
 		if unitLevel == -1 or classification == "worldboss" then
 			self.name:SetTextColor(1.0, 0.6, 0.0)  -- Orange
 		elseif classification == "rare" or classification == "rareelite" then
-			self.name:SetTextColor(0.3, 0.3, 1.0)  -- Blue
+			self.name:SetTextColor(0.4, 0.4, 1.0)  -- Blue
 		else
 			self.name:SetTextColor(0.7, 0.7, 0.7)  -- Light grey
 		end
@@ -314,18 +321,23 @@ end
 
 function UnitFrame:UpdateHealth() 
 	local currentHealth = UnitHealth(self.displayedUnit)
-	if not self.currentHealth then
-		self.currentHealth = currentHealth
-	end
-	if currentHealth ~= self.currentHealth then
-		self.healthBar:SetValue(currentHealth)
-		if self.showLossBar then
-			self.lossBar:UpdateHealth(currentHealth, self.currentHealth)
+	if self.currentHealth then
+		-- We've seen this before
+		if currentHealth ~= self.currentHealth then 
+			-- Health has changed
+			self.healthBar:SetValue(currentHealth)
+			if self.showLossBar then
+				self.lossBar:UpdateHealth(currentHealth, self.currentHealth)
+			end
+			self.currentHealth = currentHealth
 		end
+		if self.showLossBar then
+			self.lossBar:UpdateAnimation(currentHealth)
+		end
+	else 
+		-- We haven't seen this before
+		self.healthBar:SetValue(currentHealth)
 		self.currentHealth = currentHealth
-	end
-	if self.showLossBar then
-		self.lossBar:UpdateAnimation(currentHealth)
 	end
 end
 
@@ -484,46 +496,9 @@ function UnitFrame:UpdateCastBar()
 	end
 end
 
-function UnitFrame:OnEvent(event, ...)
-	local arg1, arg2, arg3, arg4 = ...
-	if event == "PLAYER_TARGET_CHANGED" then
-		self:UpdateSelectionHighlight()
-	elseif event == "PLAYER_ENTERING_WORLD" then
-		self:UpdateAll()
-	elseif event == "RAID_TARGET_UPDATE" then
-		self:UpdateRaidTarget()
-	elseif event == "UNIT_POWER_FREQUENT" then 
-		self:UpdatePower()
-	elseif event == "UNIT_MAXPOWER" then 
-		self:UpdateMaxPower()
-	elseif event == "UNIT_DISPLAYPOWER" then 
-		self:UpdatePowerBar()
-	elseif arg1 == self.unit or arg1 == self.displayedUnit then
-		if event == "UNIT_HEALTH" or event == "UNIT_HEALTH_FREQUENT" then
-			self:UpdateHealth()
-		elseif event == "UNIT_MAXHEALTH" then
-			self:UpdateMaxHealth()
-			self:UpdateHealth()
-		elseif event == "UNIT_AURA" then
-			self:UpdateBuffs()
-		elseif event == "UNIT_THREAT_LIST_UPDATE" or event == "UNIT_THREAT_SITUATION_UPDATE" then
-			if self.optionTable.considerSelectionInCombatAsHostile then
-				self:UpdateName()  -- We've been bamboozled! 
-				self:UpdateThreat()
-			end
-		elseif event == "UNIT_NAME_UPDATE" then
-			self:UpdateName()
-			self:UpdateHealthColor()  -- Event can signal we now know unit class
-		elseif event == "UNIT_FACTION" then
-			self:UpdateName()
-			self:UpdateHealthColor()
-		elseif event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_PET" then
-			self:UpdateAll()
-		end
-	end
-end
 
---[[
+--[[ Events ]]--
+
 function UnitFrame:OnEvent(event, unit, ...)
 	local eventFunction = self[event]
 	if eventFunction then
@@ -540,10 +515,6 @@ function UnitFrame:PLAYER_TARGET_CHANGED()
 end
 
 function UnitFrame:UNIT_HEALTH()
-	self:UpdateHealth()
-end
-
-function UnitFrame:UNIT_HEALTH_FREQUENT()
 	self:UpdateHealth()
 end
 
@@ -608,5 +579,4 @@ function UnitFrame:UNIT_NAME_UPDATE(unit)
 	self:UpdateHealthColor()  -- Event can signal we now know unit class
 end
 
-]]--
 
