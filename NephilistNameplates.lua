@@ -179,17 +179,13 @@ function DriverFrame:OnNamePlateCreated(nameplate)
 	unitFrame:SetAllPoints()
 	unitFrame:EnableMouse(false)
 	Mixin(unitFrame, UnitFrame)  -- Inherit UnitFrame:Methods()
-	unitFrame:Initialize()
+	unitFrame:OnLoad()
 end
 
 function DriverFrame:OnNamePlateAdded(unit)
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit, issecure())
 	if namePlate then
-		local unitFrame = namePlate.UnitFrame
-		unitFrame:UpdateLayout()
-		unitFrame:SetUnit(unit)
-		unitFrame:SetOptions()
-		unitFrame:UpdateAll()
+		namePlate.UnitFrame:OnNamePlateAdded(unit)
 		if IS_RETAIL then
 			self:OnSoftTargetUpdate()
 		end
@@ -201,8 +197,7 @@ function DriverFrame:OnNamePlateRemoved(unit)
 	-- local namePlate = C_NamePlate.GetNamePlateForUnit(unit, issecure())
 	local namePlate = C_NamePlate.GetNamePlateForUnit(unit, false)
 	if namePlate then
-		namePlate.UnitFrame:SetUnit(nil)
-		namePlate.UnitFrame.castBar:SetUnit(nil)
+		namePlate.UnitFrame:OnNamePlateRemoved()
 	end
 end
 

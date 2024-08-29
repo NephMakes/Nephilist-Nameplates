@@ -38,14 +38,15 @@ local BAR_HEIGHT_MIN_PIXELS = 5
 local BORDER_SIZE = 1
 local BORDER_MIN_PIXELS = 2
 
-local UnitHasVehicleUI = UnitHasVehicleUI or function(unit) return false end  -- Retail/Wrath or Classic Era
+-- No UnitHasVehicleUI() in Classic Era
+local UnitHasVehicleUI = UnitHasVehicleUI or function(unit) return false end  
 
 
 --[[ UnitFrame ]]-- 
 
--- "UnitFrame" here is non-interactable frame we attach to Blizz "Nameplate#" frames
+-- "UnitFrame" here is non-interactable frame we attach to Blizz "Nameplate#"
 
-function UnitFrame:Initialize()
+function UnitFrame:OnLoad()
 	self.healthBackground:SetAllPoints(self.healthBar)
 	self.selectionBorder = self.healthBar.selectionBorder
 
@@ -72,6 +73,89 @@ function UnitFrame:Initialize()
 	self.castBar:OnLoad()
 end
 
+function UnitFrame:OnNamePlateAdded(unit)
+	self:SetUnit(unit)
+	self:SetOptions()
+	self:RegisterEvents()
+	self:UpdateLayout()
+	self:UpdateAll()
+end
+
+function UnitFrame:OnNamePlateRemoved(unit)
+	self:SetUnit(nil)
+	self:UnregisterEvents()
+	self.castBar:SetUnit(nil)
+end
+
+function UnitFrame:SetUnit(unit)
+	self.unit = unit
+	self.displayedUnit = unit  -- For vehicles
+	self.inVehicle = false
+end
+
+function UnitFrame:SetOptions()
+	-- Call before UnitFrame:RegisterEvents
+	if UnitIsUnit("player", self.unit) then
+		self.optionTable = PlayerFrameOptions
+	elseif UnitIsFriend("player", self.unit) then
+		self.optionTable = FriendlyFrameOptions
+	else
+		self.optionTable = EnemyFrameOptions
+	end
+
+	local options = NephilistNameplatesOptions  -- Saved variable
+	self.showBuffs = options.ShowBuffs
+	self.onlyShowOwnBuffs = options.OnlyShowOwnBuffs
+	self.showLevel = options.ShowLevel
+	self.showThreat = options.ShowThreat
+	self.threatRole = DriverFrame.threatRole
+	self.showThreatOnlyInGroup = options.ShowThreatOnlyInGroup
+	self.showLossBar = options.ShowLossBar
+end
+
+function UnitFrame:RegisterEvents()
+	-- Call after UnitFrame:SetOptions
+	self:SetScript("OnEvent", UnitFrame.OnEvent)
+	self:RegisterEvent("UNIT_NAME_UPDATE")
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	self:RegisterEvent("UNIT_PET")
+	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
+	self:RegisterEvent("UNIT_EXITED_VEHICLE")
+	self:RegisterEvent("RAID_TARGET_UPDATE")
+	self:RegisterEvent("UNIT_FACTION")
+	-- self:RegisterEvent("UNIT_CONNECTION")
+	self:UpdateEvents()
+end
+
+function UnitFrame:UpdateEvents()
+	-- Events affected if unit in vehicle
+	-- Called by UnitFrame:RegisterEvents, UnitFrame:UpdateInVehicle
+	local displayedUnit
+	if self.unit ~= self.displayedUnit then
+		displayedUnit = self.displayedUnit
+	end
+	self:RegisterUnitEvent("UNIT_MAXHEALTH", self.unit, displayedUnit)
+	self:RegisterUnitEvent("UNIT_HEALTH", self.unit, displayedUnit)
+	if UnitIsUnit("player", self.unit) then
+		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", self.unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", self.unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_MAXPOWER", self.unit, displayedUnit)
+	end
+	if self.showBuffs then
+		self:RegisterUnitEvent("UNIT_AURA", self.unit, displayedUnit)
+	end
+	if self.showThreat then
+		self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", self.unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", self.unit, displayedUnit)
+	end
+end
+
+function UnitFrame:UnregisterEvents()
+	self:SetScript("OnEvent", nil)
+	self:UnregisterAllEvents()
+end
+
 function UnitFrame:UpdateLayout()
 	local healthBar = self.healthBar
 	local powerBar = self.powerBar
@@ -88,128 +172,6 @@ function UnitFrame:UpdateLayout()
 
 	PixelUtil.SetPoint(selectionBorder, "TOPLEFT", healthBar, "TOPLEFT", -BORDER_SIZE, BORDER_SIZE, -BORDER_MIN_PIXELS, BORDER_MIN_PIXELS)
 	PixelUtil.SetPoint(selectionBorder, "BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", BORDER_SIZE, -BORDER_SIZE, BORDER_MIN_PIXELS, -BORDER_MIN_PIXELS)
-end
-
-function UnitFrame:SetUnit(unit)
-	self.unit = unit
-	self.displayedUnit = unit  -- For vehicles
-	self.inVehicle = false
-	if unit then
-		self:RegisterEvents()
-	else
-		self:UnregisterEvents()
-	end
-end
-
-function UnitFrame:UpdateInVehicle()
-	if UnitHasVehicleUI(self.unit) then
-		self.inVehicle = true
-		if self.unit == "player" then
-			self.displayedUnit = "vehicle"
-		else
-			local prefix, id, suffix = string.match(self.unit, "([^%d]+)([%d]*)(.*)")
-			self.displayedUnit = prefix.."pet"..id..suffix
-		end
-	else
-		self.inVehicle = false
-		self.displayedUnit = self.unit
-	end
-	self:UpdateEvents()
-end
-
-function UnitFrame:RegisterEvents()
-	self:RegisterEvent("UNIT_NAME_UPDATE")
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("UNIT_PET")
-	self:RegisterEvent("UNIT_ENTERED_VEHICLE")
-	self:RegisterEvent("UNIT_EXITED_VEHICLE")
-	self:RegisterEvent("RAID_TARGET_UPDATE")
-	self:RegisterEvent("UNIT_FACTION")
-	-- self:RegisterEvent("UNIT_CONNECTION")
-	self:UpdateEvents()
-	self:SetScript("OnEvent", UnitFrame.OnEvent)
-end
-
-function UnitFrame:UpdateEvents()
-	-- These events affected if unit in vehicle
-	local displayedUnit
-	if self.unit ~= self.displayedUnit then
-		displayedUnit = self.displayedUnit
-	end
-	self:RegisterUnitEvent("UNIT_MAXHEALTH", self.unit, displayedUnit)
-	self:RegisterUnitEvent("UNIT_HEALTH", self.unit, displayedUnit)
-	self:RegisterUnitEvent("UNIT_AURA", self.unit, displayedUnit)
-	self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", self.unit, displayedUnit)
-	self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", self.unit, displayedUnit)
-	if UnitIsUnit("player", self.unit) then
-		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", self.unit, displayedUnit)
-		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", self.unit, displayedUnit)
-		self:RegisterUnitEvent("UNIT_MAXPOWER", self.unit, displayedUnit)
-	end
-end
-
-function UnitFrame:UnregisterEvents()
-	self:UnregisterAllEvents()
-	self:SetScript("OnEvent", nil)
-end
-
-function UnitFrame:OnEvent(event, ...)
-	local arg1, arg2, arg3, arg4 = ...
-	if event == "PLAYER_TARGET_CHANGED" then
-		self:UpdateSelectionHighlight()
-	elseif event == "PLAYER_ENTERING_WORLD" then
-		self:UpdateAll()
-	elseif event == "RAID_TARGET_UPDATE" then
-		self:UpdateRaidTarget()
-	elseif event == "UNIT_POWER_FREQUENT" then 
-		self:UpdatePower()
-	elseif event == "UNIT_MAXPOWER" then 
-		self:UpdateMaxPower()
-	elseif event == "UNIT_DISPLAYPOWER" then 
-		self:UpdatePowerBar()
-	elseif arg1 == self.unit or arg1 == self.displayedUnit then
-		if event == "UNIT_HEALTH" or event == "UNIT_HEALTH_FREQUENT" then
-			self:UpdateHealth()
-		elseif event == "UNIT_MAXHEALTH" then
-			self:UpdateMaxHealth()
-			self:UpdateHealth()
-		elseif event == "UNIT_AURA" then
-			self:UpdateBuffs()
-		elseif event == "UNIT_THREAT_LIST_UPDATE" or event == "UNIT_THREAT_SITUATION_UPDATE" then
-			if self.optionTable.considerSelectionInCombatAsHostile then
-				self:UpdateName()  -- We've been bamboozled! 
-				self:UpdateThreat()
-			end
-		elseif event == "UNIT_NAME_UPDATE" then
-			self:UpdateName()
-			self:UpdateHealthColor()  -- Event can signal we now know unit class
-		elseif event == "UNIT_FACTION" then
-			self:UpdateName()
-			self:UpdateHealthColor()
-		elseif event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_PET" then
-			self:UpdateAll()
-		end
-	end
-end
-
-function UnitFrame:SetOptions()
-	local options = NephilistNameplatesOptions
-	self.showBuffs = options.ShowBuffs
-	self.onlyShowOwnBuffs = options.OnlyShowOwnBuffs
-	self.showLevel = options.ShowLevel
-	self.showThreat = options.ShowThreat
-	self.threatRole = DriverFrame.threatRole
-	self.showThreatOnlyInGroup = options.ShowThreatOnlyInGroup
-	self.showLossBar = options.ShowLossBar
-
-	if UnitIsUnit("player", self.unit) then
-		self.optionTable = PlayerFrameOptions
-	elseif UnitIsFriend("player", self.unit) then
-		self.optionTable = FriendlyFrameOptions
-	else
-		self.optionTable = EnemyFrameOptions
-	end
 end
 
 function UnitFrame:UpdateAll()
@@ -229,6 +191,22 @@ function UnitFrame:UpdateAll()
 		self:UpdateEliteIcon()
 		self:UpdateThreat()
 	end
+end
+
+function UnitFrame:UpdateInVehicle()
+	if UnitHasVehicleUI(self.unit) then
+		self.inVehicle = true
+		if self.unit == "player" then
+			self.displayedUnit = "vehicle"
+		else
+			local prefix, id, suffix = string.match(self.unit, "([^%d]+)([%d]*)(.*)")
+			self.displayedUnit = prefix.."pet"..id..suffix
+		end
+	else
+		self.inVehicle = false
+		self.displayedUnit = self.unit
+	end
+	self:UpdateEvents()
 end
 
 function UnitFrame:UpdateName() 
@@ -371,12 +349,13 @@ function UnitFrame:ShowMouseoverHighlight()
 	self:SetIgnoreParentAlpha(true)
 		-- Default UI behavior:
 		--   Classic: nontarget nameplates lower alpha when target exists
-		--   Retail: alpha changes with distance
+		--   Retail: alpha changes with distance (bleh)
 	self:SetScript("OnUpdate", self.UpdateMouseoverHighlight)
 end
 
 function UnitFrame:UpdateMouseoverHighlight()
-	-- OnUpdate because UnitIsUnit("mouseover", self.unit) true when UPDATE_MOUSEOVER_UNIT fired OnLeave
+	-- OnUpdate because UnitIsUnit("mouseover", self.unit) true 
+	-- when UPDATE_MOUSEOVER_UNIT fired OnLeave
 	if not UnitIsUnit("mouseover", self.unit) then
 		self:HideMouseoverHighlight()
 		self:SetScript("OnUpdate", nil)
@@ -408,7 +387,10 @@ function UnitFrame:UpdateEliteIcon()
 		icon:Hide()
 	else
 		local classification = UnitClassification(self.unit)
-		if classification == "worldboss" or classification == "elite" or classification == "rareelite" then
+		if classification == "worldboss" or 
+			classification == "elite" or 
+			classification == "rareelite" 
+		then
 			icon:Show()
 		else
 			icon:Hide()
@@ -471,7 +453,7 @@ function UnitFrame:ShowThreatDanger()
 	-- self.healthBar.glowTop:Show()
 	-- self.healthBar.glowBottom:Show()
 
-	-- Full opacity for nameplates with threat warning (mostly affects Classic)
+	-- Full opacity for nameplates with threat warning
 	self:SetIgnoreParentAlpha(true)
 	self.threatAlpha = true
 end
@@ -502,5 +484,129 @@ function UnitFrame:UpdateCastBar()
 	end
 end
 
+function UnitFrame:OnEvent(event, ...)
+	local arg1, arg2, arg3, arg4 = ...
+	if event == "PLAYER_TARGET_CHANGED" then
+		self:UpdateSelectionHighlight()
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		self:UpdateAll()
+	elseif event == "RAID_TARGET_UPDATE" then
+		self:UpdateRaidTarget()
+	elseif event == "UNIT_POWER_FREQUENT" then 
+		self:UpdatePower()
+	elseif event == "UNIT_MAXPOWER" then 
+		self:UpdateMaxPower()
+	elseif event == "UNIT_DISPLAYPOWER" then 
+		self:UpdatePowerBar()
+	elseif arg1 == self.unit or arg1 == self.displayedUnit then
+		if event == "UNIT_HEALTH" or event == "UNIT_HEALTH_FREQUENT" then
+			self:UpdateHealth()
+		elseif event == "UNIT_MAXHEALTH" then
+			self:UpdateMaxHealth()
+			self:UpdateHealth()
+		elseif event == "UNIT_AURA" then
+			self:UpdateBuffs()
+		elseif event == "UNIT_THREAT_LIST_UPDATE" or event == "UNIT_THREAT_SITUATION_UPDATE" then
+			if self.optionTable.considerSelectionInCombatAsHostile then
+				self:UpdateName()  -- We've been bamboozled! 
+				self:UpdateThreat()
+			end
+		elseif event == "UNIT_NAME_UPDATE" then
+			self:UpdateName()
+			self:UpdateHealthColor()  -- Event can signal we now know unit class
+		elseif event == "UNIT_FACTION" then
+			self:UpdateName()
+			self:UpdateHealthColor()
+		elseif event == "UNIT_ENTERED_VEHICLE" or event == "UNIT_EXITED_VEHICLE" or event == "UNIT_PET" then
+			self:UpdateAll()
+		end
+	end
+end
 
+--[[
+function UnitFrame:OnEvent(event, unit, ...)
+	local eventFunction = self[event]
+	if eventFunction then
+		eventFunction(self, unit, ...)
+	end
+end
+
+function UnitFrame:PLAYER_ENTERING_WORLD()
+	self:UpdateAll()
+end
+
+function UnitFrame:PLAYER_TARGET_CHANGED()
+	self:UpdateSelectionHighlight()
+end
+
+function UnitFrame:UNIT_HEALTH()
+	self:UpdateHealth()
+end
+
+function UnitFrame:UNIT_HEALTH_FREQUENT()
+	self:UpdateHealth()
+end
+
+function UnitFrame:UNIT_MAXHEALTH()
+	self:UpdateMaxHealth()
+	self:UpdateHealth()
+end
+
+function UnitFrame:UNIT_POWER_FREQUENT()
+	self:UpdatePower()
+end
+
+function UnitFrame:UNIT_DISPLAYPOWER()
+	self:UpdatePowerBar()
+end
+
+function UnitFrame:UNIT_MAXPOWER()
+	self:UpdateMaxPower()
+end
+
+function UnitFrame:UNIT_AURA(unit)
+	self:UpdateBuffs()
+end
+
+function UnitFrame:UNIT_THREAT_LIST_UPDATE(unit)
+	if self.optionTable.considerSelectionInCombatAsHostile then
+		self:UpdateName()  -- We've been bamboozled! 
+		self:UpdateThreat()
+	end
+end
+
+function UnitFrame:UNIT_THREAT_SITUATION_UPDATE(unit)
+	if self.optionTable.considerSelectionInCombatAsHostile then
+		self:UpdateName()  -- It's a trap! 
+		self:UpdateThreat()
+	end
+end
+
+function UnitFrame:RAID_TARGET_UPDATE()
+	self:UpdateRaidTarget()
+end
+
+function UnitFrame:UNIT_ENTERED_VEHICLE(unit)
+	self:UpdateAll()
+end
+
+function UnitFrame:UNIT_EXITED_VEHICLE(unit)
+	self:UpdateAll()
+end
+
+function UnitFrame:UNIT_PET(unit)
+	self:UpdateAll()
+end
+
+function UnitFrame:UNIT_FACTION(unit)
+	self:UpdateName()  -- Curse your sudden but inevitable betrayal! 
+	self:UpdateHealthColor()
+end
+
+function UnitFrame:UNIT_NAME_UPDATE(unit)
+	self:UpdateName()
+	self:UpdateHealthColor()  -- Event can signal we now know unit class
+end
+
+]]--
 

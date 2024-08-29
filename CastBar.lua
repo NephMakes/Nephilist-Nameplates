@@ -16,7 +16,7 @@ local UnitCastingInfo = UnitCastingInfo
 local UnitChannelInfo = UnitChannelInfo
 
 
---[[ CastBar functions ]]-- 
+--[[ CastBar setup ]]-- 
 
 function CastBar:OnLoad()
 	-- Called by NephilistNameplates.UnitFrame:Initialize()
@@ -80,6 +80,9 @@ function CastBar:UnregisterEvents()
 	self:UnregisterEvent("UNIT_SPELLCAST_INTERRUPTIBLE")
 	self:UnregisterEvent("UNIT_SPELLCAST_NOT_INTERRUPTIBLE")
 end
+
+
+--[[ CastBar action ]]-- 
 
 function CastBar:OnShow()
 	-- Update bar value
