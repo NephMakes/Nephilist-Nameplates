@@ -31,7 +31,7 @@ PlayerPlate:RegisterEvent("ADDON_LOADED")
 
 function PlayerPlate:ADDON_LOADED()
 	DriverFrame:OnNamePlateCreated(self)
-	self.UnitFrame:SetUnit("player")
+	self.UnitFrame:OnNamePlateAdded("player")
 	self:Update()
 end
 
