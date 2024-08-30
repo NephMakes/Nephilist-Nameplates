@@ -287,12 +287,12 @@ function CastBar:UNIT_SPELLCAST_INTERRUPTED(unit, castID)
 end
 
 function CastBar:UNIT_SPELLCAST_INTERRUPTIBLE()
-	CastBar:ShowNotInterruptible(false)
+	self:ShowNotInterruptible(false)
 	self:SetStatusBarColor(self.startCastColor:GetRGB())
 end
 
 function CastBar:UNIT_SPELLCAST_NOT_INTERRUPTIBLE()
-	CastBar:ShowNotInterruptible(true)
+	self:ShowNotInterruptible(true)
 	self:SetStatusBarColor(self.notInterruptibleColor:GetRGB())
 end
 

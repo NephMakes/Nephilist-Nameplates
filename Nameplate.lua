@@ -142,9 +142,9 @@ function UnitFrame:UpdateEvents()
 	self:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit)
 	self:RegisterUnitEvent("UNIT_MAXHEALTH", unit, displayedUnit)
 	if UnitIsUnit("player", unit) then
-		self:RegisterEvent("UNIT_POWER_FREQUENT")
-		self:RegisterEvent("UNIT_MAXPOWER")
-		self:RegisterEvent("UNIT_DISPLAYPOWER")
+		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit, displayedUnit)
 	end
 	if self.showBuffs then
 		self:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit)
