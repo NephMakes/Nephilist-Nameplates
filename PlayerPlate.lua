@@ -61,7 +61,7 @@ function PlayerPlate:Update()
 end
 
 function PlayerPlate:SetPosition(point) 
-	PlayerPlate:ClearAllPoints();
+	PlayerPlate:ClearAllPoints()
 	PlayerPlate:SetPoint(unpack(point))
 end
 

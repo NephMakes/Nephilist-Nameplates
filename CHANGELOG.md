@@ -1,9 +1,9 @@
 # Changelog
 ## Nephilist Nameplates
 
-### v2.X.X
-* Fixed: Castbars now show if they become interruptible mid-cast
+### v2.5.13 (2024-08-31)
 * Fixed: Phantom damage should no longer appear on nameplates with less than full health
+* Fixed: Castbars now show if they become interruptible mid-cast
 * Updated: Table of Contents for patch 11.0.2
 
 ### v2.5.12

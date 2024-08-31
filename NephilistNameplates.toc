@@ -1,6 +1,6 @@
 ## Interface: 110002, 40400, 11503
 ## Title: Nephilist Nameplates
-## Version: 2.5.12
+## Version: 2.5.13
 ## Notes: Simple, effective nameplates
 ## Author: NephMakes / lieandswell
 ## SavedVariablesPerCharacter: NephilistNameplatesOptions

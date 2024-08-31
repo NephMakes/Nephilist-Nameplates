@@ -43,42 +43,40 @@ end
 
 function DriverFrame:UpdateClassResourceBar()
 
-	local classBar = NamePlateDriverFrame.classNamePlateMechanicFrame; -- reuse Blizzard frame
-	if ( not classBar ) then 
-		return;
+	local classBar = NamePlateDriverFrame.classNamePlateMechanicFrame -- reuse Blizzard frame
+	if not classBar then 
+		return
 	end
-	classBar:Hide();
+	classBar:Hide()
 
-	local showSelf = GetCVar("nameplateShowSelf");
-	if ( showSelf == "0" or NephilistNameplatesOptions.HideClassBar ) then
-		return;
-	end
-
-	if ( NephilistNameplatesOptions.HideClassBar ) then
-		return;
+	local showSelf = GetCVar("nameplateShowSelf")
+	if (showSelf == "0") or NephilistNameplatesOptions.HideClassBar then
+		return
 	end
 
-	local targetMode = GetCVarBool("nameplateResourceOnTarget");
-	if ( classBar and classBar.overrideTargetMode ~= nil ) then
-		targetMode = classBar.overrideTargetMode;
+	if NephilistNameplatesOptions.HideClassBar then return end
+
+	local targetMode = GetCVarBool("nameplateResourceOnTarget")
+	if classBar and (classBar.overrideTargetMode ~= nil) then
+		targetMode = classBar.overrideTargetMode
 	end
-	if ( targetMode and classBar ) then
-		local namePlateTarget = C_NamePlate.GetNamePlateForUnit("target");
-		if ( namePlateTarget ) then
-			classBar:SetParent(namePlateTarget);
-			classBar:ClearAllPoints();
-			classBar:SetPoint("BOTTOM", namePlateTarget.UnitFrame.name, "TOP", 0, 4);
-			classBar:Show();
+	if targetMode and classBar then
+		local namePlateTarget = C_NamePlate.GetNamePlateForUnit("target")
+		if namePlateTarget then
+			classBar:SetParent(namePlateTarget)
+			classBar:ClearAllPoints()
+			classBar:SetPoint("BOTTOM", namePlateTarget.UnitFrame.name, "TOP", 0, 4)
+			classBar:Show()
 		else
-			classBar:Hide();
+			classBar:Hide()
 		end
-	elseif ( not targetMode and classBar ) then
-		local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player");
-		if ( namePlatePlayer ) then
-			classBar:SetParent(namePlatePlayer);
-			classBar:ClearAllPoints();
-			classBar:SetPoint("TOP", namePlatePlayer.UnitFrame.powerBar, "BOTTOM", 0, -4);
-			classBar:Show();
+	elseif not targetMode and classBar then
+		local namePlatePlayer = C_NamePlate.GetNamePlateForUnit("player")
+		if namePlatePlayer then
+			classBar:SetParent(namePlatePlayer)
+			classBar:ClearAllPoints()
+			classBar:SetPoint("TOP", namePlatePlayer.UnitFrame.powerBar, "BOTTOM", 0, -4)
+			classBar:Show()
 		end
 	end
 end
