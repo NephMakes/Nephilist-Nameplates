@@ -1,6 +1,9 @@
 # Changelog
 ## Nephilist Nameplates
 
+### v2.6.0 (2024-??-??)
+* Added: Nameplates can now show buffs and debuffs on Classic
+
 ### v2.5.13 (2024-08-31)
 * Fixed: Phantom damage should no longer appear on nameplates with less than full health
 * Fixed: Castbars now show if they become interruptible mid-cast

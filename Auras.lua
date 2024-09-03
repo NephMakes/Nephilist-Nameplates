@@ -1,40 +1,25 @@
 local addonName, NephilistNameplates = ...
-local UnitFrame = NephilistNameplates.UnitFrame;
+local UnitFrame = NephilistNameplates.UnitFrame
 
-local function GetAuraDataByIndex(unitToken, index, filter)
-	local info = C_UnitAuras.GetAuraDataByIndex(unitToken, index, filter)
-	if info then
-		return info.name, info.icon, info.applications, info.duration, info.expirationTime, info.sourceUnit, info.nameplateShowPersonal, info.nameplateShowAll, info.isNameplateOnly
+local BUFF_MAX_DISPLAY = BUFF_MAX_DISPLAY
+
+local function ShouldShowAura(aura, onlyShowOwn, isPlayer)
+	if not aura then return false end
+	if aura.nameplateShowAll then return true end
+	if aura.isNameplateOnly then
+		return (aura.nameplateShowPersonal == onlyShowOwn)
+	end
+
+	-- In Classic isNameplateOnly and nameplateShowPersonal always false
+	if not onlyShowOwn then return true end
+	if isPlayer then
+		return aura.canApplyAura
+	else
+		local caster = aura.sourceUnit
+		return (caster == "player" or caster == "pet" or caster == "vehicle")
 	end
 end
 
-local function ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll, isNameplateOnly, onlyShowOwnBuffs)
-	if not name then
-		return false
-	end
-	if nameplateShowAll then
-		return true
-	end
-	if isNameplateOnly then
-		if onlyShowOwnBuffs then
-			return nameplateShowPersonal and (caster == "player" or caster == "pet" or caster == "vehicle")
-		else
-			return true
-		end
-	else
-		return false
-	end
-	--[[
-	-- Old version that worked on Retail: 
-	if onlyShowOwnBuffs then
-		return nameplateShowPersonal and (caster == "player" or caster == "pet" or caster == "vehicle")
-	else
-		return nameplateShowAll or (
-			nameplateShowPersonal and (caster == "player" or caster == "pet" or caster == "vehicle")
-		)
-	end
-	]]--
-end
 
 function UnitFrame:UpdateBuffs()
 	local buffFrame = self.BuffFrame
@@ -48,18 +33,18 @@ function UnitFrame:UpdateBuffs()
 	local unit = self.displayedUnit
 	local filter
 
+	local isPlayer = UnitIsUnit("player", unit)
+
 	buffFrame:ClearAllPoints()
-	if UnitIsUnit("player", unit) then
+	if isPlayer then
 		buffFrame:SetPoint("BOTTOMLEFT", self.healthBar, "TOPLEFT", 0, 5)
-		filter = "HELPFUL|INCLUDE_NAME_PLATE_ONLY"
-		-- filter = "HELPFUL"
+		filter = "HELPFUL"
 	else
 		buffFrame:SetPoint("TOPLEFT", self.healthBar, "BOTTOMLEFT", 0, -5)
 		local reaction = UnitReaction("player", unit)
 		if reaction and reaction <= 4 then
 			-- Reaction 4 is neutral and less than 4 becomes increasingly more hostile
-			filter = "HARMFUL|INCLUDE_NAME_PLATE_ONLY"
-			-- filter = "HARMFUL"
+			filter = "HARMFUL"
 		else
 			filter = "NONE"
 		end
@@ -77,48 +62,30 @@ function UnitFrame:UpdateBuffs()
 		local _, name, texture, count, duration, expirationTime, caster, nameplateShowPersonal, nameplateShowAll, buff
 		local isNameplateOnly
 		local buffIndex = 1
+		local aura
 
 		for i = 1, BUFF_MAX_DISPLAY do
-			-- name, texture, count, _, duration, expirationTime, caster, _, nameplateShowPersonal, _, _, _, _, nameplateShowAll = UnitAura(unit, i, filter)
-			name, texture, count, duration, expirationTime, caster, nameplateShowPersonal, nameplateShowAll, isNameplateOnly = GetAuraDataByIndex(unit, i, filter)
-
-			--[[
-			-- Debugging code
-			if name and duration > 0 then
-				print(unit, name, caster, nameplateShowPersonal, nameplateShowAll, isNameplateOnly)
-			end
-			-- In Classic, nameplateShowPersonal and isNameplateOnly appear to always be false
-			]]--
-
-			if ShouldShowBuff(name, caster, nameplateShowPersonal, nameplateShowAll, isNameplateOnly, self.onlyShowOwnBuffs) then
+			aura = C_UnitAuras.GetAuraDataByIndex(unit, i, filter)
+			if ShouldShowAura(aura, self.onlyShowOwnBuffs, isPlayer) then
 				if not buffFrame.buffList[buffIndex] then
 					buffFrame.buffList[buffIndex] = CreateFrame("Frame", buffFrame:GetParent():GetName() .. "Buff" .. buffIndex, buffFrame, "NephilistNameplates_BuffButtonTemplate")
 					buffFrame.buffList[buffIndex]:SetMouseClickEnabled(false)
 				end
 				buff = buffFrame.buffList[buffIndex]
 				buff:SetID(i)
-				buff.name = name
+				buff.name = aura.name
 				buff.layoutIndex = i
 
-				buff.Icon:SetTexture(texture)
-				-- buff.Icon:SetVertexColor(0.8, 0.8, 0.8)
-				if count > 1 then
-					buff.CountFrame.Count:SetText(count)
+				buff.Icon:SetTexture(aura.icon)
+				if aura.applications > 1 then
+					buff.CountFrame.Count:SetText(aura.applications)
 					buff.CountFrame.Count:Show()
 				else
 					buff.CountFrame.Count:Hide()
 				end
 
-				--[[
-				if ( UnitIsUnit("player", unit) ) then
-					buff.Border:SetVertexColor(0, 0.3, 0)
-					buff.Cooldown:SetSwipeColor(0, 0.8, 0)
-				else
-					buff.Border:SetVertexColor(0.3, 0, 0)
-					buff.Cooldown:SetSwipeColor(0.8, 0, 0)
-				end
-				]]--
-				CooldownFrame_Set(buff.Cooldown, expirationTime - duration, duration, duration > 0, true)
+				local duration = aura.duration
+				CooldownFrame_Set(buff.Cooldown, aura.expirationTime - duration, duration, duration > 0, true)
 
 				buff:Show()
 				buffIndex = buffIndex + 1

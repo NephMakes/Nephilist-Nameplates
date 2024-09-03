@@ -111,14 +111,17 @@ end
 
 function DriverFrame:OnAddonLoaded()
 	NephilistNameplates:LocalizeStrings()
-	-- if not IS_RETAIL then
-	if IS_CLASSIC_ERA or IS_CLASSIC_CATA or IS_CLASSIC_WRATH then
-		-- Disable Retail-only options
-		local optionsPanel = NephilistNameplates.OptionsPanel
+
+	-- Disable inapplicable options
+	local optionsPanel = NephilistNameplates.OptionsPanel
+	if IS_CLASSIC_ERA or IS_CLASSIC_WRATH then
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.showBuffsButton)
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.onlyShowOwnBuffsButton)
+	end
+	if IS_CLASSIC_ERA or IS_CLASSIC_WRATH or IS_CLASSIC_CATA then
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.hideClassBarButton)
 	end
+
 	NephilistNameplates:UpdateOptions("NephilistNameplatesOptions", NephilistNameplates.Defaults, false)
 end
 
