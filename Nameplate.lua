@@ -64,7 +64,7 @@ function UnitFrame:OnLoad()
 	selectionBorder:SetVertexColor(1, 1, 1, 1)
 
 	self.optionTable = {}
-	self.BuffFrame.buffList = {}
+	self.BuffFrame.auras = {}
 
 	Mixin(self.lossBar, LossBar)
 	self.lossBar:Initialize()
