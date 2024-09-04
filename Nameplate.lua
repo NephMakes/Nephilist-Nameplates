@@ -1,3 +1,5 @@
+-- "UnitFrame" here is the non-interactable frame we attach to Blizz "Nameplate#"
+
 local addonName, NephilistNameplates = ...
 
 local DriverFrame = NephilistNameplates.DriverFrame
@@ -43,8 +45,6 @@ local UnitHasVehicleUI = UnitHasVehicleUI or function(unit) return false end
 
 
 --[[ Setup ]]-- 
-
--- "UnitFrame" here is non-interactable frame we attach to Blizz "Nameplate#"
 
 function UnitFrame:OnLoad()
 	self.healthBackground:SetAllPoints(self.healthBar)
@@ -452,7 +452,7 @@ function UnitFrame:ShowThreatBad()
 	-- self.healthBar.glowTop:Show()
 	-- self.healthBar.glowBottom:Show()
 
-	-- Full opacity for nameplates with threat warning (mostly affects Classic)
+	-- Full opacity for nameplates with threat warning
 	self:SetIgnoreParentAlpha(true)
 	self.threatAlpha = true
 end

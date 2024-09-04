@@ -57,12 +57,11 @@
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true">
-					<Size x="18" y="12"/>
 					<Anchors>
-						<Anchor point="CENTER"/>
+						<Anchor point="TOPLEFT" x="1" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="1"/>
 					</Anchors>
 					<TexCoords left="0.05" right="0.95" top="0.1" bottom="0.6"/>
-					<!-- <TexCoords left="0" right="1" top="0" bottom="0.7"/> -->
 				</Texture>
 			</Layer>
 		</Layers>

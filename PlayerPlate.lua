@@ -9,10 +9,24 @@ local function round(x)
 	return floor(x + 0.5)
 end
 
-do
-	PlayerPlate:SetWidth(140)
-	PlayerPlate:SetHeight(20)
+--[[ PlayerPlate ]]--
+
+
+--[[
+function PlayerPlate:OnLoad()
+	self:SetSize(140, 20)
+	self:SetScript("OnEvent", self.OnEvent)
+	self:RegisterEvent("ADDON_LOADED")
+	self:SetScript("OnEnter", self.OnEnter)
+	self:SetScript("OnLeave", self.OnLeave)
+	self:SetMovable(true)
+	self:SetScript("OnDragStart", self.OnDragStart)
+	self:SetScript("OnDragStop", self.OnDragStop)
+	self:RegisterForDrag("LeftButton")
+	self:SetScript("OnClick", self.OnClick)
+	self:RegisterForClicks("RightButtonUp")
 end
+]]--
 
 function PlayerPlate:OnEvent(event, ...)
 	if event == "ADDON_LOADED" then
@@ -31,6 +45,7 @@ PlayerPlate:RegisterEvent("ADDON_LOADED")
 
 function PlayerPlate:ADDON_LOADED()
 	DriverFrame:OnNamePlateCreated(self)
+	-- DriverFrame:NAME_PLATE_CREATED(self)
 	self.UnitFrame:OnNamePlateAdded("player")
 	self:Update()
 end
@@ -128,7 +143,7 @@ end
 PlayerPlate:SetScript("OnDragStop", PlayerPlate.OnDragStop)
 
 function PlayerPlate:OnClick(button)
-	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
 	if button == "RightButton" then
 		InterfaceAddOnsList_Update()
 		InterfaceOptionsFrame_OpenToCategory(NephilistNameplates.OptionsPanel)
@@ -136,3 +151,9 @@ function PlayerPlate:OnClick(button)
 end
 PlayerPlate:RegisterForClicks("RightButtonUp")
 PlayerPlate:SetScript("OnClick", PlayerPlate.OnClick)
+
+--[[
+do
+	PlayerPlate:OnLoad()
+end
+]]--

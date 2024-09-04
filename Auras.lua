@@ -4,6 +4,7 @@ local addonName, NephilistNameplates = ...
 local UnitFrame = NephilistNameplates.UnitFrame
 
 local GetAuraDataByIndex = C_UnitAuras.GetAuraDataByIndex
+local SetButtonCooldown = CooldownFrame_Set
 
 local BUFF_MAX_DISPLAY = BUFF_MAX_DISPLAY
 local IS_CLASSIC = (WOW_PROJECT_ID == WOW_PROJECT_CATACLYSM_CLASSIC) or
@@ -31,7 +32,7 @@ local function SetButtonAura(button, auraData)
 		count:Hide()
 	end
 	local duration = auraData.duration
-	CooldownFrame_Set(button.Cooldown, auraData.expirationTime - duration, duration, duration > 0, true)
+	SetButtonCooldown(button.Cooldown, auraData.expirationTime - duration, duration, duration > 0, true)
 	button:Show()
 end
 
@@ -43,6 +44,7 @@ local function ShouldShowAura(aura, onlyShowOwn, isPlayer)
 	end
 	if IS_CLASSIC then
 		-- isNameplateOnly and nameplateShowPersonal always false
+		-- This filter isn't perfect but does okay
 		if not onlyShowOwn then return true end
 		if isPlayer then
 			return aura.canApplyAura
@@ -87,11 +89,11 @@ function UnitFrame:UpdateBuffs()
 		end
 	else
 		local auraData, button
-		local j = 1
+		local j = 1  -- buttonIndex
 		for i = 1, BUFF_MAX_DISPLAY do
 			auraData = GetAuraDataByIndex(unit, i, filter)
 			if ShouldShowAura(auraData, self.onlyShowOwnBuffs, isPlayer) then
-				button = auraFrame.auras[i] or MakeAuraButton(auraFrame, i)
+				button = auraFrame.auras[j] or MakeAuraButton(auraFrame, j)
 				SetButtonAura(button, auraData)
 				j = j + 1
 			end
