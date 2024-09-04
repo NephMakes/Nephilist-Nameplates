@@ -3,6 +3,7 @@
 
 ### v2.6.0 (2024-??-??)
 * Added: Nameplates can now show buffs and debuffs on Classic
+* Fixed: Right-clicking static player nameplate when unlocked should now properly open options panel
 
 ### v2.5.13 (2024-08-31)
 * Fixed: Phantom damage should no longer appear on nameplates with less than full health

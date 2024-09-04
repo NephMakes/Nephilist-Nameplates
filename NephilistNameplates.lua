@@ -113,6 +113,7 @@ end
 
 function DriverFrame:HideBlizzard()
 	NamePlateDriverFrame:UnregisterAllEvents()
+	-- TODO: Let Blizz UI show protected nameplates
 	if IS_RETAIL or IS_WOWLABS then  
 		local manaBar = ClassNameplateManaBarFrame
 		manaBar:UnregisterAllEvents()
@@ -156,10 +157,10 @@ function DriverFrame:SetOptions()
 		-- /script print(GetCVar("nameplateVerticalScale"))
 	end
 
-	self:UpdateThreatRole()
+	self:SetThreatRole()
 end
 
-function DriverFrame:UpdateThreatRole()
+function DriverFrame:SetThreatRole()
 	if IS_RETAIL or IS_WOWLABS then
 		local spec = GetSpecialization()
 		if spec then
@@ -171,11 +172,7 @@ function DriverFrame:UpdateThreatRole()
 end
 
 function DriverFrame:NAME_PLATE_CREATED(nameplate)
-	self:OnNamePlateCreated(nameplate)
-end
-
-function DriverFrame:OnNamePlateCreated(nameplate)
-	-- Called by DriverFrame:NAME_PLATE_CREATED, PlayerPlate:ADDON_LOADED
+	-- Also called by PlayerPlate:ADDON_LOADED
 	local unitFrame = CreateFrame("Button", "$parentUnitFrame", nameplate, "NephilistNameplatesTemplate")
 	unitFrame:SetAllPoints()
 	unitFrame:EnableMouse(false)
@@ -248,6 +245,19 @@ function DriverFrame:OnSoftTargetUpdate()
 		end
 	end
 end
+
+--[[
+-- TODO
+function DriverFrame:UNIT_FACTION(unit)
+	local namePlate = GetNamePlateForUnit(unit)
+	if namePlate then
+		local unitFrame = namePlate.UnitFrame
+		unitFrame:SetOptions()
+		unitFrame:UpdateLayout()
+		unitFrame:UpdateAll()
+	end
+end
+]]--
 
 function DriverFrame:PLAYER_TALENT_UPDATE()
 	self:UpdateAddon()

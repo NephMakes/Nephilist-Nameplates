@@ -1,4 +1,4 @@
--- PlayerPlate is a static frame that acts like Blizz nameplate with self.unit = "player"
+-- PlayerPlate acts like Blizz self nameplate but doesn't move on screen
 
 local addonName, NephilistNameplates = ...
 
@@ -11,22 +11,19 @@ end
 
 --[[ PlayerPlate ]]--
 
-
---[[
 function PlayerPlate:OnLoad()
 	self:SetSize(140, 20)
 	self:SetScript("OnEvent", self.OnEvent)
 	self:RegisterEvent("ADDON_LOADED")
 	self:SetScript("OnEnter", self.OnEnter)
 	self:SetScript("OnLeave", self.OnLeave)
-	self:SetMovable(true)
 	self:SetScript("OnDragStart", self.OnDragStart)
 	self:SetScript("OnDragStop", self.OnDragStop)
-	self:RegisterForDrag("LeftButton")
 	self:SetScript("OnClick", self.OnClick)
+	self:SetMovable(true)
+	self:RegisterForDrag("LeftButton")
 	self:RegisterForClicks("RightButtonUp")
 end
-]]--
 
 function PlayerPlate:OnEvent(event, ...)
 	if event == "ADDON_LOADED" then
@@ -40,18 +37,15 @@ function PlayerPlate:OnEvent(event, ...)
 		self:SetOutOfCombat()
 	end
 end
-PlayerPlate:SetScript("OnEvent", PlayerPlate.OnEvent)
-PlayerPlate:RegisterEvent("ADDON_LOADED")
 
 function PlayerPlate:ADDON_LOADED()
-	DriverFrame:OnNamePlateCreated(self)
-	-- DriverFrame:NAME_PLATE_CREATED(self)
+	DriverFrame:NAME_PLATE_CREATED(self)
 	self.UnitFrame:OnNamePlateAdded("player")
 	self:Update()
 end
 
 function PlayerPlate:Update()
-	-- Called by PlayerPlate:ADDON_LOADED(), DriverFrame:UpdateNamePlateOptions()
+	-- Called by PlayerPlate:ADDON_LOADED, DriverFrame:UpdateNamePlateOptions, 
 	-- and options panel controls
 	local self = PlayerPlate
 	local options = NephilistNameplatesOptions
@@ -76,8 +70,18 @@ function PlayerPlate:Update()
 end
 
 function PlayerPlate:SetPosition(point) 
-	PlayerPlate:ClearAllPoints()
-	PlayerPlate:SetPoint(unpack(point))
+	self:ClearAllPoints()
+	self:SetPoint(unpack(point))
+end
+
+function PlayerPlate:SetLocked(shouldLock)
+	-- Called by PlayerPlate:Update() and [options panel checkbutton]
+	if shouldLock then
+		self:EnableMouse(false)
+	else
+		self:EnableMouse(true)
+	end
+	self.isLocked = shouldLock
 end
 
 function PlayerPlate:UpdateShown()
@@ -102,16 +106,6 @@ function PlayerPlate:SetShown()
 	self:SetAlpha(1)
 end
 
-function PlayerPlate:SetLocked(isLocked)
-	-- Called by PlayerPlate:Update() and [options panel checkbutton]
-	self.isLocked = isLocked
-	if isLocked then
-		self:EnableMouse(false)
-	else
-		self:EnableMouse(true)
-	end
-end
-
 function PlayerPlate:OnEnter()
 	GameTooltip_SetDefaultAnchor(GameTooltip, self)
 	local strings = NephilistNameplates.Strings
@@ -119,19 +113,14 @@ function PlayerPlate:OnEnter()
 	GameTooltip:AddLine(strings.DragToMove)
 	GameTooltip:Show()
 end
-PlayerPlate:SetScript("OnEnter", PlayerPlate.OnEnter)
 
 function PlayerPlate:OnLeave()
 	GameTooltip:Hide()
 end
-PlayerPlate:SetScript("OnLeave", PlayerPlate.OnLeave)
 
 function PlayerPlate:OnDragStart()
 	self:StartMoving()
 end
-PlayerPlate:SetMovable(true)
-PlayerPlate:RegisterForDrag("LeftButton")
-PlayerPlate:SetScript("OnDragStart", PlayerPlate.OnDragStart)
 
 function PlayerPlate:OnDragStop()
 	self:StopMovingOrSizing()
@@ -140,20 +129,14 @@ function PlayerPlate:OnDragStop()
 	xOfs, yOfs = round(xOfs), round(yOfs)
 	NephilistNameplatesOptions.PlayerPlatePosition = {point, relativeTo, relativePoint, xOfs, yOfs}
 end
-PlayerPlate:SetScript("OnDragStop", PlayerPlate.OnDragStop)
 
 function PlayerPlate:OnClick(button)
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON)
 	if button == "RightButton" then
-		InterfaceAddOnsList_Update()
-		InterfaceOptionsFrame_OpenToCategory(NephilistNameplates.OptionsPanel)
+		Settings.OpenToCategory(addonName)
 	end
 end
-PlayerPlate:RegisterForClicks("RightButtonUp")
-PlayerPlate:SetScript("OnClick", PlayerPlate.OnClick)
 
---[[
 do
 	PlayerPlate:OnLoad()
 end
-]]--
