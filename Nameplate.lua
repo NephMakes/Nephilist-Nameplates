@@ -41,12 +41,14 @@ local BORDER_SIZE = 1
 local BORDER_MIN_PIXELS = 2
 
 -- No UnitHasVehicleUI() in Classic Era
-local UnitHasVehicleUI = UnitHasVehicleUI or function(unit) return false end  
+local UnitHasVehicleUI = UnitHasVehicleUI or function(unit) return false end
 
 
 --[[ Setup ]]-- 
 
 function UnitFrame:OnLoad()
+	-- Called by DriverFrame:NAME_PLATE_CREATED
+
 	self.healthBackground:SetAllPoints(self.healthBar)
 	self.selectionBorder = self.healthBar.selectionBorder
 
@@ -74,28 +76,55 @@ function UnitFrame:OnLoad()
 end
 
 function UnitFrame:OnNamePlateAdded(unit)
+	-- Activate for unit
+	-- Called by DriverFrame:NAME_PLATE_UNIT_ADDED, PlayerPlate:ADDON_LOADED
 	self:SetUnit(unit)
-	self:SetOptions()
-	self:RegisterEvents()
-	self:UpdateLayout()
-	self:UpdateAll()
+	self:Activate()
+	self:Update()
 end
 
 function UnitFrame:OnNamePlateRemoved()
+	-- called by DriverFrame:NAME_PLATE_UNIT_REMOVED
 	self:SetUnit(nil)
-	self:UnregisterEvents()
+	self:SetScript("OnEvent", nil)
+	self:UnregisterAllEvents()
 	self.castBar:SetUnit(nil)
-	self.currentHealth = nil
+	self.currentHealth = nil  -- Reset for LossBar
 end
 
 function UnitFrame:SetUnit(unit)
+	-- Called by UnitFrame:OnNamePlateAdded, UnitFrame:OnNamePlateRemoved
 	self.unit = unit
-	self.displayedUnit = unit  -- For vehicles
+	self.displayedUnit = unit
 	self.inVehicle = false
+	-- See also UnitFrame:UpdateDisplayedUnit()
+end
+
+function UnitFrame:Activate()
+	local unit = self.unit
+	self:SetScript("OnEvent", self.OnEvent)
+	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
+	self:RegisterEvent("RAID_TARGET_UPDATE")
+	self:RegisterUnitEvent("UNIT_PET", unit)
+	self:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", unit)
+	self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", unit)
+	self:RegisterUnitEvent("UNIT_FACTION", unit)
+	self:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
+	-- self:RegisterEvent("UNIT_CONNECTION", unit)
+	-- See also UnitFrame:UpdateUnitEvents()
+end
+
+function UnitFrame:Update()
+	-- Called by UnitFrame:OnNamePlateAdded, 
+	--   DriverFrame:UpdateAddon, 
+	--   PlayerPlate:Update
+	self:SetOptions()
+	self:UpdateLayout()
+	self:UpdateElements()
 end
 
 function UnitFrame:SetOptions()
-	-- Call before UnitFrame:RegisterEvents
 	if UnitIsUnit("player", self.unit) then
 		self.optionTable = PlayerFrameOptions
 	elseif UnitIsFriend("player", self.unit) then
@@ -114,53 +143,8 @@ function UnitFrame:SetOptions()
 	self.showLossBar = options.ShowLossBar
 end
 
-function UnitFrame:RegisterEvents()
-	-- Call after UnitFrame:SetOptions
-	-- self:SetScript("OnEvent", UnitFrame.OnEvent)
-	self:SetScript("OnEvent", self.OnEvent)
-	local unit = self.unit
-	self:RegisterEvent("PLAYER_ENTERING_WORLD")
-	self:RegisterEvent("PLAYER_TARGET_CHANGED")
-	self:RegisterEvent("RAID_TARGET_UPDATE")
-	self:RegisterUnitEvent("UNIT_PET", unit)
-	self:RegisterUnitEvent("UNIT_ENTERED_VEHICLE", unit)
-	self:RegisterUnitEvent("UNIT_EXITED_VEHICLE", unit)
-	self:RegisterUnitEvent("UNIT_FACTION", unit)
-	self:RegisterUnitEvent("UNIT_NAME_UPDATE", unit)
-	-- self:RegisterEvent("UNIT_CONNECTION", unit)
-	self:UpdateEvents()
-end
-
-function UnitFrame:UpdateEvents()
-	-- Events affected if unit in vehicle
-	-- Called by UnitFrame:RegisterEvents, UnitFrame:UpdateInVehicle
-	local unit = self.unit
-	local displayedUnit
-	if unit ~= self.displayedUnit then
-		displayedUnit = self.displayedUnit
-	end
-	self:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit)
-	self:RegisterUnitEvent("UNIT_MAXHEALTH", unit, displayedUnit)
-	if UnitIsUnit("player", unit) then
-		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", unit, displayedUnit)
-		self:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit)
-		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit, displayedUnit)
-	end
-	if self.showBuffs then
-		self:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit)
-	end
-	if self.showThreat then
-		self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit)
-		self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", unit, displayedUnit)
-	end
-end
-
-function UnitFrame:UnregisterEvents()
-	self:SetScript("OnEvent", nil)
-	self:UnregisterAllEvents()
-end
-
 function UnitFrame:UpdateLayout()
+	-- Tweak size and position of frame elements for pixel-scale clarity
 	local healthBar = self.healthBar
 	local powerBar = self.powerBar
 	local selectionBorder = self.selectionBorder
@@ -181,26 +165,28 @@ end
 
 --[[ Action ]]-- 
 
-function UnitFrame:UpdateAll()
-	self:UpdateInVehicle()
-	if UnitExists(self.displayedUnit) then
-		self:UpdateName()
-		self:UpdateLevel()
-		self:UpdateHealthColor()
-		self:UpdateMaxHealth()
-		self:UpdateHealth()
-		self:UpdateSelectionHighlight()
-		self:UpdateMouseoverHighlight()
-		self:UpdateRaidTarget()
-		self:UpdateCastBar()
-		self:UpdatePowerBar()
-		self:UpdateBuffs()
-		self:UpdateEliteIcon()
-		self:UpdateThreat()
-	end
+function UnitFrame:UpdateElements()
+	self:UpdateDisplayedUnit()
+	if not UnitExists(self.displayedUnit) then return end
+	self:UpdateUnitEvents()
+
+	self:UpdateName()
+	self:UpdateLevel()
+	self:UpdateHealthColor()
+	self:UpdateMaxHealth()
+	self:UpdateHealth()
+	self:UpdateSelectionHighlight()
+	self:UpdateMouseoverHighlight()
+	self:UpdateRaidTarget()
+	self:UpdateCastBar()
+	self:UpdatePowerBar()
+	self:UpdateBuffs()
+	self:UpdateEliteIcon()
+	self:UpdateThreat()
 end
 
-function UnitFrame:UpdateInVehicle()
+function UnitFrame:UpdateDisplayedUnit()
+	-- Show nameplate for vehicle if present
 	if UnitHasVehicleUI(self.unit) then
 		self.inVehicle = true
 		if self.unit == "player" then
@@ -213,7 +199,29 @@ function UnitFrame:UpdateInVehicle()
 		self.inVehicle = false
 		self.displayedUnit = self.unit
 	end
-	self:UpdateEvents()
+end
+
+function UnitFrame:UpdateUnitEvents()
+	-- Events affected if unit in vehicle
+	local unit = self.unit
+	local displayedUnit
+	if unit ~= self.displayedUnit then
+		displayedUnit = self.displayedUnit
+	end
+	self:RegisterUnitEvent("UNIT_HEALTH", unit, displayedUnit)
+	self:RegisterUnitEvent("UNIT_MAXHEALTH", unit, displayedUnit)
+	if UnitIsUnit("player", unit) then
+		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit, displayedUnit)
+	end
+	if self.showBuffs then
+		self:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit)
+	end
+	if self.showThreat then
+		self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit)
+		self:RegisterUnitEvent("UNIT_THREAT_SITUATION_UPDATE", unit, displayedUnit)
+	end
 end
 
 function UnitFrame:UpdateName() 
@@ -344,9 +352,7 @@ end
 function UnitFrame:UpdateSelectionHighlight() 
 	if not self.optionTable.showSelectionHighlight then
 		self.selectionBorder:Hide()
-		return
-	end
-	if UnitIsUnit(self.displayedUnit, "target") then
+	elseif UnitIsUnit(self.displayedUnit, "target") then
 		self.selectionBorder:Show()
 	else
 		self.selectionBorder:Hide()
@@ -507,7 +513,7 @@ function UnitFrame:OnEvent(event, unit, ...)
 end
 
 function UnitFrame:PLAYER_ENTERING_WORLD()
-	self:UpdateAll()
+	self:UpdateElements()
 end
 
 function UnitFrame:PLAYER_TARGET_CHANGED()
@@ -558,25 +564,24 @@ function UnitFrame:RAID_TARGET_UPDATE()
 end
 
 function UnitFrame:UNIT_ENTERED_VEHICLE(unit)
-	self:UpdateAll()
+	self:UpdateElements()
 end
 
 function UnitFrame:UNIT_EXITED_VEHICLE(unit)
-	self:UpdateAll()
+	self:UpdateElements()
 end
 
 function UnitFrame:UNIT_PET(unit)
-	self:UpdateAll()
+	self:UpdateElements()
 end
 
 function UnitFrame:UNIT_FACTION(unit)
-	self:UpdateName()  -- Curse your sudden but inevitable betrayal! 
-	self:UpdateHealthColor()
+	-- Curse your sudden but inevitable betrayal! 
+	self:Update()
 end
 
 function UnitFrame:UNIT_NAME_UPDATE(unit)
 	self:UpdateName()
 	self:UpdateHealthColor()  -- Event can signal we now know unit class
 end
-
 

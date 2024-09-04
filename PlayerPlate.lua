@@ -58,9 +58,7 @@ function PlayerPlate:Update()
 		self:SetLocked(options.PlayerPlateLocked)
 		self.outOfCombatAlpha = options.PlayerPlateOutOfCombatAlpha
 
-		self.UnitFrame:SetOptions()
-		self.UnitFrame:UpdateLayout()
-		self.UnitFrame:UpdateAll()
+		self.UnitFrame:Update()
 	else
 		self.inUse = false
 		self:UnregisterEvent("PLAYER_REGEN_DISABLED")

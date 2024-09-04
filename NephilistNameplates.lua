@@ -125,10 +125,7 @@ end
 function DriverFrame:UpdateAddon()
 	self:SetOptions()
 	for _, namePlate in pairs(GetNamePlates()) do
-		local unitFrame = namePlate.UnitFrame
-		unitFrame:SetOptions()
-		unitFrame:UpdateLayout()
-		unitFrame:UpdateAll()
+		namePlate.UnitFrame:Update()
 	end
 	PlayerPlate:Update()
 	self:UpdateClassResourceBar()  -- In Power.lua
@@ -251,10 +248,7 @@ end
 function DriverFrame:UNIT_FACTION(unit)
 	local namePlate = GetNamePlateForUnit(unit)
 	if namePlate then
-		local unitFrame = namePlate.UnitFrame
-		unitFrame:SetOptions()
-		unitFrame:UpdateLayout()
-		unitFrame:UpdateAll()
+		namePlate.UnitFrame:Update()
 	end
 end
 ]]--
