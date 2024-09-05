@@ -1,10 +1,11 @@
 # Changelog
 ## Nephilist Nameplates
 
-### v2.6.0 (2024-??-??)
+### v2.6.0 (2024-09-05)
 * Added: Nameplates can now show buffs and debuffs on Classic
+* Added: Can now separately show/hide debuffs on enemies and buffs on player
 * Fixed: Nameplates should now show when units change faction
-* Fixed: Right-clicking static player nameplate when unlocked should now properly open options panel
+* Fixed: Right-clicking static player nameplate when unlocked should now open options panel
 
 ### v2.5.13 (2024-08-31)
 * Fixed: Phantom damage should no longer appear on nameplates with less than full health

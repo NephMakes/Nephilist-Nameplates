@@ -43,31 +43,32 @@ local function ShouldShowAura(aura, onlyShowOwn, isPlayer)
 		return (aura.nameplateShowPersonal == onlyShowOwn)
 	end
 	if IS_CLASSIC then
-		-- isNameplateOnly and nameplateShowPersonal always false
+		-- isNameplateOnly and nameplateShowPersonal always false in Classic
 		-- This filter isn't perfect but does okay
 		if not onlyShowOwn then return true end
 		if isPlayer then
 			return aura.canApplyAura
 		else
 			local caster = aura.sourceUnit
-			return (caster == "player" or caster == "pet" or caster == "vehicle")
+			return caster == "player" or caster == "pet" or caster == "vehicle"
 		end
 	end
 end
 
 function UnitFrame:UpdateBuffs()
 	local auraFrame = self.BuffFrame
-	if self.showBuffs then
-		auraFrame:Show()
-	else
+	local unit = self.displayedUnit
+	local isPlayer = UnitIsUnit("player", unit)
+
+	if (isPlayer and not self.showBuffsOnPlayer) or 
+		(not isPlayer and not self.showDebuffsOnEnemy)
+	then
 		auraFrame:Hide()
 		return
 	end
+	auraFrame:Show()
 
-	local unit = self.displayedUnit
-	local isPlayer = UnitIsUnit("player", unit)
 	local filter
-
 	auraFrame:ClearAllPoints()
 	if isPlayer then
 		auraFrame:SetPoint("BOTTOMLEFT", self.healthBar, "TOPLEFT", 0, 5)

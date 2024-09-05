@@ -19,19 +19,16 @@ Localization["enUS"] = {
 	OutOfCombatOpacity = "Visibility out of combat",
 	PlayerPlate = "Player nameplate",
 	ReloadAlert = "Some settings will not take effect until you reload the user interface",
-	ShowBuffs = "Show buffs and debuffs",
-	ShowBuffsTooltip = "Show important buffs and debuffs on nameplates",
-	ShowClassResource = "Show class-specific combat resources",
-	ShowClassResourceTooltip = "Show combo points, runes, holy power, etc.", 
-	ShowDamage = "Show damage", 
+	-- ShowClassResource = "Show class-specific combat resources",
+	-- ShowClassResourceTooltip = "Show combo points, runes, holy power, etc.", 
+	ShowBuffsOnPlayer = "Show buffs on player nameplate", 
+	ShowDebuffsOnEnemy = "Show debuffs on enemy nameplates", 
+	ShowDamage = "Show recent damage", 
 	ShowDamageTooltip = "Show recent damage on health bar", 
 	ShowHide = "Show/Hide", 
 	ShowLevel = "Show unit level and difficulty",
-	-- ShowLevelTooltip = "Show unit level and difficulty",
 	ShowPlayerPlate = "Show static player nameplate",
 	ShowPlayerPlateTooltip = "Show nameplate for your character that doesn't move around on screen",
-	-- ShowThreat = "Show threat warning",
-	-- ShowThreatTooltip = "Highlight enemies attacking you when healing or doing damage, or not attacking you when tanking", 
 	ShowThreat = "Show enemy threat",
 	ShowThreatTooltip = "Color enemy health by threat in your role as a tank, healer, or damage dealer",
 	ShowThreatOnlyInGroup = "Only when in a group",
@@ -66,7 +63,8 @@ function NephilistNameplates:SetAllTheText()
 	optionsPanel.showHideText:SetText(strings.ShowHide)
 	optionsPanel.hideClassBarButton.Text:SetText(strings.HideClassBar)
 	optionsPanel.onlyShowOwnBuffsButton.Text:SetText(strings.OnlyShowOwnBuffs)
-	optionsPanel.showBuffsButton.Text:SetText(strings.ShowBuffs)
+	optionsPanel.showBuffsOnPlayerButton.Text:SetText(strings.ShowBuffsOnPlayer)
+	optionsPanel.showDebuffsOnEnemyButton.Text:SetText(strings.ShowDebuffsOnEnemy)
 	optionsPanel.showLevelButton.Text:SetText(strings.ShowLevel)
 	optionsPanel.showThreatButton.Text:SetText(strings.ShowThreat)
 	optionsPanel.showThreatButton.tooltipText = strings.ShowThreatTooltip
@@ -75,7 +73,7 @@ function NephilistNameplates:SetAllTheText()
 	optionsPanel.showLossBarButton.Text:SetText(strings.ShowDamage)
 	optionsPanel.showLossBarButton.tooltipText = strings.ShowDamageTooltip
 
-	-- Player nameplate
+	-- PlayerPlate
 	optionsPanel.playerPlateText:SetText(strings.PlayerPlate)
 	optionsPanel.showPlayerPlateButton.Text:SetText(strings.ShowPlayerPlate)
 	optionsPanel.showPlayerPlateButton.tooltipText = strings.ShowPlayerPlateTooltip

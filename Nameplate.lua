@@ -117,8 +117,7 @@ end
 
 function UnitFrame:Update()
 	-- Called by UnitFrame:OnNamePlateAdded, 
-	--   DriverFrame:UpdateAddon, 
-	--   PlayerPlate:Update
+	--   DriverFrame:Update, PlayerPlate:Update
 	self:SetOptions()
 	self:UpdateLayout()
 	self:UpdateElements()
@@ -134,7 +133,8 @@ function UnitFrame:SetOptions()
 	end
 
 	local options = NephilistNameplatesOptions  -- Saved variable
-	self.showBuffs = options.ShowBuffs
+	self.showBuffsOnPlayer = options.ShowBuffsOnPlayer
+	self.showDebuffsOnEnemy = options.ShowDebuffsOnEnemy
 	self.onlyShowOwnBuffs = options.OnlyShowOwnBuffs
 	self.showLevel = options.ShowLevel
 	self.showThreat = options.ShowThreat
@@ -214,9 +214,13 @@ function UnitFrame:UpdateUnitEvents()
 		self:RegisterUnitEvent("UNIT_POWER_FREQUENT", unit, displayedUnit)
 		self:RegisterUnitEvent("UNIT_MAXPOWER", unit, displayedUnit)
 		self:RegisterUnitEvent("UNIT_DISPLAYPOWER", unit, displayedUnit)
-	end
-	if self.showBuffs then
-		self:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit)
+		if self.showBuffsOnPlayer then
+			self:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit)
+		end
+	else
+		if self.showDebuffsOnEnemy then
+			self:RegisterUnitEvent("UNIT_AURA", unit, displayedUnit)
+		end
 	end
 	if self.showThreat then
 		self:RegisterUnitEvent("UNIT_THREAT_LIST_UPDATE", unit, displayedUnit)

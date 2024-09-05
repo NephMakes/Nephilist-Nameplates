@@ -9,7 +9,8 @@ local PlayerPlate = NephilistNameplates.PlayerPlate
 NephilistNameplates.Defaults = {
 	ColorRareNames = true, 
 	HideClassBar = false, 
-	ShowBuffs = true, 
+	ShowBuffsOnPlayer = true, 
+	ShowDebuffsOnEnemy = true, 
 	ShowEliteIcon = true, 
 	ShowLevel = true, 
 	ShowLossBar = true, 
@@ -44,20 +45,25 @@ local showLevelButton = optionsPanel.showLevelButton
 showLevelButton:SetPoint("TOPLEFT", optionsPanel.showHideText, "BOTTOMLEFT", 0, -8)
 showLevelButton.onValueChanged = NephilistNameplates.Update
 
-optionsPanel.showBuffsButton = optionsPanel:CreateCheckButton("ShowBuffs")
-local showBuffsButton = optionsPanel.showBuffsButton
-showBuffsButton:SetPoint("TOPLEFT", showLevelButton, "BOTTOMLEFT", 0, -8)
--- showBuffsButton.onValueChanged = function() end
+optionsPanel.showBuffsOnPlayerButton = optionsPanel:CreateCheckButton("ShowBuffsOnPlayer")
+local showBuffsOnPlayerButton = optionsPanel.showBuffsOnPlayerButton
+showBuffsOnPlayerButton:SetPoint("TOPLEFT", showLevelButton, "BOTTOMLEFT", 0, -8)
+showBuffsOnPlayerButton.onValueChanged = NephilistNameplates.Update
+
+optionsPanel.showDebuffsOnEnemyButton = optionsPanel:CreateCheckButton("ShowDebuffsOnEnemy")
+local showDebuffsOnEnemyButton = optionsPanel.showDebuffsOnEnemyButton
+showDebuffsOnEnemyButton:SetPoint("TOPLEFT", showBuffsOnPlayerButton, "BOTTOMLEFT", 0, -8)
+showDebuffsOnEnemyButton.onValueChanged = NephilistNameplates.Update
 
 optionsPanel.onlyShowOwnBuffsButton = optionsPanel:CreateCheckButton("OnlyShowOwnBuffs")
 local onlyShowOwnBuffsButton = optionsPanel.onlyShowOwnBuffsButton
-onlyShowOwnBuffsButton:SetPoint("TOPLEFT", optionsPanel.showBuffsButton, "BOTTOMLEFT", 0, -8)
--- onlyShowOwnBuffsButton.onValueChanged = function() end
+onlyShowOwnBuffsButton:SetPoint("TOPLEFT", optionsPanel.showDebuffsOnEnemyButton, "BOTTOMLEFT", 0, -8)
+onlyShowOwnBuffsButton.onValueChanged = NephilistNameplates.Update
 
 optionsPanel.hideClassBarButton = optionsPanel:CreateCheckButton("HideClassBar")
 local hideClassBarButton = optionsPanel.hideClassBarButton
 hideClassBarButton:SetPoint("TOPLEFT", optionsPanel.onlyShowOwnBuffsButton, "BOTTOMLEFT", 0, -8)
--- hideClassBarButton.onValueChanged = function() end
+hideClassBarButton.onValueChanged = NephilistNameplates.Update
 
 local showThreatButton = optionsPanel:CreateCheckButton("ShowThreat")
 optionsPanel.showThreatButton = showThreatButton
@@ -75,7 +81,7 @@ showLossBarButton:SetPoint("TOPLEFT", optionsPanel.showThreatOnlyInGroupButton, 
 showLossBarButton.onValueChanged = NephilistNameplates.Update
 
 
--- Player nameplate
+-- PlayerPlate
 
 optionsPanel.playerPlateText = optionsPanel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 optionsPanel.playerPlateText:SetPoint("TOPLEFT", optionsPanel.hideClassBarButton, "BOTTOMLEFT", 0, -30)

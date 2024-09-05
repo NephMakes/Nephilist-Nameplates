@@ -28,7 +28,7 @@ local GetNamePlates = C_NamePlate.GetNamePlates
 
 function NephilistNameplates:Update()
 	-- Called by options panel "Okay" button and various checkboxes
-	DriverFrame:UpdateAddon()
+	DriverFrame:Update()
 end
 
 
@@ -94,10 +94,6 @@ function DriverFrame:ADDON_LOADED(addonName)
 
 	-- Disable inapplicable option widgets
 	local optionsPanel = nephPlates.OptionsPanel
-	if IS_CLASSIC_ERA or IS_CLASSIC_WRATH then
-		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.showBuffsButton)
-		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.onlyShowOwnBuffsButton)
-	end
 	if IS_CLASSIC then
 		BlizzardOptionsPanel_CheckButton_Disable(optionsPanel.hideClassBarButton)
 	end
@@ -108,12 +104,11 @@ end
 function DriverFrame:VARIABLES_LOADED()
 	-- Blizz variables loaded
 	self:HideBlizzard()
-	self:UpdateAddon()
+	self:Update()
 end
 
 function DriverFrame:HideBlizzard()
 	NamePlateDriverFrame:UnregisterAllEvents()
-	-- TODO: Let Blizz UI show protected nameplates
 	if IS_RETAIL or IS_WOWLABS then  
 		local manaBar = ClassNameplateManaBarFrame
 		manaBar:UnregisterAllEvents()
@@ -122,7 +117,7 @@ function DriverFrame:HideBlizzard()
 	end
 end
 
-function DriverFrame:UpdateAddon()
+function DriverFrame:Update()
 	self:SetOptions()
 	for _, namePlate in pairs(GetNamePlates()) do
 		namePlate.UnitFrame:Update()
@@ -130,7 +125,6 @@ function DriverFrame:UpdateAddon()
 	PlayerPlate:Update()
 	self:UpdateClassResourceBar()  -- In Power.lua
 end
-DriverFrame.UpdateNamePlateOptions = DriverFrame.UpdateAddon  -- Deprecated
 
 function DriverFrame:SetOptions()
 	-- Get cvars
@@ -144,7 +138,7 @@ function DriverFrame:SetOptions()
 	if IS_RETAIL or IS_WOWLABS then
 		local baseNamePlateWidth = 110
 		local baseNamePlateHeight = 45
-		C_NamePlate.SetNamePlateSelfSize(baseNamePlateWidth, baseNamePlateHeight)
+		-- C_NamePlate.SetNamePlateSelfSize(baseNamePlateWidth, baseNamePlateHeight)
 			-- Creates taint if called in combat
 
 		-- local namePlateVerticalScale = tonumber(GetCVar("NamePlateVerticalScale"))
@@ -243,34 +237,31 @@ function DriverFrame:OnSoftTargetUpdate()
 	end
 end
 
---[[
--- TODO
 function DriverFrame:UNIT_FACTION(unit)
 	local namePlate = GetNamePlateForUnit(unit)
 	if namePlate then
 		namePlate.UnitFrame:Update()
 	end
 end
-]]--
 
 function DriverFrame:PLAYER_TALENT_UPDATE()
-	self:UpdateAddon()
+	self:Update()
 end
 
 function DriverFrame:ACTIVE_TALENT_GROUP_CHANGED()
-	self:UpdateAddon()
+	self:Update()
 end
 
 function DriverFrame:TALENT_GROUP_ROLE_CHANGED()
-	self:UpdateAddon()
+	self:Update()
 end
 
 function DriverFrame:CHARACTER_POINTS_CHANGED()
-	self:UpdateAddon()
+	self:Update()
 end
 
 function DriverFrame:CVAR_UPDATE()
-	self:UpdateAddon()
+	self:Update()
 end
 
 do

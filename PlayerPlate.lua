@@ -45,7 +45,7 @@ function PlayerPlate:ADDON_LOADED()
 end
 
 function PlayerPlate:Update()
-	-- Called by PlayerPlate:ADDON_LOADED, DriverFrame:UpdateNamePlateOptions, 
+	-- Called by PlayerPlate:ADDON_LOADED, DriverFrame:Update, 
 	-- and options panel controls
 	local self = PlayerPlate
 	local options = NephilistNameplatesOptions
