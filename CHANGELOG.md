@@ -1,6 +1,11 @@
 # Changelog
 ## Nephilist Nameplates
 
+### v2.6.1 (2025-10-XX)
+* Updated for Retail patch 11.2.5
+* Updated for Mists of Pandaria Classic patch 5.5.1
+* Updated for Vanilla Classic patch 1.15.7
+
 ### v2.6.0 (2024-09-05)
 * Added: Nameplates can now show buffs and debuffs on Classic
 * Added: Can now separately show/hide debuffs on enemies and buffs on player
