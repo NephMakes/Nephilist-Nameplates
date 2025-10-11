@@ -4,6 +4,8 @@
 ## Notes: Simple, effective nameplates
 ## Author: NephMakes / lieandswell
 ## SavedVariablesPerCharacter: NephilistNameplatesOptions
+## X-Curse-Project-ID: 95895
+## X-WoWI-ID: 23716
 
 NephilistNameplates.xml
 NephilistNameplates.lua
