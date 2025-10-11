@@ -1,4 +1,4 @@
-## Interface: 11507, 50501, 110205
+## Interface: 110205, 50501, 11507
 ## Title: Nephilist Nameplates
 ## Version: 2.6.1
 ## Notes: Simple, effective nameplates
